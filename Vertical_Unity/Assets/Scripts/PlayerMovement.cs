@@ -39,7 +39,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if(Input.GetAxis("LJoystickH") != 0)
         {
-            targetVelocity.x = Input.GetAxis("LJoystickH");
+            targetVelocity.x = Input.GetAxis("LJoystickH") * maxRunningSpeed;
         }
         else if(targetVelocity.x != 0)
         {
@@ -51,20 +51,19 @@ public class PlayerMovement : MonoBehaviour
     {
         if(IsOnGround())
         {
-            float addedXVelocity = Mathf.Sign(targetVelocity.x * maxRunningSpeed - rb.velocity.x) * runningAcceleration * Time.fixedDeltaTime; //the added horizontal velocity needed to get closer to the target velocity
-            if (targetVelocity.x == 0 && Mathf.Sign(rb.velocity.x + addedXVelocity) != Mathf.Sign(rb.velocity.x))
+            float addedXVelocity = Mathf.Sign(targetVelocity.x - rb.velocity.x) * runningAcceleration * Time.fixedDeltaTime;
+            if (Mathf.Sign(rb.velocity.x) != Mathf.Sign(rb.velocity.x + addedXVelocity) && targetVelocity.x == 0)
             {
-                rb.velocity = new Vector2(0f, rb.velocity.y);
-                Debug.Log("tozero");
+                rb.velocity = new Vector2(0.0f, rb.velocity.y);
             }
-            else if(targetVelocity.x != 0)
+            else if (rb.velocity.x < targetVelocity.x && targetVelocity.x > 0 || rb.velocity.x > targetVelocity.x && targetVelocity.x < 0)
             {
                 rb.velocity = new Vector2(rb.velocity.x + addedXVelocity, rb.velocity.y);
             }
 
-            if (rb.velocity.x > maxRunningSpeed)
+            if(rb.velocity.x > targetVelocity.x && targetVelocity.x > 0 || rb.velocity.x < targetVelocity.x && targetVelocity.x < 0)
             {
-                new Vector2(maxRunningSpeed, rb.velocity.y);
+                rb.velocity = new Vector2(targetVelocity.x, rb.velocity.y);
             }
         }
     }
