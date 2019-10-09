@@ -6,9 +6,13 @@ public class PlayerMovement : MonoBehaviour
 {
     public bool allowMouseControl;
     [Header("Base movement settings")]
-    public float maxRunningSpeed;
+    public float maxTargetSpeed;
     public float runningAcceleration;
     public float groundSlowing;
+    public float airAcceleration;
+    public float airSlowing;
+    public float jumpForce;
+    [Range(0, 100)] public float jumpXVelocityGain;
     [Header("Technical settings")]
     public Transform feetPos;
     public float groundCheckThickness = 0.1f;
@@ -17,11 +21,13 @@ public class PlayerMovement : MonoBehaviour
 
     private Vector2 targetVelocity;
     private Rigidbody2D rb;
-
+    private float addedXVelocity;
+    private bool jumpFlag;
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         targetVelocity = Vector2.zero;
+        jumpFlag = false;
     }
 
 
@@ -39,32 +45,61 @@ public class PlayerMovement : MonoBehaviour
     {
         if(Input.GetAxis("LJoystickH") != 0)
         {
-            targetVelocity.x = Input.GetAxis("LJoystickH") * maxRunningSpeed;
+            targetVelocity.x = Input.GetAxis("LJoystickH") * maxTargetSpeed;
         }
         else if(targetVelocity.x != 0)
         {
             targetVelocity.x = 0;
         }
+
+        if (Input.GetButton("AButton") && IsOnGround())
+        {
+            jumpFlag = true;
+        }
     }
 
     private void UpdateMovement()
     {
-        if(IsOnGround())
+        if (targetVelocity.x != rb.velocity.x)
         {
-            float addedXVelocity = Mathf.Sign(targetVelocity.x - rb.velocity.x) * runningAcceleration * Time.fixedDeltaTime;
-            if (Mathf.Sign(rb.velocity.x) != Mathf.Sign(rb.velocity.x + addedXVelocity) && targetVelocity.x == 0)
+            float xDirection = Mathf.Sign(targetVelocity.x - rb.velocity.x);
+            if (rb.velocity.x > 0 && rb.velocity.x < targetVelocity.x || rb.velocity.x < 0 && rb.velocity.x > targetVelocity.x)
             {
-                rb.velocity = new Vector2(0.0f, rb.velocity.y);
+                if (IsOnGround())
+                {
+                    addedXVelocity = xDirection * runningAcceleration * Time.fixedDeltaTime;
+                }
+                else
+                {
+                    addedXVelocity = xDirection * airAcceleration * Time.fixedDeltaTime;
+                }
             }
-            else if (rb.velocity.x < targetVelocity.x && targetVelocity.x > 0 || rb.velocity.x > targetVelocity.x && targetVelocity.x < 0)
+            else
             {
-                rb.velocity = new Vector2(rb.velocity.x + addedXVelocity, rb.velocity.y);
+                if (IsOnGround())
+                {
+                    addedXVelocity = xDirection * groundSlowing * Time.fixedDeltaTime;
+                }
+                else
+                {
+                    addedXVelocity = xDirection * airSlowing * Time.fixedDeltaTime;
+                }
             }
 
-            if(rb.velocity.x > targetVelocity.x && targetVelocity.x > 0 || rb.velocity.x < targetVelocity.x && targetVelocity.x < 0)
+            if (targetVelocity.x > rb.velocity.x && targetVelocity.x < rb.velocity.x + addedXVelocity || targetVelocity.x < rb.velocity.x && targetVelocity.x > rb.velocity.x + addedXVelocity)
             {
                 rb.velocity = new Vector2(targetVelocity.x, rb.velocity.y);
             }
+            else
+            {
+                rb.velocity = new Vector2(rb.velocity.x + addedXVelocity, rb.velocity.y);
+            }
+        }
+
+        if(jumpFlag)
+        {
+            Propel(new Vector2(targetVelocity.x * jumpXVelocityGain / 100, jumpForce), false, true);
+            jumpFlag = false;
         }
     }
 
@@ -77,5 +112,30 @@ public class PlayerMovement : MonoBehaviour
         }
 
         return isGrounded;
+    }
+
+    public void Propel(Vector2 directedForce, bool resetHorizontalVelocity, bool resetVerticalVelocity)
+    {
+        Vector2 newVelocity = Vector2.zero;
+
+        if(resetVerticalVelocity)
+        {
+            newVelocity.y = directedForce.y;
+        }
+        else
+        {
+            newVelocity.y = rb.velocity.y + directedForce.y;
+        }
+
+        if (resetHorizontalVelocity)
+        {
+            newVelocity.x = directedForce.x;
+        }
+        else
+        {
+            newVelocity.x = rb.velocity.x + directedForce.x;
+        }
+
+        rb.velocity = new Vector2(newVelocity.x, newVelocity.y);
     }
 }

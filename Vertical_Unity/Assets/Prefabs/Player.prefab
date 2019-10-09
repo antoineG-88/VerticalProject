@@ -99,8 +99,8 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 1
-  m_Material: {fileID: 6200000, guid: 7af7c22ae2cd92d409fda48ee99a999e, type: 2}
+  m_GravityScale: 4
+  m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
@@ -114,7 +114,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 4503195422415338485}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 6200000, guid: 7af7c22ae2cd92d409fda48ee99a999e, type: 2}
+  m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
@@ -144,12 +144,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   allowMouseControl: 0
-  maxRunningSpeed: 10
-  runningAcceleration: 200
-  groundSlowing: 5
+  maxTargetSpeed: 10
+  runningAcceleration: 30
+  groundSlowing: 50
+  airAcceleration: 20
+  airSlowing: 1
+  jumpForce: 10
+  jumpXVelocityGain: 68.8
   feetPos: {fileID: 4503195423458372692}
-  groundCheckThickness: 0.1
-  groundCheckWidth: 1
+  groundCheckThickness: 0.05
+  groundCheckWidth: 0.8
   walkableMask:
     serializedVersion: 2
     m_Bits: 256
