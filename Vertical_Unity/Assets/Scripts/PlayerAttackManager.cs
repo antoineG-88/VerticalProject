@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerAttackManager : MonoBehaviour
 {
-    private Kick currentKick;
+    public Kick currentKick;
 
     private PlayerGrapplingHandler playerGrapplingHandler;
     private PlayerMovement playerMovement;
@@ -13,11 +13,6 @@ public class PlayerAttackManager : MonoBehaviour
     {
         playerGrapplingHandler = GetComponent<PlayerGrapplingHandler>();
         playerMovement = GetComponent<PlayerMovement>();
-    }
-
-    void Update()
-    {
-        
     }
 
     /// <summary>
@@ -30,5 +25,10 @@ public class PlayerAttackManager : MonoBehaviour
         Kick previousKick = currentKick;
         currentKick = newKick;
         return previousKick;
+    }
+
+    public void TriggerKick(EnnemyHandler ennemy)
+    {
+        currentKick.Use(ennemy, playerMovement, playerGrapplingHandler);
     }
 }

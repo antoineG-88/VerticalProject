@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class RingHandler : MonoBehaviour
 {
-    private PlayerGrapplingHandler playerGrapplingHandler;
+    public PlayerGrapplingHandler playerGrapplingHandler;
 
     void Start()
     {

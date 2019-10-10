@@ -35,7 +35,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
     private Vector2 shootDirection;
     private bool shootFlag;
     private bool isHooked;
-    private GameObject attachedObject;
+    [HideInInspector] public GameObject attachedObject;
     private Vector2 tractionDirection;
     [HideInInspector] public bool isTracting;
     [HideInInspector] public bool canUseTraction;
@@ -111,9 +111,9 @@ public class PlayerGrapplingHandler : MonoBehaviour
                     float angledDirection = (Mathf.Atan2(aimDirection.x, aimDirection.y) * 180 / Mathf.PI - 90) + relativeAngle;
 
                     Vector2 direction = new Vector2(Mathf.Cos((angledDirection) * Mathf.PI / 180), Mathf.Sin((angledDirection) * Mathf.PI / 180));
-                    hit = Physics2D.Raycast(shootPoint.position, direction, ropeLength, LayerMask.GetMask("Ring","Walkable"));
+                    hit = Physics2D.Raycast(shootPoint.position, direction, ropeLength, LayerMask.GetMask("Ring","Walkable","Ennemy"));
 
-                    if (hit && hit.collider.CompareTag("Ring") && nearestRing != hit.collider.gameObject && Vector2.Angle(direction, new Vector2(aimDirection.x, -aimDirection.y)) < minAngleFound)
+                    if (hit && (hit.collider.CompareTag("Ring") || hit.collider.CompareTag("Ennemy")) && nearestRing != hit.collider.gameObject && Vector2.Angle(direction, new Vector2(aimDirection.x, -aimDirection.y)) < minAngleFound)
                     {
                         nearestRing = hit.collider.gameObject;
                         minAngleFound = Vector2.Angle(direction, new Vector2(aimDirection.x, -aimDirection.y));
@@ -165,6 +165,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
         if(isHooked)
         {
             currentHook.transform.position = attachedObject.transform.position;
+            currentHook.GetComponent<Collider2D>().isTrigger = true;
 
             ropeRenderer.enabled = true;
             Vector3[] ropePoints = new Vector3[2];
@@ -181,7 +182,8 @@ public class PlayerGrapplingHandler : MonoBehaviour
 
                 rb.velocity = tractionDirection * tractionForce;
             }
-            if(isTracting && (Input.GetAxisRaw("RTAxis") == 0 || (Vector2.Distance(transform.position, currentHook.transform.position) < releasingHookDist)))
+
+            if(isTracting && (Input.GetAxisRaw("RTAxis") == 0 || (Vector2.Distance(transform.position, currentHook.transform.position) < releasingHookDist && attachedObject.CompareTag("Ring"))))
             {
                 rb.velocity = tractionDirection * tractionForce * velocityKeptReleasingHook / 100;
                 isTracting = false;
@@ -203,8 +205,10 @@ public class PlayerGrapplingHandler : MonoBehaviour
     public void ReleaseHook()
     {
         isHooked = false;
+        isTracting = false;
         ropeRenderer.enabled = false;
         playerMovement.inControl = true;
+        attachedObject = null;
         if(currentHook != null)
         {
             Destroy(currentHook);
