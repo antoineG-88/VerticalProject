@@ -130,9 +130,6 @@ MonoBehaviour:
   useAutoAim: 0
   widthAimAngle: 0
   raycastNumber: 0
-  clipMask:
-    serializedVersion: 2
-    m_Bits: 0
   armShoulderO: {fileID: 0}
   shootPoint: {fileID: 0}
   hookPrefab: {fileID: 2211880245883361801, guid: 041f2b0a20ef83746947ff243b04874a,
@@ -154,7 +151,7 @@ Rigidbody2D:
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 4
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 11e62417d5f030e4aa0c6b8f6f06e4d1, type: 2}
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0

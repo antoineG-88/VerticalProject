@@ -24,12 +24,15 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D rb;
     private float addedXVelocity;
     private bool jumpFlag;
+    private float timeBeforeControl;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         targetVelocity = Vector2.zero;
         jumpFlag = false;
         inControl = true;
+        timeBeforeControl = 0;
     }
 
 
@@ -41,6 +44,11 @@ public class PlayerMovement : MonoBehaviour
     private void FixedUpdate()
     {
         UpdateMovement();
+
+        if(timeBeforeControl > 0)
+        {
+            timeBeforeControl -= Time.fixedDeltaTime;
+        }
     }
 
     private void UpdateInput()
@@ -62,7 +70,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void UpdateMovement()
     {
-        if(inControl)
+        if(inControl && timeBeforeControl <= 0)
         {
             if (targetVelocity.x != rb.velocity.x)
             {
@@ -142,5 +150,17 @@ public class PlayerMovement : MonoBehaviour
         }
 
         rb.velocity = new Vector2(newVelocity.x, newVelocity.y);
+    }
+
+    public void DisableControl(float noControlTime, bool isAdded)
+    {
+        if(isAdded)
+        {
+            timeBeforeControl += noControlTime;
+        }
+        else
+        {
+            timeBeforeControl = noControlTime;
+        }
     }
 }
