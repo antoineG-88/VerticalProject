@@ -10,9 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 4503195422415338473}
   - component: {fileID: 4503195422415338474}
+  - component: {fileID: 4503195422415338472}
+  - component: {fileID: 2276650194064215076}
   - component: {fileID: 4503195422415338475}
   - component: {fileID: 4503195422415338484}
-  - component: {fileID: 4503195422415338472}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -84,6 +85,59 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &4503195422415338472
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4503195422415338485}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de2c3819255ff3a4cb2346ae31a13f24, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  allowMouseControl: 0
+  maxTargetSpeed: 10
+  runningAcceleration: 30
+  groundSlowing: 50
+  airAcceleration: 20
+  airSlowing: 1
+  jumpForce: 10
+  jumpXVelocityGain: 68.8
+  feetPos: {fileID: 4503195423458372692}
+  groundCheckThickness: 0.05
+  groundCheckWidth: 0.8
+  walkableMask:
+    serializedVersion: 2
+    m_Bits: 256
+  inControl: 0
+--- !u!114 &2276650194064215076
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4503195422415338485}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f07ad249d271bb44ab81849d07cda09, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shootForce: 10
+  ropeLength: 0
+  shootCooldown: 0
+  useAutoAim: 0
+  widthAimAngle: 0
+  raycastNumber: 0
+  clipMask:
+    serializedVersion: 2
+    m_Bits: 0
+  armShoulderO: {fileID: 0}
+  shootPoint: {fileID: 0}
+  hookPrefab: {fileID: 2211880245883361801, guid: 041f2b0a20ef83746947ff243b04874a,
+    type: 3}
+  ringHighLighterO: {fileID: 0}
 --- !u!50 &4503195422415338475
 Rigidbody2D:
   serializedVersion: 4
@@ -131,32 +185,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &4503195422415338472
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4503195422415338485}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: de2c3819255ff3a4cb2346ae31a13f24, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  allowMouseControl: 0
-  maxTargetSpeed: 10
-  runningAcceleration: 30
-  groundSlowing: 50
-  airAcceleration: 20
-  airSlowing: 1
-  jumpForce: 10
-  jumpXVelocityGain: 68.8
-  feetPos: {fileID: 4503195423458372692}
-  groundCheckThickness: 0.05
-  groundCheckWidth: 0.8
-  walkableMask:
-    serializedVersion: 2
-    m_Bits: 256
 --- !u!1 &4503195423458372693
 GameObject:
   m_ObjectHideFlags: 0

@@ -19,6 +19,7 @@ public class PlayerMovement : MonoBehaviour
     public float groundCheckWidth = 1.0f;
     public LayerMask walkableMask;
 
+    [HideInInspector] public bool inControl;
     private Vector2 targetVelocity;
     private Rigidbody2D rb;
     private float addedXVelocity;
@@ -28,6 +29,7 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         targetVelocity = Vector2.zero;
         jumpFlag = false;
+        inControl = true;
     }
 
 
@@ -60,46 +62,49 @@ public class PlayerMovement : MonoBehaviour
 
     private void UpdateMovement()
     {
-        if (targetVelocity.x != rb.velocity.x)
+        if(inControl)
         {
-            float xDirection = Mathf.Sign(targetVelocity.x - rb.velocity.x);
-            if (rb.velocity.x > 0 && rb.velocity.x < targetVelocity.x || rb.velocity.x < 0 && rb.velocity.x > targetVelocity.x)
+            if (targetVelocity.x != rb.velocity.x)
             {
-                if (IsOnGround())
+                float xDirection = Mathf.Sign(targetVelocity.x - rb.velocity.x);
+                if (rb.velocity.x > 0 && rb.velocity.x < targetVelocity.x || rb.velocity.x < 0 && rb.velocity.x > targetVelocity.x)
                 {
-                    addedXVelocity = xDirection * runningAcceleration * Time.fixedDeltaTime;
+                    if (IsOnGround())
+                    {
+                        addedXVelocity = xDirection * runningAcceleration * Time.fixedDeltaTime;
+                    }
+                    else
+                    {
+                        addedXVelocity = xDirection * airAcceleration * Time.fixedDeltaTime;
+                    }
                 }
                 else
                 {
-                    addedXVelocity = xDirection * airAcceleration * Time.fixedDeltaTime;
+                    if (IsOnGround())
+                    {
+                        addedXVelocity = xDirection * groundSlowing * Time.fixedDeltaTime;
+                    }
+                    else
+                    {
+                        addedXVelocity = xDirection * airSlowing * Time.fixedDeltaTime;
+                    }
                 }
-            }
-            else
-            {
-                if (IsOnGround())
+
+                if (targetVelocity.x > rb.velocity.x && targetVelocity.x < rb.velocity.x + addedXVelocity || targetVelocity.x < rb.velocity.x && targetVelocity.x > rb.velocity.x + addedXVelocity)
                 {
-                    addedXVelocity = xDirection * groundSlowing * Time.fixedDeltaTime;
+                    rb.velocity = new Vector2(targetVelocity.x, rb.velocity.y);
                 }
                 else
                 {
-                    addedXVelocity = xDirection * airSlowing * Time.fixedDeltaTime;
+                    rb.velocity = new Vector2(rb.velocity.x + addedXVelocity, rb.velocity.y);
                 }
             }
 
-            if (targetVelocity.x > rb.velocity.x && targetVelocity.x < rb.velocity.x + addedXVelocity || targetVelocity.x < rb.velocity.x && targetVelocity.x > rb.velocity.x + addedXVelocity)
+            if (jumpFlag)
             {
-                rb.velocity = new Vector2(targetVelocity.x, rb.velocity.y);
+                Propel(new Vector2(targetVelocity.x * jumpXVelocityGain / 100, jumpForce), false, true);
+                jumpFlag = false;
             }
-            else
-            {
-                rb.velocity = new Vector2(rb.velocity.x + addedXVelocity, rb.velocity.y);
-            }
-        }
-
-        if(jumpFlag)
-        {
-            Propel(new Vector2(targetVelocity.x * jumpXVelocityGain / 100, jumpForce), false, true);
-            jumpFlag = false;
         }
     }
 
