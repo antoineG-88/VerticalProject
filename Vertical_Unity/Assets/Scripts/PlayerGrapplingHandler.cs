@@ -23,7 +23,6 @@ public class PlayerGrapplingHandler : MonoBehaviour
 
     private Rigidbody2D rb;
     private LineRenderer ropeRenderer;
-    private PlayerMovement playerMovement;
     private Vector2 aimDirection;
     private bool isAiming;
     private GameObject currentHook;
@@ -45,7 +44,6 @@ public class PlayerGrapplingHandler : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         ropeRenderer = GetComponent<LineRenderer>();
-        playerMovement = GetComponent<PlayerMovement>();
         ringHighLighterO.SetActive(false);
         isAiming = false;
         shootFlag = true;
@@ -183,7 +181,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
             if (canUseTraction && Input.GetAxisRaw("RTAxis") == 1)
             {
                 isTracting = true;
-                playerMovement.inControl = false;
+                GameData.playerMovement.inControl = false;
 
                 rb.velocity = tractionDirection * tractionForce;
             }
@@ -212,7 +210,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
         isHooked = false;
         isTracting = false;
         ropeRenderer.enabled = false;
-        playerMovement.inControl = true;
+        GameData.playerMovement.inControl = true;
         attachedObject = null;
         if(currentHook != null)
         {

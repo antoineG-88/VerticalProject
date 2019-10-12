@@ -8,17 +8,14 @@ public class PlayerManager : MonoBehaviour
     public float maxhealth;
     [Header("General debug settings")]
     public Color stunColor;
+    public bool isVulnerable;
 
     private float currentHealth;
-    private PlayerMovement playerMovement;
-    private PlayerGrapplingHandler playerGrapplingHandler;
     private Rigidbody2D rb;
     private Color baseColor;
 
     void Start()
     {
-        playerMovement = GetComponent<PlayerMovement>();
-        playerGrapplingHandler = GetComponent<PlayerGrapplingHandler>();
         rb = GetComponent<Rigidbody2D>();
         currentHealth = maxhealth;
         baseColor = GetComponent<SpriteRenderer>().color;
@@ -26,19 +23,33 @@ public class PlayerManager : MonoBehaviour
 
     public void TakeDamage(float damage, Vector2 knockBack, float stunTime)
     {
-        currentHealth -= damage;
-        playerMovement.Propel(knockBack, true, true);
-        StartCoroutine(Stun(stunTime));
+        if(isVulnerable)
+        {
+            currentHealth -= damage;
+            GameData.playerMovement.Propel(knockBack, true, true);
+            StartCoroutine(Stun(stunTime));
+
+            Debug.Log("The player took " + damage + " damage, he has " + currentHealth + "hp left");
+
+            if (currentHealth <= 0)
+            {
+                GetComponent<SpriteRenderer>().enabled = false;
+                GetComponent<Collider2D>().enabled = false;
+                rb.simulated = false;
+                GameData.playerMovement.inControl = false;
+                GameData.playerGrapplingHandler.canShoot = false;
+            }
+        }
     }
 
     private IEnumerator Stun(float stunTime)
     {
         GetComponent<SpriteRenderer>().color = stunColor;
-        playerMovement.inControl = false;
-        playerGrapplingHandler.canShoot = false;
+        GameData.playerMovement.inControl = false;
+        GameData.playerGrapplingHandler.canShoot = false;
         yield return new WaitForSeconds(stunTime);
         GetComponent<SpriteRenderer>().color = baseColor;
-        playerMovement.inControl = true;
-        playerGrapplingHandler.canShoot = true;
+        GameData.playerMovement.inControl = true;
+        GameData.playerGrapplingHandler.canShoot = true;
     }
 }

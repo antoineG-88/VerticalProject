@@ -12,15 +12,27 @@ public class EnnemySample : EnnemyHandler
     public float airControl;
     public float jumpTriggerAngle;
     public float gravityForce;
+    [Space]
+    public float damage;
+    public float attackKnockBackForce;
+    public float attackKnockBackUp;
+    public float attackStunTime;
+    public float attackCooldown;
+
+    private float cooldownRemaining;
 
     private void Start()
     {
         HandlerStart();
+
+        cooldownRemaining = 0;
     }
 
     private void Update()
     {
         UpdateMovement();
+
+        Behavior();
     }
 
     public override void UpdateMovement()
@@ -69,9 +81,17 @@ public class EnnemySample : EnnemyHandler
 
     public void Behavior()
     {
-        if(isTouchingPlayer)
+        if(cooldownRemaining > 0)
         {
+            cooldownRemaining -= Time.deltaTime;
+        }
 
+        if(isTouchingPlayer && cooldownRemaining <= 0 && !GameData.playerGrapplingHandler.isTracting && !isStunned)
+        {
+            Vector2 knockBack = (GameData.playerMovement.transform.position - transform.position).normalized * attackKnockBackForce;
+            knockBack.y += attackKnockBackUp;
+            GameData.playerManager.TakeDamage(damage, knockBack, attackStunTime);
+            cooldownRemaining = attackCooldown;
         }
     }
 }

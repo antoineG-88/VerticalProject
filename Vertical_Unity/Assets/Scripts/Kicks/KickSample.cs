@@ -10,6 +10,7 @@ public class KickSample: Kick
 {
     public float damagePerHit;
     public float criticalDamage;
+    public float stunTime;
 
     public float ennemyKnockBackForce;
     public float playerKnockBackForce;
@@ -18,22 +19,24 @@ public class KickSample: Kick
 
     private int repetition = 0;
     private float damageToDeal;
-    public override void Use(EnnemyHandler ennemy, PlayerMovement playerMovement, PlayerGrapplingHandler playerGrapplingHandler)
+    public override void Use(EnnemyHandler ennemy)
     {
+        Debug.Log("Kicked");
+
         damageToDeal = damagePerHit;
         if (repetition <= 2)
         {
             repetition++;
         }
-        if(repetition > 2 && playerGrapplingHandler.attachedObject == null)
+        if(repetition > 2 && GameData.playerGrapplingHandler.attachedObject == null)
         {
             repetition = 0;
             damageToDeal = criticalDamage;
         }
-        Vector2 kickDirection = new Vector2(ennemy.transform.position.x - playerMovement.transform.position.x, ennemy.transform.position.y - playerMovement.transform.position.y).normalized;
-        playerMovement.DisableControl(0.3f, false);
-        playerMovement.Propel(-kickDirection * playerKnockBackForce + addedPlayerKnockBack, true, true);
-        ennemy.TakeDamage(damageToDeal, kickDirection * ennemyKnockBackForce + addedEnnemyKnockBack, 0.3f);
-        playerGrapplingHandler.ReleaseHook();
+        Vector2 kickDirection = new Vector2(ennemy.transform.position.x - GameData.playerMovement.transform.position.x, ennemy.transform.position.y - GameData.playerMovement.transform.position.y).normalized;
+        GameData.playerMovement.DisableControl(0.3f, false);
+        GameData.playerMovement.Propel(-kickDirection * playerKnockBackForce + addedPlayerKnockBack, true, true);
+        ennemy.TakeDamage(damageToDeal, kickDirection * ennemyKnockBackForce + addedEnnemyKnockBack, stunTime);
+        GameData.playerGrapplingHandler.ReleaseHook();
     }
 }

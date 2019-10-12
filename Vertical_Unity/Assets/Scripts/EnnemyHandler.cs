@@ -25,8 +25,6 @@ public abstract class EnnemyHandler : MonoBehaviour
     [HideInInspector] public bool isInControl;
     [HideInInspector] public bool isTouchingPlayer;
     [HideInInspector] public Rigidbody2D rb;
-    [HideInInspector] public PlayerGrapplingHandler playerGrapplingHandler;
-    [HideInInspector] public PlayerAttackManager playerAttackManager;
 
     [HideInInspector] public Seeker seeker;
     [HideInInspector] public Path path;
@@ -34,13 +32,14 @@ public abstract class EnnemyHandler : MonoBehaviour
     [HideInInspector] public bool pathEndReached;
     [HideInInspector] public Vector2 pathDirection;
 
+    private Color baseColor;
+
     public void HandlerStart()
     {
-        playerGrapplingHandler = GameObject.FindWithTag("Player").GetComponent<PlayerGrapplingHandler>();
-        playerAttackManager = GameObject.FindWithTag("Player").GetComponent<PlayerAttackManager>();
         rb = GetComponent<Rigidbody2D>();
         seeker = GetComponent<Seeker>();
 
+        baseColor = GetComponentInChildren<SpriteRenderer>().color;
         pathEndReached = false;
         isStunned = false;
         isInControl = true;
@@ -75,7 +74,7 @@ public abstract class EnnemyHandler : MonoBehaviour
 
     void CalculatePath()
     {
-        seeker.StartPath(transform.position, playerAttackManager.transform.position, OnPathComplete);
+        seeker.StartPath(transform.position, GameData.playerAttackManager.transform.position, OnPathComplete);
     }
 
     void OnPathComplete(Path p)
@@ -109,7 +108,7 @@ public abstract class EnnemyHandler : MonoBehaviour
     {
         GetComponentInChildren<SpriteRenderer>().color = hurtColor;
         yield return new WaitForSeconds(invulnerableTime);
-        GetComponentInChildren<SpriteRenderer>().color = Color.white;
+        GetComponentInChildren<SpriteRenderer>().color = baseColor;
         isInvulnerable = false;
         yield return new WaitForSeconds(stunTime - invulnerableTime);
         isStunned = false;
@@ -123,9 +122,9 @@ public abstract class EnnemyHandler : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collider)
     {
-        if (collider.CompareTag("Hook") && !playerGrapplingHandler.isTracting && !isInvulnerable && currentHealth > 0)
+        if (collider.CompareTag("Hook") && !GameData.playerGrapplingHandler.isTracting && !isInvulnerable && currentHealth > 0)
         {
-            playerGrapplingHandler.AttachHook(gameObject);
+            GameData.playerGrapplingHandler.AttachHook(gameObject);
         }
         else if (collider.CompareTag("Player"))
         {

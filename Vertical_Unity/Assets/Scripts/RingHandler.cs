@@ -4,18 +4,11 @@ using UnityEngine;
 
 public class RingHandler : MonoBehaviour
 {
-    private PlayerGrapplingHandler playerGrapplingHandler;
-
-    void Start()
-    {
-        playerGrapplingHandler = GameObject.FindWithTag("Player").GetComponent<PlayerGrapplingHandler>();
-    }
-
     private void OnTriggerEnter2D(Collider2D collider)
     {
         if(collider.CompareTag("Hook"))
         {
-            playerGrapplingHandler.AttachHook(gameObject);
+            GameData.playerGrapplingHandler.AttachHook(gameObject);
         }
     }
 }

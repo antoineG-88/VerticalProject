@@ -6,13 +6,8 @@ public class PlayerAttackManager : MonoBehaviour
 {
     public Kick currentKick;
 
-    private PlayerGrapplingHandler playerGrapplingHandler;
-    private PlayerMovement playerMovement;
-
     void Start()
     {
-        playerGrapplingHandler = GetComponent<PlayerGrapplingHandler>();
-        playerMovement = GetComponent<PlayerMovement>();
     }
 
     /// <summary>
@@ -29,12 +24,12 @@ public class PlayerAttackManager : MonoBehaviour
 
     public void TriggerKick(EnnemyHandler ennemy)
     {
-        currentKick.Use(ennemy, playerMovement, playerGrapplingHandler);
+        currentKick.Use(ennemy);
     }
 
     private void OnTriggerStay2D(Collider2D collider)
     {
-        if (collider.gameObject.layer == LayerMask.GetMask("ennemy") && playerGrapplingHandler.isTracting && playerGrapplingHandler.attachedObject == collider.gameObject)
+        if (collider.gameObject.CompareTag("Ennemy") && GameData.playerGrapplingHandler.isTracting && GameData.playerGrapplingHandler.attachedObject == collider.gameObject)
         {
             EnnemyHandler ennemy = collider.GetComponent<EnnemyHandler>();
             TriggerKick(ennemy);

@@ -10,5 +10,5 @@ public abstract class Kick : ScriptableObject
 
     public float triggerDistance;
 
-    public abstract void Use(EnnemyHandler ennemy, PlayerMovement playerMovement, PlayerGrapplingHandler playerGrapplingHandler);
+    public abstract void Use(EnnemyHandler ennemy);
 }
