@@ -31,4 +31,13 @@ public class PlayerAttackManager : MonoBehaviour
     {
         currentKick.Use(ennemy, playerMovement, playerGrapplingHandler);
     }
+
+    private void OnTriggerStay2D(Collider2D collider)
+    {
+        if (collider.gameObject.layer == LayerMask.GetMask("ennemy") && playerGrapplingHandler.isTracting && playerGrapplingHandler.attachedObject == collider.gameObject)
+        {
+            EnnemyHandler ennemy = collider.GetComponent<EnnemyHandler>();
+            TriggerKick(ennemy);
+        }
+    }
 }

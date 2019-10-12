@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Pathfinding;
 
 public abstract class EnnemyHandler : MonoBehaviour
 {
@@ -9,13 +10,84 @@ public abstract class EnnemyHandler : MonoBehaviour
     public float maxHealth;
     public Color hurtColor;
     public float invulnerableTime;
+    [Header("Ennemy pathfinding settings")]
+    public float nextWaypointDistance;
+    public float pathUpdatingFrequency;
+    [Header("Ennemy technical settings")]
+    public Transform feetPos;
+    public float groundCheckWidth;
+    public float groundCheckThickness;
+    public LayerMask walkableMask;
 
     [HideInInspector] public float currentHealth;
     [HideInInspector] public bool isInvulnerable;
     [HideInInspector] public bool isStunned;
+    [HideInInspector] public bool isInControl;
+    [HideInInspector] public bool isTouchingPlayer;
     [HideInInspector] public Rigidbody2D rb;
     [HideInInspector] public PlayerGrapplingHandler playerGrapplingHandler;
     [HideInInspector] public PlayerAttackManager playerAttackManager;
+
+    [HideInInspector] public Seeker seeker;
+    [HideInInspector] public Path path;
+    [HideInInspector] public int currentWaypoint;
+    [HideInInspector] public bool pathEndReached;
+    [HideInInspector] public Vector2 pathDirection;
+
+    public void HandlerStart()
+    {
+        playerGrapplingHandler = GameObject.FindWithTag("Player").GetComponent<PlayerGrapplingHandler>();
+        playerAttackManager = GameObject.FindWithTag("Player").GetComponent<PlayerAttackManager>();
+        rb = GetComponent<Rigidbody2D>();
+        seeker = GetComponent<Seeker>();
+
+        pathEndReached = false;
+        isStunned = false;
+        isInControl = true;
+        isInvulnerable = false;
+        isTouchingPlayer = false;
+        currentHealth = maxHealth;
+
+        InvokeRepeating("CalculatePath", 0.0f, pathUpdatingFrequency);
+    }
+
+    public void HandlerUpdate()
+    {
+        if (path != null)
+        {
+            if (currentWaypoint >= path.vectorPath.Count)
+            {
+                pathEndReached = true;
+            }
+            else
+            {
+                pathEndReached = false;
+
+                pathDirection = (path.vectorPath[currentWaypoint] - transform.position).normalized;
+
+                if (Vector2.Distance(transform.position, path.vectorPath[currentWaypoint]) < nextWaypointDistance)
+                {
+                    currentWaypoint++;
+                }
+            }
+        }
+    }
+
+    void CalculatePath()
+    {
+        seeker.StartPath(transform.position, playerAttackManager.transform.position, OnPathComplete);
+    }
+
+    void OnPathComplete(Path p)
+    {
+        if(!p.error)
+        {
+            path = p;
+            currentWaypoint = 0;
+        }
+    }
+
+    public abstract void UpdateMovement();
 
     public void TakeDamage(float damage, Vector2 knockBack, float stunTime)
     {
@@ -35,9 +107,9 @@ public abstract class EnnemyHandler : MonoBehaviour
 
     public IEnumerator Hurt(float stunTime)
     {
-        GetComponent<SpriteRenderer>().color = hurtColor;
+        GetComponentInChildren<SpriteRenderer>().color = hurtColor;
         yield return new WaitForSeconds(invulnerableTime);
-        GetComponent<SpriteRenderer>().color = Color.white;
+        GetComponentInChildren<SpriteRenderer>().color = Color.white;
         isInvulnerable = false;
         yield return new WaitForSeconds(stunTime - invulnerableTime);
         isStunned = false;
@@ -49,15 +121,59 @@ public abstract class EnnemyHandler : MonoBehaviour
         Destroy(gameObject);
     }
 
-    private void OnTriggerStay2D(Collider2D collider)
+    private void OnTriggerEnter2D(Collider2D collider)
     {
         if (collider.CompareTag("Hook") && !playerGrapplingHandler.isTracting && !isInvulnerable && currentHealth > 0)
         {
             playerGrapplingHandler.AttachHook(gameObject);
         }
-        else if (collider.CompareTag("Player") && playerGrapplingHandler.isTracting && gameObject == playerGrapplingHandler.attachedObject)
+        else if (collider.CompareTag("Player"))
         {
-            playerAttackManager.TriggerKick(this);
+            isTouchingPlayer = true;
         }
+    }
+
+    private void OnTriggerExit2D(Collider2D collider)
+    {
+        if (collider.CompareTag("Player"))
+        {
+            isTouchingPlayer = false;
+        }
+    }
+
+    public void Propel(Vector2 directedForce, bool resetHorizontalVelocity, bool resetVerticalVelocity)
+    {
+        Vector2 newVelocity = Vector2.zero;
+
+        if (resetVerticalVelocity)
+        {
+            newVelocity.y = directedForce.y;
+        }
+        else
+        {
+            newVelocity.y = rb.velocity.y + directedForce.y;
+        }
+
+        if (resetHorizontalVelocity)
+        {
+            newVelocity.x = directedForce.x;
+        }
+        else
+        {
+            newVelocity.x = rb.velocity.x + directedForce.x;
+        }
+
+        rb.velocity = new Vector2(newVelocity.x, newVelocity.y);
+    }
+
+    public bool IsOnGround()
+    {
+        bool isGrounded = false;
+        if (Physics2D.OverlapBox(feetPos.position, new Vector2(groundCheckWidth, groundCheckThickness), 0.0f, walkableMask) != null)
+        {
+            isGrounded = true;
+        }
+
+        return isGrounded;
     }
 }
