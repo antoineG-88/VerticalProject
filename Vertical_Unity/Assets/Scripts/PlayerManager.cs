@@ -29,8 +29,6 @@ public class PlayerManager : MonoBehaviour
             GameData.playerMovement.Propel(knockBack, true, true);
             StartCoroutine(Stun(stunTime));
 
-            Debug.Log("The player took " + damage + " damage, he has " + currentHealth + "hp left");
-
             if (currentHealth <= 0)
             {
                 GetComponent<SpriteRenderer>().enabled = false;

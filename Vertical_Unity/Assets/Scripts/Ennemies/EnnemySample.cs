@@ -18,8 +18,14 @@ public class EnnemySample : EnnemyHandler
     public float attackKnockBackUp;
     public float attackStunTime;
     public float attackCooldown;
+    [Space]
+    public float jumpAttackTriggerDistance;
+    public Vector2 jumpAttackForce;
+    public float attackPauseTime;
 
     private float cooldownRemaining;
+    private float pathDirectionAngle;
+    private int horiz;
 
     private void Start()
     {
@@ -46,10 +52,10 @@ public class EnnemySample : EnnemyHandler
                 {
                     rb.velocity = new Vector2(rb.velocity.x + pathDirection.x * acceleration * Time.deltaTime, rb.velocity.y);
 
-                    float pathDirectionAngle = -90;
-                    if ((currentWaypoint + 2) < path.vectorPath.Count)
+                    pathDirectionAngle = -90;
+                    if ((currentWaypoint) < path.vectorPath.Count)
                     {
-                        pathDirectionAngle = Vector2.SignedAngle(Vector2.right, path.vectorPath[currentWaypoint + 2] - transform.position);
+                        pathDirectionAngle = Vector2.SignedAngle(Vector2.right, path.vectorPath[currentWaypoint] - transform.position);
                     }
                     previsuDirection.transform.localRotation = Quaternion.Euler(0, 0, pathDirectionAngle - 90);
                     if (pathDirectionAngle > 90 - jumpTriggerAngle / 2 && pathDirectionAngle < 90 + jumpTriggerAngle / 2)
@@ -92,6 +98,13 @@ public class EnnemySample : EnnemyHandler
             knockBack.y += attackKnockBackUp;
             GameData.playerManager.TakeDamage(damage, knockBack, attackStunTime);
             cooldownRemaining = attackCooldown;
+        }
+
+        horiz = (int)Mathf.Sign(GameData.playerMovement.transform.position.x - transform.position.x);
+        if((pathDirectionAngle < 45 || pathDirectionAngle > 135) && Physics2D.OverlapBox(new Vector2(transform.position.x + horiz * jumpAttackTriggerDistance / 2, transform.position.y),new Vector2(jumpAttackTriggerDistance, 1.0f),0.0f,LayerMask.GetMask("Player")) && IsOnGround() && !isStunned)
+        {
+            Propel(new Vector2(horiz * jumpAttackForce.x, jumpAttackForce.y), true, true);
+            StartCoroutine(Stun(1.0f, 0.0f));
         }
     }
 }

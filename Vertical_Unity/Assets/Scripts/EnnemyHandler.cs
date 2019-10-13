@@ -175,4 +175,12 @@ public abstract class EnnemyHandler : MonoBehaviour
 
         return isGrounded;
     }
+
+    public IEnumerator Stun(float stunTime, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        isStunned = true;
+        yield return new WaitForSeconds(stunTime);
+        isStunned = false;
+    }
 }

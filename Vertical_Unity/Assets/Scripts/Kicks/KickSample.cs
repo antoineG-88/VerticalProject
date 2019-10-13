@@ -21,8 +21,6 @@ public class KickSample: Kick
     private float damageToDeal;
     public override void Use(EnnemyHandler ennemy)
     {
-        Debug.Log("Kicked");
-
         damageToDeal = damagePerHit;
         if (repetition <= 2)
         {
