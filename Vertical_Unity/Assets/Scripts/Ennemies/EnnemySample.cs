@@ -18,12 +18,14 @@ public class EnnemySample : EnnemyHandler
     public float attackKnockBackUp;
     public float attackStunTime;
     public float attackCooldown;
+    public float jumpCooldown;
     [Space]
     public float jumpAttackTriggerDistance;
     public Vector2 jumpAttackForce;
     public float attackPauseTime;
 
     private float cooldownRemaining;
+    private float jumpCooldownRemaining;
     private float pathDirectionAngle;
     private int horiz;
 
@@ -32,6 +34,7 @@ public class EnnemySample : EnnemyHandler
         HandlerStart();
 
         cooldownRemaining = 0;
+        jumpCooldownRemaining = 0;
     }
 
     private void Update()
@@ -39,6 +42,11 @@ public class EnnemySample : EnnemyHandler
         UpdateMovement();
 
         Behavior();
+    }
+
+    private void FixedUpdate()
+    {
+        HandlerFixedUpdate();
     }
 
     public override void UpdateMovement()
@@ -92,7 +100,12 @@ public class EnnemySample : EnnemyHandler
             cooldownRemaining -= Time.deltaTime;
         }
 
-        if(isTouchingPlayer && cooldownRemaining <= 0 && !GameData.playerGrapplingHandler.isTracting && !isStunned)
+        if (jumpCooldownRemaining > 0)
+        {
+            jumpCooldownRemaining -= Time.deltaTime;
+        }
+
+        if (isTouchingPlayer && cooldownRemaining <= 0 && !GameData.playerGrapplingHandler.isTracting)
         {
             Vector2 knockBack = (GameData.playerMovement.transform.position - transform.position).normalized * attackKnockBackForce;
             knockBack.y += attackKnockBackUp;
@@ -101,10 +114,11 @@ public class EnnemySample : EnnemyHandler
         }
 
         horiz = (int)Mathf.Sign(GameData.playerMovement.transform.position.x - transform.position.x);
-        if((pathDirectionAngle < 45 || pathDirectionAngle > 135) && Physics2D.OverlapBox(new Vector2(transform.position.x + horiz * jumpAttackTriggerDistance / 2, transform.position.y),new Vector2(jumpAttackTriggerDistance, 1.0f),0.0f,LayerMask.GetMask("Player")) && IsOnGround() && !isStunned)
+        if(jumpCooldownRemaining <= 0 && (pathDirectionAngle < 45 || pathDirectionAngle > 135) && Physics2D.OverlapBox(new Vector2(transform.position.x + horiz * jumpAttackTriggerDistance / 2, transform.position.y),new Vector2(jumpAttackTriggerDistance, 1.0f),0.0f,LayerMask.GetMask("Player")) && IsOnGround())
         {
             Propel(new Vector2(horiz * jumpAttackForce.x, jumpAttackForce.y), true, true);
-            StartCoroutine(Stun(1.0f, 0.0f));
+            StartCoroutine(Stun(0.5f, 0.0f));
+            jumpCooldownRemaining = jumpCooldown;
         }
     }
 }

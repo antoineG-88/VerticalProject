@@ -6,10 +6,6 @@ public class PlayerAttackManager : MonoBehaviour
 {
     public Kick currentKick;
 
-    void Start()
-    {
-    }
-
     /// <summary>
     /// Replace the equipped Kick with a new one, return the kick replaced
     /// </summary>

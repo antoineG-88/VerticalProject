@@ -18,6 +18,7 @@ public abstract class EnnemyHandler : MonoBehaviour
     public float groundCheckWidth;
     public float groundCheckThickness;
     public LayerMask walkableMask;
+    public Vector2 colliderSize;
 
     [HideInInspector] public float currentHealth;
     [HideInInspector] public bool isInvulnerable;
@@ -72,6 +73,11 @@ public abstract class EnnemyHandler : MonoBehaviour
         }
     }
 
+    public void HandlerFixedUpdate()
+    {
+        DetectPlayer();
+    }
+
     void CalculatePath()
     {
         seeker.StartPath(transform.position, GameData.playerAttackManager.transform.position, OnPathComplete);
@@ -120,25 +126,38 @@ public abstract class EnnemyHandler : MonoBehaviour
         Destroy(gameObject);
     }
 
+    private void DetectPlayer()
+    {
+        Collider2D collider = Physics2D.OverlapBox(transform.position, colliderSize, 0.0f, LayerMask.GetMask("Player"));
+        if (collider != null)
+        {
+            isTouchingPlayer = true;
+        }
+        else
+        {
+            isTouchingPlayer = false;
+        }
+    }
+
     private void OnTriggerEnter2D(Collider2D collider)
     {
         if (collider.CompareTag("Hook") && !GameData.playerGrapplingHandler.isTracting && !isInvulnerable && currentHealth > 0)
         {
             GameData.playerGrapplingHandler.AttachHook(gameObject);
         }
-        else if (collider.CompareTag("Player"))
+        /*else if (collider.CompareTag("Player"))
         {
             isTouchingPlayer = true;
-        }
+        }*/
     }
 
-    private void OnTriggerExit2D(Collider2D collider)
+    /*private void OnTriggerExit2D(Collider2D collider)
     {
         if (collider.CompareTag("Player"))
         {
             isTouchingPlayer = false;
         }
-    }
+    }*/
 
     public void Propel(Vector2 directedForce, bool resetHorizontalVelocity, bool resetVerticalVelocity)
     {
