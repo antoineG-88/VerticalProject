@@ -5,6 +5,17 @@ using UnityEngine;
 public class PlayerAttackManager : MonoBehaviour
 {
     public Kick currentKick;
+    [Header("Collide settings")]
+    public Vector2 collideSize;
+
+    private void FixedUpdate()
+    {
+        Collider2D enemyCollider = Physics2D.OverlapBox(transform.position, collideSize, 0.0f, LayerMask.GetMask("Ennemy"));
+        if (enemyCollider != null && GameData.playerGrapplingHandler.isTracting && GameData.playerGrapplingHandler.attachedObject == enemyCollider.gameObject)
+        {
+            TriggerKick(enemyCollider.GetComponent<EnnemyHandler>());
+        }
+    }
 
     /// <summary>
     /// Replace the equipped Kick with a new one, return the kick replaced
@@ -21,14 +32,5 @@ public class PlayerAttackManager : MonoBehaviour
     public void TriggerKick(EnnemyHandler ennemy)
     {
         currentKick.Use(ennemy);
-    }
-
-    private void OnTriggerStay2D(Collider2D collider)
-    {
-        if (collider.gameObject.CompareTag("Ennemy") && GameData.playerGrapplingHandler.isTracting && GameData.playerGrapplingHandler.attachedObject == collider.gameObject)
-        {
-            EnnemyHandler ennemy = collider.GetComponent<EnnemyHandler>();
-            TriggerKick(ennemy);
-        }
     }
 }

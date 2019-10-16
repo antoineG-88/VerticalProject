@@ -84,9 +84,13 @@ public class EnnemySample : EnnemyHandler
         }
         else
         {
-            if(Mathf.Abs(rb.velocity.x) > 0 && IsOnGround())
+            if(Mathf.Abs(rb.velocity.x) > 0.2f && IsOnGround())
             {
                 rb.velocity = new Vector2(rb.velocity.x - Mathf.Sign(rb.velocity.x) * acceleration * Time.deltaTime, rb.velocity.y);
+            }
+            else if(Mathf.Abs(rb.velocity.x) <= 0.2f && IsOnGround())
+            {
+                rb.velocity = new Vector2(0.0f, rb.velocity.y);
             }
         }
 
@@ -105,19 +109,20 @@ public class EnnemySample : EnnemyHandler
             jumpCooldownRemaining -= Time.deltaTime;
         }
 
-        if (isTouchingPlayer && cooldownRemaining <= 0 && !GameData.playerGrapplingHandler.isTracting)
+        if (isTouchingPlayer && cooldownRemaining <= 0 && !GameData.playerGrapplingHandler.isTracting && !isStunned)
         {
             Vector2 knockBack = (GameData.playerMovement.transform.position - transform.position).normalized * attackKnockBackForce;
             knockBack.y += attackKnockBackUp;
             GameData.playerManager.TakeDamage(damage, knockBack, attackStunTime);
             cooldownRemaining = attackCooldown;
+            rb.velocity = -knockBack * 0.5f;
         }
 
         horiz = (int)Mathf.Sign(GameData.playerMovement.transform.position.x - transform.position.x);
         if(jumpCooldownRemaining <= 0 && (pathDirectionAngle < 45 || pathDirectionAngle > 135) && Physics2D.OverlapBox(new Vector2(transform.position.x + horiz * jumpAttackTriggerDistance / 2, transform.position.y),new Vector2(jumpAttackTriggerDistance, 1.0f),0.0f,LayerMask.GetMask("Player")) && IsOnGround())
         {
             Propel(new Vector2(horiz * jumpAttackForce.x, jumpAttackForce.y), true, true);
-            StartCoroutine(Stun(0.5f, 0.0f));
+            StartCoroutine(NoControl(0.5f));
             jumpCooldownRemaining = jumpCooldown;
         }
     }

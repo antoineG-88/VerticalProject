@@ -99,9 +99,8 @@ public abstract class EnnemyHandler : MonoBehaviour
         if (!isInvulnerable)
         {
             currentHealth -= damage;
-            isInvulnerable = true;
-            isStunned = true;
-            StartCoroutine(Hurt(stunTime));
+            StartCoroutine(Stun(stunTime));
+            StartCoroutine(Hurt());
             if (currentHealth <= 0)
             {
                 StartCoroutine(DeathAnimation());
@@ -110,14 +109,13 @@ public abstract class EnnemyHandler : MonoBehaviour
         rb.velocity = knockBack;
     }
 
-    public IEnumerator Hurt(float stunTime)
+    public IEnumerator Hurt()
     {
+        isInvulnerable = true;
         GetComponentInChildren<SpriteRenderer>().color = hurtColor;
         yield return new WaitForSeconds(invulnerableTime);
         GetComponentInChildren<SpriteRenderer>().color = baseColor;
         isInvulnerable = false;
-        yield return new WaitForSeconds(stunTime - invulnerableTime);
-        isStunned = false;
     }
 
     public IEnumerator DeathAnimation()
@@ -150,14 +148,6 @@ public abstract class EnnemyHandler : MonoBehaviour
             isTouchingPlayer = true;
         }*/
     }
-
-    /*private void OnTriggerExit2D(Collider2D collider)
-    {
-        if (collider.CompareTag("Player"))
-        {
-            isTouchingPlayer = false;
-        }
-    }*/
 
     public void Propel(Vector2 directedForce, bool resetHorizontalVelocity, bool resetVerticalVelocity)
     {
@@ -195,11 +185,17 @@ public abstract class EnnemyHandler : MonoBehaviour
         return isGrounded;
     }
 
-    public IEnumerator Stun(float stunTime, float delay)
+    public IEnumerator Stun(float stunTime)
     {
-        yield return new WaitForSeconds(delay);
         isStunned = true;
         yield return new WaitForSeconds(stunTime);
         isStunned = false;
+    }
+
+    public IEnumerator NoControl(float noControlTime)
+    {
+        isInControl = false;
+        yield return new WaitForSeconds(noControlTime);
+        isInControl = true;
     }
 }
