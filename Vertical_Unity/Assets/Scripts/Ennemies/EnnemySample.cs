@@ -119,7 +119,7 @@ public class EnnemySample : EnnemyHandler
         }
 
         horiz = (int)Mathf.Sign(GameData.playerMovement.transform.position.x - transform.position.x);
-        if(jumpCooldownRemaining <= 0 && (pathDirectionAngle < 45 || pathDirectionAngle > 135) && Physics2D.OverlapBox(new Vector2(transform.position.x + horiz * jumpAttackTriggerDistance / 2, transform.position.y),new Vector2(jumpAttackTriggerDistance, 1.0f),0.0f,LayerMask.GetMask("Player")) && IsOnGround())
+        if(jumpCooldownRemaining <= 0 && (pathDirectionAngle < 45 || pathDirectionAngle > 135) && Physics2D.OverlapBox(new Vector2(transform.position.x + horiz * jumpAttackTriggerDistance / 2, transform.position.y),new Vector2(jumpAttackTriggerDistance, 1.0f),0.0f,LayerMask.GetMask("Player")) && IsOnGround() && !isStunned)
         {
             Propel(new Vector2(horiz * jumpAttackForce.x, jumpAttackForce.y), true, true);
             StartCoroutine(NoControl(0.5f));

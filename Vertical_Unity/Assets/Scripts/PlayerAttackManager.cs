@@ -8,6 +8,18 @@ public class PlayerAttackManager : MonoBehaviour
     [Header("Collide settings")]
     public Vector2 collideSize;
 
+    private void Update()
+    {
+        if(Input.GetButtonDown("XButton") && GameData.playerGrapplingHandler.isTracting)
+        {
+            Collider2D testedCollider = currentKick.HitTest();
+            if (testedCollider != null && GameData.playerGrapplingHandler.attachedObject == testedCollider.gameObject)
+            {
+                TriggerKick(testedCollider.GetComponent<EnnemyHandler>());
+            }
+        }
+    }
+
     private void FixedUpdate()
     {
         Collider2D enemyCollider = Physics2D.OverlapBox(transform.position, collideSize, 0.0f, LayerMask.GetMask("Ennemy"));

@@ -40,7 +40,7 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    private IEnumerator Stun(float stunTime)
+    public IEnumerator Stun(float stunTime)
     {
         GetComponent<SpriteRenderer>().color = stunColor;
         GameData.playerMovement.inControl = false;

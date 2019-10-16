@@ -20,6 +20,8 @@ public abstract class EnnemyHandler : MonoBehaviour
     public LayerMask walkableMask;
     public Vector2 colliderSize;
 
+    public bool pauseAI;
+
     [HideInInspector] public float currentHealth;
     [HideInInspector] public bool isInvulnerable;
     [HideInInspector] public bool isStunned;
@@ -71,6 +73,7 @@ public abstract class EnnemyHandler : MonoBehaviour
                 }
             }
         }
+        isStunned = pauseAI;
     }
 
     public void HandlerFixedUpdate()

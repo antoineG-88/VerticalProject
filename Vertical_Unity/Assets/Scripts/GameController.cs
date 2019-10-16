@@ -5,6 +5,9 @@ using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
+    [HideInInspector] public float rightJoystickHorizontal;
+    [HideInInspector] public float rightJoystickVertical;
+
     private void Start()
     {
         GameObject player = GameObject.FindWithTag("Player");
@@ -17,5 +20,8 @@ public class GameController : MonoBehaviour
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
+
+        rightJoystickHorizontal = Input.GetAxis("RJoystickH");
+        rightJoystickVertical = -Input.GetAxis("RJoystickV");
     }
 }

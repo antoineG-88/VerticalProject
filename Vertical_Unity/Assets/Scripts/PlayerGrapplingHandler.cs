@@ -35,7 +35,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
     private bool shootFlag;
     private bool isHooked;
     [HideInInspector] public GameObject attachedObject;
-    private Vector2 tractionDirection;
+    [HideInInspector] public Vector2 tractionDirection;
     [HideInInspector] public bool isTracting;
     [HideInInspector] public bool canUseTraction;
     [HideInInspector] public bool canShoot;
@@ -192,6 +192,12 @@ public class PlayerGrapplingHandler : MonoBehaviour
                 isTracting = false;
                 ReleaseHook();
             }
+
+            RaycastHit2D ringHit = Physics2D.Raycast(transform.position, tractionDirection, ropeLength, LayerMask.GetMask("Ring","Ennemy","Walkable"));
+            if (!ringHit.collider.CompareTag("Ring") && !ringHit.collider.CompareTag("Ennemy"))
+            {
+                BreakRope();
+            }
         }
         else
         {
@@ -216,5 +222,11 @@ public class PlayerGrapplingHandler : MonoBehaviour
         {
             Destroy(currentHook);
         }
+    }
+
+    public void BreakRope()
+    {
+        //breakingAnimation
+        ReleaseHook();
     }
 }
