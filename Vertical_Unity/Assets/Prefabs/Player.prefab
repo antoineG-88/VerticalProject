@@ -155,6 +155,7 @@ GameObject:
   - component: {fileID: 4503195422415338472}
   - component: {fileID: 2276650194064215076}
   - component: {fileID: 4744132222942516713}
+  - component: {fileID: 1164104435070563982}
   - component: {fileID: 4503195422415338475}
   - component: {fileID: 4503195422415338484}
   - component: {fileID: 1050642299}
@@ -286,6 +287,7 @@ MonoBehaviour:
   attachedObject: {fileID: 0}
   isTracting: 0
   canUseTraction: 0
+  canShoot: 0
 --- !u!114 &4744132222942516713
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -299,6 +301,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentKick: {fileID: 11400000, guid: b689cc1bf754caf4a82b13749e16d858, type: 2}
+--- !u!114 &1164104435070563982
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4503195422415338485}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ed5cea198e10c34590799e9fff49c66, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxhealth: 80
+  stunColor: {r: 0.9339623, g: 0.629984, b: 0.629984, a: 1}
 --- !u!50 &4503195422415338475
 Rigidbody2D:
   serializedVersion: 4

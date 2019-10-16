@@ -5,14 +5,16 @@ using UnityEngine;
 public class PlayerAttackManager : MonoBehaviour
 {
     public Kick currentKick;
+    [Header("Collide settings")]
+    public Vector2 collideSize;
 
-    private PlayerGrapplingHandler playerGrapplingHandler;
-    private PlayerMovement playerMovement;
-
-    void Start()
+    private void FixedUpdate()
     {
-        playerGrapplingHandler = GetComponent<PlayerGrapplingHandler>();
-        playerMovement = GetComponent<PlayerMovement>();
+        Collider2D enemyCollider = Physics2D.OverlapBox(transform.position, collideSize, 0.0f, LayerMask.GetMask("Ennemy"));
+        if (enemyCollider != null && GameData.playerGrapplingHandler.isTracting && GameData.playerGrapplingHandler.attachedObject == enemyCollider.gameObject)
+        {
+            TriggerKick(enemyCollider.GetComponent<EnnemyHandler>());
+        }
     }
 
     /// <summary>
@@ -29,6 +31,6 @@ public class PlayerAttackManager : MonoBehaviour
 
     public void TriggerKick(EnnemyHandler ennemy)
     {
-        currentKick.Use(ennemy, playerMovement, playerGrapplingHandler);
+        currentKick.Use(ennemy);
     }
 }

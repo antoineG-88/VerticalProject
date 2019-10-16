@@ -23,7 +23,6 @@ public class PlayerGrapplingHandler : MonoBehaviour
 
     private Rigidbody2D rb;
     private LineRenderer ropeRenderer;
-    private PlayerMovement playerMovement;
     private Vector2 aimDirection;
     private bool isAiming;
     private GameObject currentHook;
@@ -39,18 +38,19 @@ public class PlayerGrapplingHandler : MonoBehaviour
     private Vector2 tractionDirection;
     [HideInInspector] public bool isTracting;
     [HideInInspector] public bool canUseTraction;
+    [HideInInspector] public bool canShoot;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         ropeRenderer = GetComponent<LineRenderer>();
-        playerMovement = GetComponent<PlayerMovement>();
         ringHighLighterO.SetActive(false);
         isAiming = false;
         shootFlag = true;
         isHooked = false;
         isTracting = false;
         canUseTraction = true;
+        canShoot = true;
         armShoulderO.SetActive(false);
         timeBeforeNextShoot = 0;
         subwidthAimAngle = widthAimAngle / (raycastNumber - 1);
@@ -75,88 +75,91 @@ public class PlayerGrapplingHandler : MonoBehaviour
 
     void ShootManager()
     {
-        if (!isAiming && (Mathf.Abs(Input.GetAxisRaw("RJoystickH")) > 0.1f || Mathf.Abs(Input.GetAxisRaw("RJoystickV")) > 0.1f))
+        if(canShoot)
         {
-            isAiming = true;
-            armShoulderO.SetActive(true);
-        }
-        else if (isAiming && Mathf.Abs(Input.GetAxisRaw("RJoystickH")) <= 0.1f && Mathf.Abs(Input.GetAxisRaw("RJoystickV")) <= 0.1f)
-        {
-            isAiming = false;
-            armShoulderO.SetActive(false);
-        }
-
-        if(timeBeforeNextShoot > 0)
-        {
-            timeBeforeNextShoot -= Time.deltaTime;
-        }
-        else
-        {
-            timeBeforeNextShoot = 0;
-        }
-
-        if(isAiming)
-        {
-            aimDirection = new Vector2(Input.GetAxis("RJoystickH"), Input.GetAxis("RJoystickV")).normalized;
-            armShoulderO.transform.rotation = Quaternion.Euler(0.0f, 0.0f, Mathf.Atan2(aimDirection.x, aimDirection.y) * 180 / Mathf.PI - 90);
-
-            if(useAutoAim)
+            if (!isAiming && (Mathf.Abs(Input.GetAxisRaw("RJoystickH")) > 0.1f || Mathf.Abs(Input.GetAxisRaw("RJoystickV")) > 0.1f))
             {
-                RaycastHit2D hit;
-                float minAngleFound = widthAimAngle;
-                nearestRing = null;
-                for (int i = 0; i < raycastNumber; i++)
+                isAiming = true;
+                armShoulderO.SetActive(true);
+            }
+            else if (isAiming && Mathf.Abs(Input.GetAxisRaw("RJoystickH")) <= 0.1f && Mathf.Abs(Input.GetAxisRaw("RJoystickV")) <= 0.1f)
+            {
+                isAiming = false;
+                armShoulderO.SetActive(false);
+            }
+
+            if (timeBeforeNextShoot > 0)
+            {
+                timeBeforeNextShoot -= Time.deltaTime;
+            }
+            else
+            {
+                timeBeforeNextShoot = 0;
+            }
+
+            if (isAiming)
+            {
+                aimDirection = new Vector2(Input.GetAxis("RJoystickH"), Input.GetAxis("RJoystickV")).normalized;
+                armShoulderO.transform.rotation = Quaternion.Euler(0.0f, 0.0f, Mathf.Atan2(aimDirection.x, aimDirection.y) * 180 / Mathf.PI - 90);
+
+                if (useAutoAim)
                 {
-                    float relativeAngle = firstAngle + subwidthAimAngle * i;
-                    float angledDirection = (Mathf.Atan2(aimDirection.x, aimDirection.y) * 180 / Mathf.PI - 90) + relativeAngle;
-
-                    Vector2 direction = new Vector2(Mathf.Cos((angledDirection) * Mathf.PI / 180), Mathf.Sin((angledDirection) * Mathf.PI / 180));
-                    hit = Physics2D.Raycast(shootPoint.position, direction, ropeLength, LayerMask.GetMask("Ring","Walkable","Ennemy"));
-
-                    if (hit && (hit.collider.CompareTag("Ring") || hit.collider.CompareTag("Ennemy")) && nearestRing != hit.collider.gameObject && Vector2.Angle(direction, new Vector2(aimDirection.x, -aimDirection.y)) < minAngleFound)
+                    RaycastHit2D hit;
+                    float minAngleFound = widthAimAngle;
+                    nearestRing = null;
+                    for (int i = 0; i < raycastNumber; i++)
                     {
-                        nearestRing = hit.collider.gameObject;
-                        minAngleFound = Vector2.Angle(direction, new Vector2(aimDirection.x, -aimDirection.y));
-                    }
-                }
+                        float relativeAngle = firstAngle + subwidthAimAngle * i;
+                        float angledDirection = (Mathf.Atan2(aimDirection.x, aimDirection.y) * 180 / Mathf.PI - 90) + relativeAngle;
 
-                if(nearestRing != null)
-                {
-                    ringHighLighterO.SetActive(true);
-                    ringHighLighterO.transform.position = nearestRing.transform.position;
-                    shootDirection = new Vector2(nearestRing.transform.position.x - shootPoint.position.x, nearestRing.transform.position.y - shootPoint.position.y).normalized;
+                        Vector2 direction = new Vector2(Mathf.Cos((angledDirection) * Mathf.PI / 180), Mathf.Sin((angledDirection) * Mathf.PI / 180));
+                        hit = Physics2D.Raycast(shootPoint.position, direction, ropeLength, LayerMask.GetMask("Ring", "Walkable", "Ennemy"));
+
+                        if (hit && (hit.collider.CompareTag("Ring") || hit.collider.CompareTag("Ennemy")) && nearestRing != hit.collider.gameObject && Vector2.Angle(direction, new Vector2(aimDirection.x, -aimDirection.y)) < minAngleFound)
+                        {
+                            nearestRing = hit.collider.gameObject;
+                            minAngleFound = Vector2.Angle(direction, new Vector2(aimDirection.x, -aimDirection.y));
+                        }
+                    }
+
+                    if (nearestRing != null)
+                    {
+                        ringHighLighterO.SetActive(true);
+                        ringHighLighterO.transform.position = nearestRing.transform.position;
+                        shootDirection = new Vector2(nearestRing.transform.position.x - shootPoint.position.x, nearestRing.transform.position.y - shootPoint.position.y).normalized;
+                    }
+                    else
+                    {
+                        shootDirection = aimDirection;
+                        shootDirection.y *= -1;
+                        ringHighLighterO.SetActive(false);
+                    }
                 }
                 else
                 {
                     shootDirection = aimDirection;
                     shootDirection.y *= -1;
-                    ringHighLighterO.SetActive(false);
+                }
+
+
+                if (shootFlag && Input.GetAxisRaw("LTAxis") == 1 && timeBeforeNextShoot <= 0)
+                {
+                    shootFlag = false;
+                    ReleaseHook();
+                    currentHook = Instantiate(hookPrefab, shootPoint.position, Quaternion.identity);
+                    hookRb = currentHook.GetComponent<Rigidbody2D>();
+                    hookRb.velocity = shootDirection * shootForce;
+                }
+                else if (!shootFlag && Input.GetAxisRaw("LTAxis") == 0)
+                {
+                    shootFlag = true;
+                    timeBeforeNextShoot = shootCooldown;
                 }
             }
             else
             {
-                shootDirection = aimDirection;
-                shootDirection.y *= -1;
+                ringHighLighterO.SetActive(false);
             }
-            
-
-            if (shootFlag && Input.GetAxisRaw("LTAxis") == 1 && timeBeforeNextShoot <= 0)
-            {
-                shootFlag = false;
-                ReleaseHook();
-                currentHook = Instantiate(hookPrefab, shootPoint.position, Quaternion.identity);
-                hookRb = currentHook.GetComponent<Rigidbody2D>();
-                hookRb.velocity = shootDirection * shootForce;
-            }
-            else if(!shootFlag && Input.GetAxisRaw("LTAxis") == 0)
-            {
-                shootFlag = true;
-                timeBeforeNextShoot = shootCooldown;
-            }
-        }
-        else
-        {
-            ringHighLighterO.SetActive(false);
         }
     }
 
@@ -178,7 +181,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
             if (canUseTraction && Input.GetAxisRaw("RTAxis") == 1)
             {
                 isTracting = true;
-                playerMovement.inControl = false;
+                GameData.playerMovement.inControl = false;
 
                 rb.velocity = tractionDirection * tractionForce;
             }
@@ -207,7 +210,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
         isHooked = false;
         isTracting = false;
         ropeRenderer.enabled = false;
-        playerMovement.inControl = true;
+        GameData.playerMovement.inControl = true;
         attachedObject = null;
         if(currentHook != null)
         {

@@ -35,7 +35,6 @@ public class PlayerMovement : MonoBehaviour
         timeBeforeControl = 0;
     }
 
-
     private void Update()
     {
         UpdateInput();
