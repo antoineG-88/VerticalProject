@@ -40,7 +40,6 @@ public class KickSample: Kick
             propelingDirection.x = GameData.gameController.rightJoystickHorizontal;
             propelingDirection.y = GameData.gameController.rightJoystickVertical;
             propelingDirection.Normalize();
-            Debug.Log(propelingDirection);
         }
 
         GameData.playerManager.Stun(0.1f);

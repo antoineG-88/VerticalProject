@@ -39,7 +39,6 @@ public class PlayerGrapplingHandler : MonoBehaviour
     [HideInInspector] public bool isTracting;
     [HideInInspector] public bool canUseTraction;
     [HideInInspector] public bool canShoot;
-
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -142,7 +141,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
                 }
 
 
-                if (shootFlag && Input.GetAxisRaw("LTAxis") == 1 && timeBeforeNextShoot <= 0)
+                if (shootFlag && Input.GetAxisRaw("LTAxis") == 1 && timeBeforeNextShoot <= 0 && !isHooked)
                 {
                     shootFlag = false;
                     ReleaseHook();
@@ -178,7 +177,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
 
             tractionDirection = (currentHook.transform.position - transform.position).normalized;
 
-            if (canUseTraction && Input.GetAxisRaw("RTAxis") == 1)
+            if (canUseTraction && Input.GetAxisRaw("LTAxis") == 1)
             {
                 isTracting = true;
                 GameData.playerMovement.inControl = false;
@@ -186,7 +185,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
                 rb.velocity = tractionDirection * tractionForce;
             }
 
-            if(isTracting && (Input.GetAxisRaw("RTAxis") == 0 || (Vector2.Distance(transform.position, currentHook.transform.position) < releasingHookDist && attachedObject.CompareTag("Ring"))))
+            if(isTracting && (Input.GetAxisRaw("LTAxis") == 0 || (Vector2.Distance(transform.position, currentHook.transform.position) < releasingHookDist)))
             {
                 rb.velocity = tractionDirection * tractionForce * velocityKeptReleasingHook / 100;
                 isTracting = false;
@@ -218,6 +217,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
         ropeRenderer.enabled = false;
         GameData.playerMovement.inControl = true;
         attachedObject = null;
+        GameData.playerAttackManager.kickUsed = false;
         if(currentHook != null)
         {
             Destroy(currentHook);
