@@ -18,7 +18,7 @@ public abstract class Kick : ScriptableObject
 
     public Collider2D HitTest()
     {
-        hitCollider = Physics2D.OverlapBox((Vector2)GameData.playerMovement.transform.position + GameData.playerGrapplingHandler.tractionDirection * hitCollidingSize.x / 2, hitCollidingSize, Vector2.Angle(Vector2.right, GameData.playerGrapplingHandler.tractionDirection), LayerMask.GetMask("Ennemy","Ring"));
+        hitCollider = Physics2D.OverlapBox((Vector2)GameData.playerMovement.transform.position + GameData.playerGrapplingHandler.tractionDirection * hitCollidingSize.x / 2, hitCollidingSize, Vector2.SignedAngle(Vector2.right, GameData.playerGrapplingHandler.tractionDirection), LayerMask.GetMask("Ennemy","Ring"));
         if (hitCollider != null && hitCollider.CompareTag("Ennemy"))
         {
             return hitCollider;

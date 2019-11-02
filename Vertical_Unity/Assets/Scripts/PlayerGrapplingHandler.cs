@@ -193,7 +193,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
             }
 
             RaycastHit2D ringHit = Physics2D.Raycast(transform.position, tractionDirection, ropeLength, LayerMask.GetMask("Ring","Ennemy","Walkable"));
-            if (!ringHit.collider.CompareTag("Ring") && !ringHit.collider.CompareTag("Ennemy"))
+            if (ringHit && !ringHit.collider.CompareTag("Ring") && !ringHit.collider.CompareTag("Ennemy"))
             {
                 BreakRope();
             }
