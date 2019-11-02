@@ -66,7 +66,9 @@ public class PlayerGrapplingHandler : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if(currentHook != null && attachedObject == null)
+        RopeManager();
+
+        if (currentHook != null && attachedObject == null)
         {
             currentHook.transform.rotation = Quaternion.Euler(0.0f, 0.0f, Mathf.Atan2(hookRb.velocity.y, -hookRb.velocity.x) * 180 / Mathf.PI);
         }
@@ -141,7 +143,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
                 }
 
 
-                if (shootFlag && Input.GetAxisRaw("LTAxis") == 1 && timeBeforeNextShoot <= 0 && !isHooked)
+                if (shootFlag && Input.GetAxis("LTAxis") > 0.1f && timeBeforeNextShoot <= 0 && !isHooked)
                 {
                     shootFlag = false;
                     ReleaseHook();
@@ -191,16 +193,35 @@ public class PlayerGrapplingHandler : MonoBehaviour
                 isTracting = false;
                 ReleaseHook();
             }
+        }
+        else
+        {
+            ropeRenderer.enabled = false;
+        }
+    }
 
-            RaycastHit2D ringHit = Physics2D.Raycast(transform.position, tractionDirection, ropeLength, LayerMask.GetMask("Ring","Ennemy","Walkable"));
+    private void RopeManager()
+    {
+        if(isHooked)
+        {
+            RaycastHit2D ringHit = Physics2D.Raycast(transform.position, tractionDirection, ropeLength, LayerMask.GetMask("Ring", "Ennemy", "Walkable"));
             if (ringHit && !ringHit.collider.CompareTag("Ring") && !ringHit.collider.CompareTag("Ennemy"))
             {
                 BreakRope();
             }
         }
-        else
+
+        if(currentHook != null && Vector2.Distance(transform.position, currentHook.transform.position) > ropeLength + 2)
         {
-            ropeRenderer.enabled = false;
+            ReleaseHook();
+        }
+
+        if(currentHook != null && !isHooked)
+        {
+            if(Physics2D.OverlapCircle(currentHook.transform.position, 0.2f, LayerMask.GetMask("Walkable")))
+            {
+                ReleaseHook();
+            }
         }
     }
 

@@ -94,9 +94,8 @@ public class PlayerAttackManager : MonoBehaviour
                 repropulsionPreview.SetActive(false);
             }
 
-            if (GameData.gameController.rightTriggerAxis == 0 && aimDirection != Vector2.zero)
+            if (GameData.gameController.rightTriggerAxis == 0)
             {
-                Debug.Log("released");
                 isRepropulsing = false;
             }
         }

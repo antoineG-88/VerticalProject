@@ -175,7 +175,7 @@ PrefabInstance:
     - target: {fileID: 1368036684051362087, guid: e3ae287a63fbda44ebcefb3ac93170da,
         type: 3}
       propertyPath: m_RootOrder
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 1368036684051362087, guid: e3ae287a63fbda44ebcefb3ac93170da,
         type: 3}
@@ -1375,6 +1375,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1444916539395562212, guid: 69ca3f1f046cf8d48abbcca71eef52eb,
+        type: 3}
+      propertyPath: data.dataString
+      value: UEsDBBQAAAgIAAAIIez79rApZQIAAAoFAAALACQAZ3JhcGgwLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQFlVE1zmzAQ/SsenesMYGKH3lrHcXrIx8Tt5MJFFovRWEiMJGI7Gf/3roQw1OWC2N23+/btii/CpWmAWaXXmhdPqgDyfULcmXybDM5HONKdkhv+CX3MOy9s5YKoj3mjliu0xw5mVA1Wc/ZD7oQLjtDYSl4qXa+KHSyVsQbNJRUG0KWVdWiJpq8JOeIrWTjI6XL6xFMWTc54ZCAt6CF0dpNm+NzdLgJidnMbEOnNIpvH83Q1jWce20omaN1A4RoZpUgCNF74MIkthojIJ2NKCG4CQ2JPjVdg01SgwUlQcIoNe1YuVQV8V9nwccG+lKUBG9TQ9HTPNerWJSU/VSdmTc2+I/ZBRevKJLdzT6pL+vSffxp7d6lV/djXjSNXw1ac7d/oiVFjR2qPzfcD8djrc6BiT7cC3iuQz2qtVSsLdFrdOmhrILkfPi+tLStg+8HeUb0yts0geD/cfrSuh7Pv/rgUvN564dPOsBHKy525YNA4ml9I2O+LCSnQ6lj8MfCb7saLFRwPXBuLrtCldPS2qtUulKy8Zq6b1i6VluDNgXQDkgp7esU09nqEV75R2SvPA3VXKBQPvv5mXEG8eYiPoivXqzpchmUqdXgCU720VnAJA2nneEadlkrKbsPGmvSwTatLykawXcuLf1eLsG2ZzbI0Ktk8LdgsmW5jmkVbWOCtvIMkSYnfPS6xTypeO6JBHpyaHJJL3LP+zzJZa9r4bS80Paz5Z63GBLks1YZpAPnSpbgwB41V8F4Wq4KjQhuwlks/cPKVE6HYHor8UjP3ra6OVtN8yJKThn8o6yw5Wfp/SU7O5PwXUEsDBBQAAAgIAAAIIeyGnLaDbAAAAHcAAAAJACQAbWV0YS5qc29uCgAgAAAAAAABABgAAIA+1d6xnQEAgD7V3rGdAQCAPtXesZ0Bq1YqSy0qzszPU7JSMNEz0rPQUVBKL0osyCgGChiCOKWZKSB2tFJyUpqlsaWJQVqymUlKsrGRbpJhoqVBUqq5kbmBRaqRkYlSLFB9SWVBql9ibipET0BiSUZaZl5KZl66nntRZoo7yGil2FoAUEsBAi0AFAAACAgAAAgh7Pv2sCllAgAACgUAAAsAJAAAAAAAAAAAAAAAAAAAAGdyYXBoMC5qc29uCgAgAAAAAAABABgAAIA+1d6xnQEAgD7V3rGdAQCAPtXesZ0BUEsBAi0AFAAACAgAAAgh7IactoNsAAAAdwAAAAkAJAAAAAAAAAAAAAAAsgIAAG1ldGEuanNvbgoAIAAAAAAAAQAYAACAPtXesZ0BAIA+1d6xnQEAgD7V3rGdAVBLBQYAAAAAAgACALgAAABpAwAAAAA=
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 69ca3f1f046cf8d48abbcca71eef52eb, type: 3}
 --- !u!1001 &1960271053059213304
@@ -1478,6 +1483,11 @@ PrefabInstance:
       propertyPath: velocityKeptReleasingHook
       value: 75.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2276650194064215076, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
+        type: 3}
+      propertyPath: ropeLength
+      value: 12
+      objectReference: {fileID: 0}
     - target: {fileID: 4503195422415338473, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1538,6 +1548,11 @@ PrefabInstance:
       propertyPath: isVulnerable
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1164104435070563982, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
+        type: 3}
+      propertyPath: maxhealth
+      value: 800
+      objectReference: {fileID: 0}
     - target: {fileID: 4503195422415338474, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
         type: 3}
       propertyPath: m_Sprite
@@ -1587,7 +1602,7 @@ PrefabInstance:
     - target: {fileID: 4744132222942516713, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
         type: 3}
       propertyPath: slowMoTimeSpeed
-      value: 0.145
+      value: 0.033
       objectReference: {fileID: 0}
     - target: {fileID: 4744132222942516713, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
         type: 3}
@@ -1599,6 +1614,11 @@ PrefabInstance:
       propertyPath: repropulsionPreview
       value: 
       objectReference: {fileID: 269809583}
+    - target: {fileID: 4503195422415338475, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
+        type: 3}
+      propertyPath: m_GravityScale
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531, type: 3}
 --- !u!1001 &5285105932691312406
@@ -1651,7 +1671,7 @@ PrefabInstance:
     - target: {fileID: 5285105932516836633, guid: 6ed0f5418bcc0ea4eb4bd2daa1128767,
         type: 3}
       propertyPath: m_RootOrder
-      value: 6
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 5285105932516836633, guid: 6ed0f5418bcc0ea4eb4bd2daa1128767,
         type: 3}
