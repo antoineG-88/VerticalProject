@@ -15,6 +15,8 @@ public abstract class EnnemyHandler : MonoBehaviour
     [Space]
     public float pathUpdatingFrequency;
     public float connectionJumpTime;
+    public float pathfindingJumpWeight;
+    public float pathFindingJumpCooldown;
     [Header("Ennemy technical settings")]
     public Transform feetPos;
     public float groundCheckWidth;
@@ -44,7 +46,8 @@ public abstract class EnnemyHandler : MonoBehaviour
     [HideInInspector] public PlatformConnection targetConnectedConnection;
     [HideInInspector] public float timeBeforeNextGroundPathUpdate;
 
-    private List<PlatformHandler> testedPlatforms = new List<PlatformHandler>();
+    private List<PlatformHandler> testedPlatform = new List<PlatformHandler>();
+    [HideInInspector] public float pJumpCDRemaining;
 
     private Color baseColor;
 
@@ -61,15 +64,14 @@ public abstract class EnnemyHandler : MonoBehaviour
         isAffectedByGravity = true;
         isTouchingPlayer = false;
         currentHealth = maxHealth;
+        pJumpCDRemaining = 0;
 
         timeBeforeNextGroundPathUpdate = 0;
-
-        InvokeRepeating("CalculatePath", 0.0f, pathUpdatingFrequency);
     }
 
     public void HandlerUpdate()
     {
-        UpdateGroundPath();
+        UpdatePath();
 
         if (path != null)
         {
@@ -115,7 +117,7 @@ public abstract class EnnemyHandler : MonoBehaviour
     public PlatformHandler GetCurrentPlatform()
     {
         PlatformHandler platform = null;
-        Collider2D collider = Physics2D.OverlapCircle(feetPos.position, 2.0f, LayerMask.GetMask("Walkable"));
+        Collider2D collider = Physics2D.OverlapCircle(feetPos.position, 1.2f, LayerMask.GetMask("Walkable"));
         if(collider != null)
         {
             Debug.Log("----Platform " + collider.gameObject.name + " found!");
@@ -141,10 +143,10 @@ public abstract class EnnemyHandler : MonoBehaviour
             currentPlatform = platformFound;
         }
 
-        testedPlatforms.Clear();
+        testedPlatform.Clear();
+        testedPlatform.Add(currentPlatform);
 
-        testedPlatforms.Add(currentPlatform);
-        if(FindNextConnection(currentPlatform, target, feetPos.position))
+        if (FindNextConnection(currentPlatform, target, feetPos.position) > 0)
         {
             playerFound = true;
             Debug.Log("Player accessible !");
@@ -153,62 +155,113 @@ public abstract class EnnemyHandler : MonoBehaviour
         return playerFound;
     }
 
-    private bool FindNextConnection(PlatformHandler platform, GameObject target, Vector2 originConnectionPos)
+
+    /// <summary>
+    /// Change the value of targetConnection and targetConnectedConnection.
+    /// Return the distance between the connected connection and the next connection in negative, if positive it's the distance between the player and the connected connection
+    /// </summary>
+    /// <param name="platform"></param>
+    /// <param name="target"></param>
+    /// <param name="originConnectionPos"></param>
+    /// <param name="linkedConnection"></param>
+    /// <returns></returns>
+    private float FindNextConnection(PlatformHandler platform, GameObject target, Vector2 originConnectionPos)
     {
         Debug.Log("Testing player presence on " + platform.gameObject.name);
         if(platform.IsUnder(target))
         {
             Debug.Log("Player found on " + platform.gameObject.name + " !");
-            return true;
+
+            float distanceToPlayer = Vector2.Distance(originConnectionPos, target.transform.position);
+            return distanceToPlayer;
         }
         else
         {
             Debug.Log("No player found. Now testing connections on " + platform.gameObject.name);
+
+            float minDistanceBetweenConnection = -1;
+
             foreach (PlatformConnection connection in platform.connections)
             {
                 Debug.Log("Testing " + connection.gameObject.name);
                 if(connection.connectedConnections.Count > 0)
                 {
-                    Debug.Log("Connection " + connection.gameObject.name + " has at least 1 connected connection");
+                    Debug.Log(connection.gameObject.name + " has at least 1 connected connection");
 
-                    foreach (PlatformConnection connectedConnection in connection.connectedConnections)
+                    float minDistanceBetweenConnected = -1;
+                    float distanceToConnection = Vector2.Distance(originConnectionPos, connection.transform.position) + pathfindingJumpWeight;
+                    PlatformConnection tempCC = null;
+
+                    for (int i = 0; i < connection.connectedConnections.Count; i++)
                     {
-                        if(!testedPlatforms.Contains(connectedConnection.attachedPlatformHandler))
+                        Debug.Log("Testing connected " + connection.connectedConnections[i].gameObject.name);
+                        if (!testedPlatform.Contains(connection.connectedConnections[i].attachedPlatformHandler))
                         {
-                            Debug.Log("The platform " + connectedConnection.attachedPlatformHandler.gameObject.name + " connected by the connection " + connectedConnection.gameObject.name + " has not been tested yet");
+                            testedPlatform.Add(connection.connectedConnections[i].attachedPlatformHandler);
+                            
+                            float distanceFromEnd = FindNextConnection(connection.connectedConnections[i].attachedPlatformHandler, target, connection.connectedConnections[i].transform.position);
 
-                            //float distanceToConnection = Vector2.Distance(originConnectionPos, connection.transform.position);
-
-                            testedPlatforms.Add(connectedConnection.attachedPlatformHandler);
-                            if(FindNextConnection(connectedConnection.attachedPlatformHandler, target, connectedConnection.transform.position))
+                            if (distanceFromEnd > 0)
                             {
-                                targetConnection = connection;
-                                targetConnectedConnection = connectedConnection;
-                                return true;
+                                testedPlatform.Remove(connection.connectedConnections[i].attachedPlatformHandler);
+                                Debug.Log("Player found at " + distanceFromEnd + " passing by " + connection.connectedConnections[i].gameObject.name + " linked with " + connection.gameObject.name);
+                                if (distanceFromEnd < minDistanceBetweenConnected || minDistanceBetweenConnected == -1)
+                                {
+                                    Debug.Log("Better CC found with " + distanceFromEnd + " instead of " + minDistanceBetweenConnected);
+                                    minDistanceBetweenConnected = distanceFromEnd;
+                                    tempCC = connection.connectedConnections[i];
+                                }
                             }
                         }
                         else
                         {
-                            Debug.Log("Skip > The platform " + connectedConnection.attachedPlatformHandler.gameObject.name + " connected by the connection " + connectedConnection.gameObject.name + " has already been tested");
+                            Debug.Log(connection.connectedConnections[i].attachedPlatformHandler.gameObject.name + " has already been tested");
                         }
                     }
 
-                    Debug.Log("All connected connection on " + connection.gameObject.name + " has been tested with no results");
+                    if(minDistanceBetweenConnected != -1)
+                    {
+                        if ((minDistanceBetweenConnected + distanceToConnection) < minDistanceBetweenConnection || minDistanceBetweenConnection == -1)
+                        {
+                            Debug.Log("Better connection found with " + minDistanceBetweenConnected + distanceToConnection + " instead of " + minDistanceBetweenConnection);
+                            minDistanceBetweenConnection = minDistanceBetweenConnected + distanceToConnection;
+
+                            if(platform == currentPlatform)
+                            {
+                                Debug.Log("Target Connection found ! + \"" + connection.gameObject.name + " is the chosen one ! Linked to " + tempCC.gameObject.name);
+                                targetConnection = connection;
+                                targetConnectedConnection = tempCC;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Debug.Log("No CC linked to " + connection.gameObject.name + " lead to the player");
+                    }
                 }
                 else
                 {
                     Debug.Log("Connection " + connection.gameObject.name + " has no connected connection");
                 }
             }
-            Debug.Log("All connections on " + platform.gameObject.name + " has been tested with no results");
-        }
 
-        return false;
+            if(minDistanceBetweenConnection != -1)
+            {
+                return minDistanceBetweenConnection;
+            }
+            else
+            {
+                Debug.Log(platform.gameObject.name + " has no connection leading to the player");
+            }
+        }
+        return 0;
     }
 
-    private void UpdateGroundPath()
+    private void UpdatePath()
     {
-        if(timeBeforeNextGroundPathUpdate <= 0)
+        CalculatePath();
+
+        if (timeBeforeNextGroundPathUpdate <= 0)
         {
             timeBeforeNextGroundPathUpdate = pathUpdatingFrequency;
             FindGroundPathToTarget(GameData.playerManager.gameObject);
@@ -217,6 +270,11 @@ public abstract class EnnemyHandler : MonoBehaviour
         if(timeBeforeNextGroundPathUpdate > 0)
         {
             timeBeforeNextGroundPathUpdate -= Time.deltaTime;
+        }
+
+        if(pJumpCDRemaining > 0)
+        {
+            pJumpCDRemaining -= Time.deltaTime;
         }
     }
 
@@ -227,6 +285,7 @@ public abstract class EnnemyHandler : MonoBehaviour
         isInvulnerable = true;
         isAffectedByGravity = false;
         float timer = connectionJumpTime;
+        pJumpCDRemaining = pathFindingJumpCooldown;
 
         while(timer > 0 && !isStunned)
         {

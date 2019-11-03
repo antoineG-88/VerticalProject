@@ -63,14 +63,14 @@ public class EnnemySample : EnnemyHandler
     {
         if (!isStunned && isInControl)
         {
-            if(IsOnGround() && currentPlatform.IsUnder(GameData.playerManager.gameObject))
+            if(currentPlatform != null && currentPlatform.IsUnder(GameData.playerManager.gameObject))
             {
                 targetPathfindingPosition = GameData.playerAttackManager.transform.position;
             }
             else if (targetConnection != null)
             {
                 targetPathfindingPosition = targetConnection.transform.position;
-                if(Vector2.Distance(feetPos.position, targetConnection.transform.position) < 0.5f)
+                if(Vector2.Distance(feetPos.position, targetConnection.transform.position) < 0.5f && pJumpCDRemaining <= 0)
                 {
                     StartCoroutine(JumpToConnection(targetConnectedConnection));
                 }

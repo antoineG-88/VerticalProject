@@ -11,7 +11,6 @@ public class PlatformHandler : MonoBehaviour
     {
         foreach(PlatformConnection connection in connections)
         {
-            Debug.Log("Adding " + connection.gameObject.name + " to " + this.gameObject.name);
             connection.attachedPlatformHandler = this;
         }
     }
