@@ -12,7 +12,9 @@ public abstract class EnnemyHandler : MonoBehaviour
     public float invulnerableTime;
     [Header("Ennemy pathfinding settings")]
     public float nextWaypointDistance;
+    [Space]
     public float pathUpdatingFrequency;
+    public float connectionJumpTime;
     [Header("Ennemy technical settings")]
     public Transform feetPos;
     public float groundCheckWidth;
@@ -26,6 +28,7 @@ public abstract class EnnemyHandler : MonoBehaviour
     [HideInInspector] public bool isInvulnerable;
     [HideInInspector] public bool isStunned;
     [HideInInspector] public bool isInControl;
+    [HideInInspector] public bool isAffectedByGravity;
     [HideInInspector] public bool isTouchingPlayer;
     [HideInInspector] public Rigidbody2D rb;
 
@@ -34,6 +37,14 @@ public abstract class EnnemyHandler : MonoBehaviour
     [HideInInspector] public int currentWaypoint;
     [HideInInspector] public bool pathEndReached;
     [HideInInspector] public Vector2 pathDirection;
+    [HideInInspector] public Vector2 targetPathfindingPosition;
+
+    [HideInInspector] public PlatformHandler currentPlatform;
+    [HideInInspector] public PlatformConnection targetConnection;
+    [HideInInspector] public PlatformConnection targetConnectedConnection;
+    [HideInInspector] public float timeBeforeNextGroundPathUpdate;
+
+    private List<PlatformHandler> testedPlatforms = new List<PlatformHandler>();
 
     private Color baseColor;
 
@@ -47,14 +58,19 @@ public abstract class EnnemyHandler : MonoBehaviour
         isStunned = false;
         isInControl = true;
         isInvulnerable = false;
+        isAffectedByGravity = true;
         isTouchingPlayer = false;
         currentHealth = maxHealth;
+
+        timeBeforeNextGroundPathUpdate = 0;
 
         InvokeRepeating("CalculatePath", 0.0f, pathUpdatingFrequency);
     }
 
     public void HandlerUpdate()
     {
+        UpdateGroundPath();
+
         if (path != null)
         {
             if (currentWaypoint >= path.vectorPath.Count)
@@ -73,6 +89,7 @@ public abstract class EnnemyHandler : MonoBehaviour
                 }
             }
         }
+
         isStunned = pauseAI;
     }
 
@@ -83,7 +100,7 @@ public abstract class EnnemyHandler : MonoBehaviour
 
     void CalculatePath()
     {
-        seeker.StartPath(transform.position, GameData.playerAttackManager.transform.position, OnPathComplete);
+        seeker.StartPath(transform.position, targetPathfindingPosition, OnPathComplete);
     }
 
     void OnPathComplete(Path p)
@@ -93,6 +110,141 @@ public abstract class EnnemyHandler : MonoBehaviour
             path = p;
             currentWaypoint = 0;
         }
+    }
+
+    public PlatformHandler GetCurrentPlatform()
+    {
+        PlatformHandler platform = null;
+        Collider2D collider = Physics2D.OverlapCircle(feetPos.position, 2.0f, LayerMask.GetMask("Walkable"));
+        if(collider != null)
+        {
+            Debug.Log("----Platform " + collider.gameObject.name + " found!");
+            platform = collider.GetComponent<PlatformHandler>();  //DANGEROUS ------------------------------ !!
+        }
+        else
+        {
+            Debug.Log("No platform found");
+        }
+
+        return platform;
+    }
+
+    public bool FindGroundPathToTarget(GameObject target)
+    {
+        bool playerFound = false;
+
+        Debug.Log("GROUND PATHFINDING STARTED");
+
+        PlatformHandler platformFound = GetCurrentPlatform();
+        if (platformFound != null)
+        {
+            currentPlatform = platformFound;
+        }
+
+        testedPlatforms.Clear();
+
+        testedPlatforms.Add(currentPlatform);
+        if(FindNextConnection(currentPlatform, target, feetPos.position))
+        {
+            playerFound = true;
+            Debug.Log("Player accessible !");
+        }
+
+        return playerFound;
+    }
+
+    private bool FindNextConnection(PlatformHandler platform, GameObject target, Vector2 originConnectionPos)
+    {
+        Debug.Log("Testing player presence on " + platform.gameObject.name);
+        if(platform.IsUnder(target))
+        {
+            Debug.Log("Player found on " + platform.gameObject.name + " !");
+            return true;
+        }
+        else
+        {
+            Debug.Log("No player found. Now testing connections on " + platform.gameObject.name);
+            foreach (PlatformConnection connection in platform.connections)
+            {
+                Debug.Log("Testing " + connection.gameObject.name);
+                if(connection.connectedConnections.Count > 0)
+                {
+                    Debug.Log("Connection " + connection.gameObject.name + " has at least 1 connected connection");
+
+                    foreach (PlatformConnection connectedConnection in connection.connectedConnections)
+                    {
+                        if(!testedPlatforms.Contains(connectedConnection.attachedPlatformHandler))
+                        {
+                            Debug.Log("The platform " + connectedConnection.attachedPlatformHandler.gameObject.name + " connected by the connection " + connectedConnection.gameObject.name + " has not been tested yet");
+
+                            //float distanceToConnection = Vector2.Distance(originConnectionPos, connection.transform.position);
+
+                            testedPlatforms.Add(connectedConnection.attachedPlatformHandler);
+                            if(FindNextConnection(connectedConnection.attachedPlatformHandler, target, connectedConnection.transform.position))
+                            {
+                                targetConnection = connection;
+                                targetConnectedConnection = connectedConnection;
+                                return true;
+                            }
+                        }
+                        else
+                        {
+                            Debug.Log("Skip > The platform " + connectedConnection.attachedPlatformHandler.gameObject.name + " connected by the connection " + connectedConnection.gameObject.name + " has already been tested");
+                        }
+                    }
+
+                    Debug.Log("All connected connection on " + connection.gameObject.name + " has been tested with no results");
+                }
+                else
+                {
+                    Debug.Log("Connection " + connection.gameObject.name + " has no connected connection");
+                }
+            }
+            Debug.Log("All connections on " + platform.gameObject.name + " has been tested with no results");
+        }
+
+        return false;
+    }
+
+    private void UpdateGroundPath()
+    {
+        if(timeBeforeNextGroundPathUpdate <= 0)
+        {
+            timeBeforeNextGroundPathUpdate = pathUpdatingFrequency;
+            FindGroundPathToTarget(GameData.playerManager.gameObject);
+        }
+
+        if(timeBeforeNextGroundPathUpdate > 0)
+        {
+            timeBeforeNextGroundPathUpdate -= Time.deltaTime;
+        }
+    }
+
+    public IEnumerator JumpToConnection(PlatformConnection endConnection)
+    {
+        Vector2 jumpDifference = endConnection.transform.position - feetPos.position;
+        isInControl = false;
+        isInvulnerable = true;
+        isAffectedByGravity = false;
+        float timer = connectionJumpTime;
+
+        while(timer > 0 && !isStunned)
+        {
+            rb.velocity = jumpDifference / connectionJumpTime * Time.deltaTime * 50;
+
+            yield return new WaitForEndOfFrame();
+
+            timer -= Time.deltaTime;
+        }
+
+        if(!isStunned)
+        {
+            transform.position = endConnection.transform.position - feetPos.localPosition;
+        }
+
+        isAffectedByGravity = true;
+        isInControl = true;
+        isInvulnerable = false;
     }
 
     public abstract void UpdateMovement();
@@ -146,10 +298,6 @@ public abstract class EnnemyHandler : MonoBehaviour
         {
             GameData.playerGrapplingHandler.AttachHook(gameObject);
         }
-        /*else if (collider.CompareTag("Player"))
-        {
-            isTouchingPlayer = true;
-        }*/
     }
 
     public void Propel(Vector2 directedForce, bool resetHorizontalVelocity, bool resetVerticalVelocity)

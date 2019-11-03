@@ -39,9 +39,19 @@ public class EnnemySample : EnnemyHandler
 
     private void Update()
     {
+        HandlerUpdate();
+
         UpdateMovement();
 
         Behavior();
+
+        if(Input.GetKeyDown(KeyCode.P))
+        {
+            if(currentPlatform.IsUnder(GameData.playerManager.gameObject))
+            {
+                Debug.Log("Player is on the same platform as " + gameObject.name);
+            }
+        }
     }
 
     private void FixedUpdate()
@@ -51,9 +61,21 @@ public class EnnemySample : EnnemyHandler
 
     public override void UpdateMovement()
     {
-        HandlerUpdate();
-        if(!isStunned && isInControl)
+        if (!isStunned && isInControl)
         {
+            if(IsOnGround() && currentPlatform.IsUnder(GameData.playerManager.gameObject))
+            {
+                targetPathfindingPosition = GameData.playerAttackManager.transform.position;
+            }
+            else if (targetConnection != null)
+            {
+                targetPathfindingPosition = targetConnection.transform.position;
+                if(Vector2.Distance(feetPos.position, targetConnection.transform.position) < 0.5f)
+                {
+                    StartCoroutine(JumpToConnection(targetConnectedConnection));
+                }
+            }
+
             if (path != null && !pathEndReached)
             {
                 if(IsOnGround())
@@ -66,10 +88,10 @@ public class EnnemySample : EnnemyHandler
                         pathDirectionAngle = Vector2.SignedAngle(Vector2.right, path.vectorPath[currentWaypoint] - transform.position);
                     }
                     previsuDirection.transform.localRotation = Quaternion.Euler(0, 0, pathDirectionAngle - 90);
-                    if (pathDirectionAngle > 90 - jumpTriggerAngle / 2 && pathDirectionAngle < 90 + jumpTriggerAngle / 2)
+                    /*if (pathDirectionAngle > 90 - jumpTriggerAngle / 2 && pathDirectionAngle < 90 + jumpTriggerAngle / 2)
                     {
                         Propel(Vector2.up * jumpForce, false, true);
-                    }
+                    }*/
                 }
                 else
                 {
@@ -94,7 +116,10 @@ public class EnnemySample : EnnemyHandler
             }
         }
 
-        rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y - gravityForce * Time.deltaTime);
+        if(isAffectedByGravity)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y - gravityForce * Time.deltaTime);
+        }
     }
 
     public void Behavior()

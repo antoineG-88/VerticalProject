@@ -79,11 +79,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   name: Mechant robot
-  maxHealth: 30
+  maxHealth: 300
   hurtColor: {r: 0.9245283, g: 0.37068352, b: 0.37068352, a: 1}
   invulnerableTime: 0.2
   nextWaypointDistance: 1
-  pathUpdatingFrequency: 0.1
+  pathUpdatingFrequency: 0.2
+  connectionJumpTime: 0.5
   feetPos: {fileID: 5285105933167829694}
   groundCheckWidth: 0.9
   groundCheckThickness: 0.01
@@ -91,16 +92,23 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   colliderSize: {x: 1, y: 1}
+  pauseAI: 0
   currentHealth: 0
   isInvulnerable: 0
   isStunned: 0
   isInControl: 0
+  isAffectedByGravity: 0
   isTouchingPlayer: 0
   rb: {fileID: 0}
   seeker: {fileID: 0}
   currentWaypoint: 0
   pathEndReached: 0
   pathDirection: {x: 0, y: 0}
+  targetPathfindingPosition: {x: 0, y: 0}
+  currentPlatform: {fileID: 0}
+  targetConnection: {fileID: 0}
+  targetConnectedConnection: {fileID: 0}
+  timeBeforeNextGroundPathUpdate: 0
   previsuDirection: {fileID: 5285105934242502177}
   jumpForce: 15
   maxSpeed: 3
