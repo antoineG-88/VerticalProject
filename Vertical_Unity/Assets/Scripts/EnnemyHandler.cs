@@ -118,9 +118,9 @@ public abstract class EnnemyHandler : MonoBehaviour
     {
         PlatformHandler platform = null;
         Collider2D collider = Physics2D.OverlapCircle(feetPos.position, 1.2f, LayerMask.GetMask("Walkable"));
-        if(collider != null)
+        if(collider != null && (currentPlatform == null || currentPlatform.gameObject != collider.gameObject))
         {
-            Debug.Log("----Platform " + collider.gameObject.name + " found!");
+            Debug.Log("Set current platform for " + gameObject.name + " to " + collider.gameObject.name);
             platform = collider.GetComponent<PlatformHandler>();  //DANGEROUS ------------------------------ !!
         }
         else
