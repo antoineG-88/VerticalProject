@@ -8,6 +8,7 @@ public class GameController : MonoBehaviour
     [HideInInspector] public float rightJoystickHorizontal;
     [HideInInspector] public float rightJoystickVertical;
     [HideInInspector] public float rightTriggerAxis;
+    [HideInInspector] public PlatformHandler currentPlayerPlatform;
 
     private void Start()
     {

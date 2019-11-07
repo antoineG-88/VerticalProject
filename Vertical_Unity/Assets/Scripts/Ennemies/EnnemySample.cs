@@ -63,7 +63,7 @@ public class EnnemySample : EnnemyHandler
     {
         if (!isStunned && isInControl)
         {
-            if(currentPlatform != null && currentPlatform.IsUnder(GameData.playerManager.gameObject))
+            if(currentPlatform != null && currentPlatform == GameData.gameController.currentPlayerPlatform)
             {
                 targetPathfindingPosition = GameData.playerAttackManager.transform.position;
             }
@@ -76,7 +76,24 @@ public class EnnemySample : EnnemyHandler
                 }
             }
 
-            if (path != null && !pathEndReached)
+            if(targetPathfindingPosition != null)
+            {
+                if(IsOnGround())
+                {
+                    rb.velocity = new Vector2(rb.velocity.x + acceleration * Mathf.Sign(targetPathfindingPosition.x - transform.position.x) * Time.deltaTime, rb.velocity.y);
+                }
+                else
+                {
+                    rb.velocity = new Vector2(rb.velocity.x + airControl * Mathf.Sign(targetPathfindingPosition.x - transform.position.x) * Time.deltaTime, rb.velocity.y);
+                }
+
+                if (Mathf.Abs(rb.velocity.x) > maxSpeed)
+                {
+                    rb.velocity = new Vector2(Mathf.Sign(rb.velocity.x) * maxSpeed, rb.velocity.y);
+                }
+            }
+
+            /*if (path != null && !pathEndReached)
             {
                 if(IsOnGround())
                 {
@@ -88,10 +105,10 @@ public class EnnemySample : EnnemyHandler
                         pathDirectionAngle = Vector2.SignedAngle(Vector2.right, path.vectorPath[currentWaypoint] - transform.position);
                     }
                     previsuDirection.transform.localRotation = Quaternion.Euler(0, 0, pathDirectionAngle - 90);
-                    /*if (pathDirectionAngle > 90 - jumpTriggerAngle / 2 && pathDirectionAngle < 90 + jumpTriggerAngle / 2)
+                    if (pathDirectionAngle > 90 - jumpTriggerAngle / 2 && pathDirectionAngle < 90 + jumpTriggerAngle / 2)
                     {
                         Propel(Vector2.up * jumpForce, false, true);
-                    }*/
+                    }
                 }
                 else
                 {
@@ -102,7 +119,7 @@ public class EnnemySample : EnnemyHandler
                 {
                     rb.velocity = new Vector2(Mathf.Sign(rb.velocity.x) * maxSpeed, rb.velocity.y);
                 }
-            }
+            }*/
         }
         else
         {
