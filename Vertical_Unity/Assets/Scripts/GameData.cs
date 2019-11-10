@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class GameData 
+public static class GameData
 {
     public static PlayerManager playerManager;
     public static PlayerMovement playerMovement;
