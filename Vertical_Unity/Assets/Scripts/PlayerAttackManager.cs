@@ -36,7 +36,7 @@ public class PlayerAttackManager : MonoBehaviour
 
     private void KickTest()
     {
-        if (Input.GetAxisRaw("RTAxis") == 1 && GameData.playerGrapplingHandler.isTracting && !isKicking && !kickUsed)
+        if (Input.GetButton("RBButton") && GameData.playerGrapplingHandler.isTracting && !isKicking && !kickUsed)
         {
             kickUsed = true;
             remainingTimeBeforeKick = currentKick.timeBeforeKick;
@@ -94,7 +94,7 @@ public class PlayerAttackManager : MonoBehaviour
                 repropulsionPreview.SetActive(false);
             }
 
-            if (GameData.gameController.rightTriggerAxis == 0)
+            if (!GameData.gameController.rightBumper)
             {
                 isRepropulsing = false;
             }

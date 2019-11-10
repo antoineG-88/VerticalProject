@@ -10,11 +10,13 @@ public class PlayerGrapplingHandler : MonoBehaviour
     public float shootCooldown;
     public float tractionForce;
     public float releasingHookDist;
+    public float tractionAirDensity;
     [Range(0,100)] public float velocityKeptReleasingHook;
     [Header("AutoAim settings")]
     public bool useAutoAim;
     public float widthAimAngle;
     public float raycastNumber;
+    [Space]
     [Header("Grappling References")]
     public GameObject armShoulderO;
     public Transform shootPoint;
@@ -34,6 +36,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
     private Vector2 shootDirection;
     private bool shootFlag;
     private bool isHooked;
+    private float tractionDragForce;
     [HideInInspector] public GameObject attachedObject;
     [HideInInspector] public Vector2 tractionDirection;
     [HideInInspector] public bool isTracting;
@@ -143,7 +146,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
                 }
 
 
-                if (shootFlag && Input.GetAxis("LTAxis") > 0.1f && timeBeforeNextShoot <= 0 && !isHooked)
+                if (shootFlag && Input.GetAxis("RTAxis") > 0.1f && timeBeforeNextShoot <= 0 && !isHooked)
                 {
                     shootFlag = false;
                     ReleaseHook();
@@ -151,7 +154,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
                     hookRb = currentHook.GetComponent<Rigidbody2D>();
                     hookRb.velocity = shootDirection * shootForce;
                 }
-                else if (!shootFlag && Input.GetAxisRaw("LTAxis") == 0)
+                else if (!shootFlag && Input.GetAxisRaw("RTAxis") == 0)
                 {
                     shootFlag = true;
                     timeBeforeNextShoot = shootCooldown;
@@ -179,18 +182,21 @@ public class PlayerGrapplingHandler : MonoBehaviour
 
             tractionDirection = (currentHook.transform.position - transform.position).normalized;
 
-            if (canUseTraction && Input.GetAxisRaw("LTAxis") == 1)
+            if (canUseTraction && Input.GetAxisRaw("RTAxis") == 1)
             {
                 isTracting = true;
                 GameData.playerMovement.inControl = false;
-
-                rb.velocity = tractionDirection * tractionForce;
+                GameData.playerMovement.isAffectedbyGravity = false;
+                rb.velocity += tractionDirection * tractionForce;
+                tractionDragForce = tractionAirDensity * Mathf.Pow(rb.velocity.magnitude, 1.2f) / 2;
+                rb.velocity -= rb.velocity * tractionDragForce * Time.deltaTime;
             }
 
-            if(isTracting && (Input.GetAxisRaw("LTAxis") == 0 || (Vector2.Distance(transform.position, currentHook.transform.position) < releasingHookDist)))
+            if(isTracting && (Input.GetAxisRaw("RTAxis") == 0 || (Vector2.Distance(transform.position, currentHook.transform.position) < releasingHookDist)))
             {
-                rb.velocity = tractionDirection * tractionForce * velocityKeptReleasingHook / 100;
+                rb.velocity *= velocityKeptReleasingHook / 100;
                 isTracting = false;
+                GameData.playerMovement.isAffectedbyGravity = true;
                 ReleaseHook();
             }
         }

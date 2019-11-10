@@ -413,8 +413,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: f3146136827a3b34bb7220c35f1b91da, type: 3}
-  m_Color: {r: 0.5849056, g: 0.2179601, b: 0.2179601, a: 1}
+  m_Sprite: {fileID: 21300000, guid: b5816382e637f6247b5c1a226ef6e9fb, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -443,6 +443,7 @@ MonoBehaviour:
   airAcceleration: 20
   airSlowing: 1
   jumpForce: 10
+  gravityForce: 30
   jumpXVelocityGain: 100
   feetPos: {fileID: 4503195423458372692}
   groundCheckThickness: 0.05
@@ -451,6 +452,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   inControl: 0
+  isAffectedbyGravity: 0
 --- !u!114 &2276650194064215076
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -466,9 +468,9 @@ MonoBehaviour:
   shootForce: 35
   ropeLength: 12
   shootCooldown: 0.2
-  tractionForce: 15
+  tractionForce: 2
   releasingHookDist: 1
-  velocityKeptReleasingHook: 75.5
+  velocityKeptReleasingHook: 40
   useAutoAim: 1
   widthAimAngle: 45
   raycastNumber: 90
@@ -532,7 +534,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 3
+  m_GravityScale: 0
   m_Material: {fileID: 6200000, guid: 11e62417d5f030e4aa0c6b8f6f06e4d1, type: 2}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -555,7 +557,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
+    oldSize: {x: 0.75, y: 1}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0

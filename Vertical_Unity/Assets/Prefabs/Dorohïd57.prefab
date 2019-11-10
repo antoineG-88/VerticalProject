@@ -20,7 +20,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5285105932516836633
 Transform:
   m_ObjectHideFlags: 0
@@ -83,8 +83,10 @@ MonoBehaviour:
   hurtColor: {r: 0.9245283, g: 0.37068352, b: 0.37068352, a: 1}
   invulnerableTime: 0.2
   nextWaypointDistance: 1
-  pathUpdatingFrequency: 0.2
+  pathUpdatingFrequency: 0.1
   connectionJumpTime: 0.5
+  pathfindingJumpWeight: 0.5
+  pathFindingJumpCooldown: 0.5
   feetPos: {fileID: 5285105933167829694}
   groundCheckWidth: 0.9
   groundCheckThickness: 0.01
@@ -93,6 +95,8 @@ MonoBehaviour:
     m_Bits: 256
   colliderSize: {x: 1, y: 1}
   pauseAI: 0
+  debugParticlePrefab: {fileID: 743808000188852099, guid: 1cf7fde50c7c4334dbeb307cefb2d3dd,
+    type: 3}
   currentHealth: 0
   isInvulnerable: 0
   isStunned: 0
@@ -109,9 +113,10 @@ MonoBehaviour:
   targetConnection: {fileID: 0}
   targetConnectedConnection: {fileID: 0}
   timeBeforeNextGroundPathUpdate: 0
+  pJumpCDRemaining: 0
   previsuDirection: {fileID: 5285105934242502177}
   jumpForce: 15
-  maxSpeed: 3
+  maxSpeed: 5
   acceleration: 30
   airControl: 5
   jumpTriggerAngle: 30

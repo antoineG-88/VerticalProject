@@ -12,6 +12,7 @@ public class PlayerMovement : MonoBehaviour
     public float airAcceleration;
     public float airSlowing;
     public float jumpForce;
+    public float baseGravityForce;
     [Range(0, 100)] public float jumpXVelocityGain;
     [Header("Technical settings")]
     public Transform feetPos;
@@ -20,6 +21,8 @@ public class PlayerMovement : MonoBehaviour
     public LayerMask walkableMask;
 
     [HideInInspector] public bool inControl;
+    [HideInInspector] public bool isAffectedbyGravity;
+    [HideInInspector] public float gravityForce;
     private Vector2 targetVelocity;
     private Rigidbody2D rb;
     private float addedXVelocity;
@@ -32,7 +35,9 @@ public class PlayerMovement : MonoBehaviour
         targetVelocity = Vector2.zero;
         jumpFlag = false;
         inControl = true;
+        isAffectedbyGravity = true;
         timeBeforeControl = 0;
+        gravityForce = baseGravityForce;
     }
 
     private void Update()
@@ -112,6 +117,11 @@ public class PlayerMovement : MonoBehaviour
                 Propel(new Vector2(targetVelocity.x * jumpXVelocityGain / 100, jumpForce), false, true);
                 jumpFlag = false;
             }
+        }
+
+        if(isAffectedbyGravity)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y - gravityForce * Time.deltaTime);
         }
     }
 

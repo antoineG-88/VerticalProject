@@ -334,50 +334,6 @@ PrefabInstance:
       propertyPath: kickPreview
       value: 
       objectReference: {fileID: 1026494737}
-    - target: {fileID: 1014211694, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 269809583, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4503195423458372693, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1164104435070563982, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
-        type: 3}
-      propertyPath: isVulnerable
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4503195422415338474, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: b5816382e637f6247b5c1a226ef6e9fb,
-        type: 3}
-    - target: {fileID: 4503195422415338474, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
-        type: 3}
-      propertyPath: m_WasSpriteAssigned
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4503195422415338474, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
-        type: 3}
-      propertyPath: m_Color.r
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4503195422415338474, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
-        type: 3}
-      propertyPath: m_Color.g
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4503195422415338474, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
-        type: 3}
-      propertyPath: m_Color.b
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531, type: 3}
 --- !u!1 &153150920 stripped
@@ -785,6 +741,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: "Doroh\xEFd57 (1)"
       objectReference: {fileID: 0}
+    - target: {fileID: 5285105932516836639, guid: 6ed0f5418bcc0ea4eb4bd2daa1128767,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5285105932516836633, guid: 6ed0f5418bcc0ea4eb4bd2daa1128767,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -879,6 +840,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: "Doroh\xEFd57 (4)"
+      objectReference: {fileID: 0}
+    - target: {fileID: 5285105932516836639, guid: 6ed0f5418bcc0ea4eb4bd2daa1128767,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5285105932516836633, guid: 6ed0f5418bcc0ea4eb4bd2daa1128767,
         type: 3}
@@ -1054,6 +1020,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: "Doroh\xEFd57 (3)"
+      objectReference: {fileID: 0}
+    - target: {fileID: 5285105932516836639, guid: 6ed0f5418bcc0ea4eb4bd2daa1128767,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5285105932516836633, guid: 6ed0f5418bcc0ea4eb4bd2daa1128767,
         type: 3}
@@ -1335,7 +1306,7 @@ PrefabInstance:
     - target: {fileID: 1976976933381308253, guid: a8a52d73fb1b86c44b482db3aeebf115,
         type: 3}
       propertyPath: orthographic size
-      value: 6
+      value: 9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a8a52d73fb1b86c44b482db3aeebf115, type: 3}
@@ -2049,6 +2020,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: "Doroh\xEFd57 (5)"
       objectReference: {fileID: 0}
+    - target: {fileID: 5285105932516836639, guid: 6ed0f5418bcc0ea4eb4bd2daa1128767,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5285105932516836633, guid: 6ed0f5418bcc0ea4eb4bd2daa1128767,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2253,6 +2229,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: "Doroh\xEFd57 (2)"
       objectReference: {fileID: 0}
+    - target: {fileID: 5285105932516836639, guid: 6ed0f5418bcc0ea4eb4bd2daa1128767,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5285105932516836633, guid: 6ed0f5418bcc0ea4eb4bd2daa1128767,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2348,6 +2329,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: "Doroh\xEFd57 (6)"
       objectReference: {fileID: 0}
+    - target: {fileID: 5285105932516836639, guid: 6ed0f5418bcc0ea4eb4bd2daa1128767,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5285105932516836633, guid: 6ed0f5418bcc0ea4eb4bd2daa1128767,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2442,6 +2428,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: "Doroh\xEFd57 (7)"
+      objectReference: {fileID: 0}
+    - target: {fileID: 5285105932516836639, guid: 6ed0f5418bcc0ea4eb4bd2daa1128767,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5285105932516836633, guid: 6ed0f5418bcc0ea4eb4bd2daa1128767,
         type: 3}
@@ -2599,32 +2590,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5285105932516836636, guid: 6ed0f5418bcc0ea4eb4bd2daa1128767,
-        type: 3}
-      propertyPath: pathUpdatingFrequency
-      value: 0.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5285105932516836636, guid: 6ed0f5418bcc0ea4eb4bd2daa1128767,
-        type: 3}
-      propertyPath: maxSpeed
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 5285105932516836636, guid: 6ed0f5418bcc0ea4eb4bd2daa1128767,
-        type: 3}
-      propertyPath: pathfindingJumpWeight
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 5285105932516836636, guid: 6ed0f5418bcc0ea4eb4bd2daa1128767,
-        type: 3}
-      propertyPath: pathFindingJumpCooldown
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 5285105932516836636, guid: 6ed0f5418bcc0ea4eb4bd2daa1128767,
-        type: 3}
-      propertyPath: debugParticlePrefab
-      value: 
-      objectReference: {fileID: 743808000188852099, guid: 1cf7fde50c7c4334dbeb307cefb2d3dd,
-        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6ed0f5418bcc0ea4eb4bd2daa1128767, type: 3}
 --- !u!1 &2026466297 stripped
