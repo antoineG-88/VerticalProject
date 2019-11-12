@@ -13,9 +13,7 @@ public class KickSample: Kick
     public float stunTime;
 
     public float ennemyKnockBackForce;
-    public float playerKnockBackForce;
     public Vector2 addedEnnemyKnockBack;
-    public Vector2 addedPlayerKnockBack;
 
     private int repetition = 0;
     private float damageToDeal;
@@ -33,7 +31,6 @@ public class KickSample: Kick
         }
         Vector2 kickDirection = new Vector2(ennemy.transform.position.x - GameData.playerMovement.transform.position.x, ennemy.transform.position.y - GameData.playerMovement.transform.position.y).normalized;
         GameData.playerMovement.DisableControl(0.3f, false);
-        GameData.playerMovement.Propel(-kickDirection * playerKnockBackForce + addedPlayerKnockBack, true, true);
         ennemy.TakeDamage(damageToDeal, kickDirection * ennemyKnockBackForce + addedEnnemyKnockBack, stunTime);
         GameData.playerGrapplingHandler.ReleaseHook();
     }

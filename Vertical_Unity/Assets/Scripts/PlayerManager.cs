@@ -27,6 +27,7 @@ public class PlayerManager : MonoBehaviour
         {
             currentHealth -= damage;
             GameData.playerMovement.Propel(knockBack, true, true);
+            GameData.playerGrapplingHandler.ReleaseHook();
             StartCoroutine(Stun(stunTime));
 
             if (currentHealth <= 0)
@@ -40,7 +41,7 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    private IEnumerator Stun(float stunTime)
+    public IEnumerator Stun(float stunTime)
     {
         GetComponent<SpriteRenderer>().color = stunColor;
         GameData.playerMovement.inControl = false;

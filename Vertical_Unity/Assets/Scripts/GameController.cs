@@ -5,6 +5,12 @@ using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
+    [HideInInspector] public float rightJoystickHorizontal;
+    [HideInInspector] public float rightJoystickVertical;
+    [HideInInspector] public float rightTriggerAxis;
+    [HideInInspector] public bool rightBumper;
+    [HideInInspector] public PlatformHandler currentPlayerPlatform;
+
     private void Start()
     {
         GameObject player = GameObject.FindWithTag("Player");
@@ -17,5 +23,10 @@ public class GameController : MonoBehaviour
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
+
+        rightJoystickHorizontal = Input.GetAxis("RJoystickH");
+        rightJoystickVertical = -Input.GetAxis("RJoystickV");
+        rightTriggerAxis = Input.GetAxis("RTAxis");
+        rightBumper = Input.GetButton("RBButton");
     }
 }
