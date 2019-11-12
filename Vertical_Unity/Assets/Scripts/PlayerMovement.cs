@@ -78,8 +78,41 @@ public class PlayerMovement : MonoBehaviour
         {
             if (targetVelocity.x != rb.velocity.x)
             {
-                float xDirection = Mathf.Sign(targetVelocity.x - rb.velocity.x);
+                /*float xDirection = Mathf.Sign(targetVelocity.x - rb.velocity.x);
                 if (rb.velocity.x > 0 && rb.velocity.x < targetVelocity.x || rb.velocity.x < 0 && rb.velocity.x > targetVelocity.x)
+                {
+                    if (IsOnGround())
+                    {
+                        addedXVelocity = xDirection * runningAcceleration * Time.fixedDeltaTime;
+                    }
+                    else
+                    {
+                        addedXVelocity = xDirection * airAcceleration * Time.fixedDeltaTime;
+                    }
+                }
+                else
+                {
+                    if (IsOnGround())
+                    {
+                        addedXVelocity = xDirection * groundSlowing * Time.fixedDeltaTime;
+                    }
+                    else
+                    {
+                        addedXVelocity = xDirection * airSlowing * Time.fixedDeltaTime;
+                    }
+                }
+
+                if (targetVelocity.x > rb.velocity.x && targetVelocity.x < rb.velocity.x + addedXVelocity || targetVelocity.x < rb.velocity.x && targetVelocity.x > rb.velocity.x + addedXVelocity)
+                {
+                    rb.velocity = new Vector2(targetVelocity.x, rb.velocity.y);
+                }
+                else
+                {
+                    rb.velocity = new Vector2(rb.velocity.x + addedXVelocity, rb.velocity.y);
+                }*/
+
+                float xDirection = Mathf.Sign(targetVelocity.x - rb.velocity.x);
+                if (targetVelocity.x > 0 && rb.velocity.x < targetVelocity.x || targetVelocity.x < 0 && rb.velocity.x > targetVelocity.x)
                 {
                     if (IsOnGround())
                     {

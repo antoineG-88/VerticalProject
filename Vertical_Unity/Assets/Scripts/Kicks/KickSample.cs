@@ -33,16 +33,5 @@ public class KickSample: Kick
         GameData.playerMovement.DisableControl(0.3f, false);
         ennemy.TakeDamage(damageToDeal, kickDirection * ennemyKnockBackForce + addedEnnemyKnockBack, stunTime);
         GameData.playerGrapplingHandler.ReleaseHook();
-
-        /*Vector2 propelingDirection = -kickDirection;
-        if(GameData.gameController.rightJoystickHorizontal != 0 || GameData.gameController.rightJoystickVertical != 0)
-        {
-            propelingDirection.x = GameData.gameController.rightJoystickHorizontal;
-            propelingDirection.y = GameData.gameController.rightJoystickVertical;
-            propelingDirection.Normalize();
-        }
-
-        GameData.playerManager.Stun(0.1f);
-        GameData.playerMovement.Propel(propelingDirection * propelingForce, true, true);*/
     }
 }

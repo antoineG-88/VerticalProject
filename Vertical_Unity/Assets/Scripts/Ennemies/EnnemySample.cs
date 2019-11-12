@@ -28,6 +28,7 @@ public class EnnemySample : EnnemyHandler
     private float jumpCooldownRemaining;
     private float pathDirectionAngle;
     private int horiz;
+    private bool isAttackJumping;
 
     private void Start()
     {
@@ -35,6 +36,7 @@ public class EnnemySample : EnnemyHandler
 
         cooldownRemaining = 0;
         jumpCooldownRemaining = 0;
+        isAttackJumping = false;
     }
 
     private void Update()
@@ -93,7 +95,7 @@ public class EnnemySample : EnnemyHandler
                 }
             }
 
-            /*if (path != null && !pathEndReached)
+            if (path != null && !pathEndReached)
             {
                 if(IsOnGround())
                 {
@@ -119,7 +121,7 @@ public class EnnemySample : EnnemyHandler
                 {
                     rb.velocity = new Vector2(Mathf.Sign(rb.velocity.x) * maxSpeed, rb.velocity.y);
                 }
-            }*/
+            }
         }
         else
         {
@@ -151,13 +153,30 @@ public class EnnemySample : EnnemyHandler
             jumpCooldownRemaining -= Time.deltaTime;
         }
 
-        if (isTouchingPlayer && cooldownRemaining <= 0 && !GameData.playerGrapplingHandler.isTracting && !isStunned)
+        // Old attack by touching
+        /*if (isTouchingPlayer && cooldownRemaining <= 0 && !GameData.playerGrapplingHandler.isTracting && !isStunned)
         {
             Vector2 knockBack = (GameData.playerMovement.transform.position - transform.position).normalized * attackKnockBackForce;
             knockBack.y += attackKnockBackUp;
             GameData.playerManager.TakeDamage(damage, knockBack, attackStunTime);
             cooldownRemaining = attackCooldown;
             rb.velocity = -knockBack * 0.5f;
+        }*/
+
+        if(isAttackJumping)
+        {
+            if(!isStunned)
+            {
+                if (isTouchingPlayer)
+                {
+                    Attack();
+                }
+            }
+
+            if(IsOnGround() && jumpCooldownRemaining > 0.2f)
+            {
+                isAttackJumping = false;
+            }
         }
 
         horiz = (int)Mathf.Sign(GameData.playerMovement.transform.position.x - transform.position.x);
@@ -165,7 +184,30 @@ public class EnnemySample : EnnemyHandler
         {
             Propel(new Vector2(horiz * jumpAttackForce.x, jumpAttackForce.y), true, true);
             StartCoroutine(NoControl(0.5f));
+            isAttackJumping = true;
             jumpCooldownRemaining = jumpCooldown;
         }
+    }
+
+    public override bool TestCounter()
+    {
+        bool countering = false;
+
+        if(isAttackJumping)
+        {
+            countering = true;
+            Attack();
+        }
+
+        return countering;
+    }
+
+    private void Attack()
+    {
+        Vector2 knockBack = (GameData.playerMovement.transform.position - transform.position).normalized * attackKnockBackForce;
+        knockBack.y += attackKnockBackUp;
+        GameData.playerManager.TakeDamage(damage, knockBack, attackStunTime);
+        cooldownRemaining = attackCooldown;
+        rb.velocity = -knockBack * 0.5f;
     }
 }

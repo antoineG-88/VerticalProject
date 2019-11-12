@@ -54,8 +54,12 @@ public class PlayerAttackManager : MonoBehaviour
             Collider2D testedCollider = currentKick.HitTest();
             if (testedCollider != null)
             {
-                currentKick.Use(testedCollider.GetComponent<EnnemyHandler>());
-                StartCoroutine(Repropulsion());
+                EnnemyHandler ennemy = testedCollider.GetComponent<EnnemyHandler>();
+                if (!ennemy.TestCounter())
+                {
+                    currentKick.Use(ennemy);
+                    StartCoroutine(Repropulsion());
+                }
             }
             isKicking = false;
             GameData.playerGrapplingHandler.ReleaseHook();

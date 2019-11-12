@@ -27,6 +27,7 @@ public class PlayerManager : MonoBehaviour
         {
             currentHealth -= damage;
             GameData.playerMovement.Propel(knockBack, true, true);
+            GameData.playerGrapplingHandler.ReleaseHook();
             StartCoroutine(Stun(stunTime));
 
             if (currentHealth <= 0)

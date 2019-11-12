@@ -5,15 +5,25 @@ using UnityEngine;
 public class PlayerGrapplingHandler : MonoBehaviour
 {
     [Header("Grappling settings")]
-    public bool useRealisticMomentum;
+    public bool instantaneousAttach;
     public float shootForce;
     public float ropeLength;
     public float shootCooldown;
-    public float tractionForce;
     public float releasingHookDist;
-    public float tractionAirDensity;
+    public bool useGhostHook;
     public float minAttachDistance;
+    public bool useJoint;
+    [Space]
+    [Header("Momentum settings")]
+    public bool resetMomentumOnTraction;
+    public float tractionForce;
+    public float tractionAirDensity;
+    public float maxTractionSpeed;
+    [Range(0,180)] public float momentumAngle;
+    public float startTractionPropulsion;
+    [Space]
     [Range(0,100)] public float velocityKeptReleasingHook;
+    [Space]
     [Header("AutoAim settings")]
     public bool useAutoAim;
     public float widthAimAngle;
@@ -62,6 +72,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
         isTracting = false;
         canUseTraction = true;
         canShoot = true;
+        isGhostHook = false;
         basicHookColor = hookPrefab.GetComponent<SpriteRenderer>().color;
         armShoulderO.SetActive(false);
         timeBeforeNextShoot = 0;
@@ -69,20 +80,13 @@ public class PlayerGrapplingHandler : MonoBehaviour
         firstAngle = -widthAimAngle / 2;
     }
 
-    void Update()
+    private void Update()
     {
-        
+        ShootManager();
     }
 
     private void FixedUpdate()
     {
-        if (currentHook != null && attachedObject == null)
-        {
-            currentHook.transform.rotation = Quaternion.Euler(0.0f, 0.0f, Mathf.Atan2(hookRb.velocity.y, -hookRb.velocity.x) * 180 / Mathf.PI);
-        }
-
-        ShootManager();
-
         TractionManager();
 
         HookManager();
@@ -161,10 +165,30 @@ public class PlayerGrapplingHandler : MonoBehaviour
                 {
                     shootFlag = false;
                     ReleaseHook();
-                    currentHook = Instantiate(hookPrefab, shootPoint.position, Quaternion.identity);
-                    isGhostHook = true;
-                    hookRb = currentHook.GetComponent<Rigidbody2D>();
-                    hookRb.velocity = shootDirection * shootForce;
+                    if(useGhostHook)
+                    {
+                        isGhostHook = true;
+                    }
+
+                    if (useAutoAim && instantaneousAttach)
+                    {
+                        if(nearestRing != null)
+                        {
+                            currentHook = Instantiate(hookPrefab, nearestRing.transform.position, Quaternion.identity);
+                            AttachHook(nearestRing);
+                            hookRb = currentHook.GetComponent<Rigidbody2D>();
+                        }
+                        else
+                        {
+                            // No Target Feedback
+                        }
+                    }
+                    else
+                    {
+                        currentHook = Instantiate(hookPrefab, shootPoint.position, Quaternion.identity);
+                        hookRb.velocity = shootDirection * shootForce;
+                        hookRb = currentHook.GetComponent<Rigidbody2D>();
+                    }
                 }
                 else if (!shootFlag && Input.GetAxisRaw("RTAxis") == 0)
                 {
@@ -197,12 +221,47 @@ public class PlayerGrapplingHandler : MonoBehaviour
 
             if (canUseTraction && Input.GetAxisRaw("RTAxis") == 1)
             {
-                isTracting = true;
-                GameData.playerMovement.inControl = false;
                 GameData.playerMovement.isAffectedbyGravity = false;
-                rb.velocity += tractionDirection * tractionForce;
-                tractionDragForce = tractionAirDensity * Mathf.Pow(rb.velocity.magnitude, 1.2f) / 2;
+                GameData.playerMovement.inControl = false;
+
+                if (!isTracting)
+                {
+                    if(resetMomentumOnTraction)
+                    {
+                        float angle = Vector2.Angle(rb.velocity, tractionDirection);
+                        if (angle < momentumAngle)
+                        {
+                            angle = 0;
+                        }
+
+                        float startTractionVelocity = rb.velocity.magnitude * Mathf.Cos(Mathf.Deg2Rad * angle);
+
+                        if (startTractionVelocity < 0)
+                        {
+                            startTractionVelocity = 0;
+                        }
+
+                        startTractionVelocity += startTractionPropulsion;
+
+                        rb.velocity = startTractionVelocity * tractionDirection;
+                    }
+                    else
+                    {
+                        rb.velocity += startTractionPropulsion * tractionDirection;
+                    }
+                }
+
+                rb.velocity += tractionDirection * tractionForce * Time.deltaTime;
+
+                tractionDragForce = tractionAirDensity * Mathf.Pow(rb.velocity.magnitude, 2) / 2;
                 rb.velocity -= rb.velocity * tractionDragForce * Time.deltaTime;
+
+                if (rb.velocity.magnitude > maxTractionSpeed)
+                {
+                    rb.velocity = tractionDirection * maxTractionSpeed;
+                }
+
+                isTracting = true;
             }
 
             if(isTracting && (Input.GetAxisRaw("RTAxis") == 0 || (Vector2.Distance(transform.position, currentHook.transform.position) < releasingHookDist)))
@@ -220,18 +279,22 @@ public class PlayerGrapplingHandler : MonoBehaviour
 
     private void HookManager()
     {
-        if(isHooked)
+        if (isHooked)
         {
             RaycastHit2D ringHit = Physics2D.Raycast(transform.position, tractionDirection, ropeLength, LayerMask.GetMask("Ring", "Ennemy", "Walkable"));
             if (ringHit && !ringHit.collider.CompareTag("Ring") && !ringHit.collider.CompareTag("Ennemy"))
             {
-                Debug.Log("Object touched : " + ringHit.transform.gameObject.name);
                 BreakRope();
             }
         }
 
         if(currentHook != null)
         {
+            if(attachedObject == null)
+            {
+                currentHook.transform.rotation = Quaternion.Euler(0.0f, 0.0f, Mathf.Atan2(hookRb.velocity.y, -hookRb.velocity.x) * 180 / Mathf.PI);
+            }
+
             if(Vector2.Distance(transform.position, currentHook.transform.position) > ropeLength + 2)
             {
                 BreakRope();
@@ -242,13 +305,16 @@ public class PlayerGrapplingHandler : MonoBehaviour
                 ReleaseHook();
             }
 
-            if(isGhostHook)
+            if(useGhostHook)
             {
-                currentHook.GetComponent<SpriteRenderer>().color = ghostHookColor;
-                if(Vector2.Distance(currentHook.transform.position, transform.position) > minAttachDistance)
+                if (isGhostHook)
                 {
-                    currentHook.GetComponent<SpriteRenderer>().color = basicHookColor;
-                    isGhostHook = false;
+                    currentHook.GetComponent<SpriteRenderer>().color = ghostHookColor;
+                    if (Vector2.Distance(currentHook.transform.position, transform.position) > minAttachDistance)
+                    {
+                        currentHook.GetComponent<SpriteRenderer>().color = basicHookColor;
+                        isGhostHook = false;
+                    }
                 }
             }
         }
@@ -260,9 +326,21 @@ public class PlayerGrapplingHandler : MonoBehaviour
         {
             isHooked = true;
             attachedObject = attachPos;
-            distanceJoint.enabled = true;
-            distanceJoint.connectedBody = attachPos.GetComponent<Rigidbody2D>();
-            distanceJoint.distance = Vector2.Distance(attachPos.transform.position, transform.position);
+
+            if(!useGhostHook)
+            {
+                if (attachedObject.CompareTag("Ennemy") && Vector2.Distance(currentHook.transform.position, transform.position) < minAttachDistance)
+                {
+                    BreakRope();
+                }
+            }
+
+            if(useJoint)
+            {
+                distanceJoint.enabled = true;
+                distanceJoint.connectedBody = attachPos.GetComponent<Rigidbody2D>();
+                distanceJoint.distance = Vector2.Distance(attachPos.transform.position, transform.position);
+            }
         }
     }
 

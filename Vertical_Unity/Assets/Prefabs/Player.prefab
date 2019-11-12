@@ -351,6 +351,7 @@ GameObject:
   - component: {fileID: 4503195422415338475}
   - component: {fileID: 4503195422415338484}
   - component: {fileID: 1050642299}
+  - component: {fileID: 111360269}
   m_Layer: 9
   m_Name: Player
   m_TagString: Player
@@ -439,12 +440,12 @@ MonoBehaviour:
   allowMouseControl: 0
   maxTargetSpeed: 6
   runningAcceleration: 100
-  groundSlowing: 100
-  airAcceleration: 20
+  groundSlowing: 50
+  airAcceleration: 10
   airSlowing: 1
-  jumpForce: 10
-  gravityForce: 30
-  jumpXVelocityGain: 100
+  jumpForce: 5
+  baseGravityForce: 20
+  jumpXVelocityGain: 0
   feetPos: {fileID: 4503195423458372692}
   groundCheckThickness: 0.05
   groundCheckWidth: 0.8
@@ -453,6 +454,7 @@ MonoBehaviour:
     m_Bits: 256
   inControl: 0
   isAffectedbyGravity: 0
+  gravityForce: 30
 --- !u!114 &2276650194064215076
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -465,12 +467,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f07ad249d271bb44ab81849d07cda09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  instantaneousAttach: 1
   shootForce: 35
-  ropeLength: 12
+  ropeLength: 15
   shootCooldown: 0.2
-  tractionForce: 2
-  releasingHookDist: 1
-  velocityKeptReleasingHook: 40
+  releasingHookDist: 0.5
+  useGhostHook: 0
+  minAttachDistance: 1
+  useJoint: 0
+  resetMomentumOnTraction: 1
+  tractionForce: 40
+  tractionAirDensity: 0.01
+  maxTractionSpeed: 20
+  momentumAngle: 0
+  startTractionPropulsion: 12
+  velocityKeptReleasingHook: 70
   useAutoAim: 1
   widthAimAngle: 45
   raycastNumber: 90
@@ -479,6 +490,7 @@ MonoBehaviour:
   hookPrefab: {fileID: 2211880245883361801, guid: 041f2b0a20ef83746947ff243b04874a,
     type: 3}
   ringHighLighterO: {fileID: 0}
+  ghostHookColor: {r: 1, g: 0.65, b: 0, a: 0.4}
   attachedObject: {fileID: 0}
   tractionDirection: {x: 0, y: 0}
   isTracting: 0
@@ -538,7 +550,7 @@ Rigidbody2D:
   m_Material: {fileID: 6200000, guid: 11e62417d5f030e4aa0c6b8f6f06e4d1, type: 2}
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!61 &4503195422415338484
 BoxCollider2D:
@@ -662,6 +674,25 @@ LineRenderer:
     generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
+--- !u!232 &111360269
+DistanceJoint2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4503195422415338485}
+  m_Enabled: 0
+  serializedVersion: 4
+  m_EnableCollision: 0
+  m_ConnectedRigidBody: {fileID: 0}
+  m_BreakForce: Infinity
+  m_BreakTorque: Infinity
+  m_AutoConfigureConnectedAnchor: 0
+  m_Anchor: {x: 0, y: 0}
+  m_ConnectedAnchor: {x: 0, y: 0}
+  m_AutoConfigureDistance: 0
+  m_Distance: 3.6842737
+  m_MaxDistanceOnly: 1
 --- !u!1 &4503195423458372693
 GameObject:
   m_ObjectHideFlags: 0

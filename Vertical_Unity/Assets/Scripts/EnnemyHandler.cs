@@ -154,7 +154,7 @@ public abstract class EnnemyHandler : MonoBehaviour
             playerFound = true;
             //Debug.Log("Player accessible !");
         }
-        Instantiate(debugParticlePrefab, targetConnection.transform.position, Quaternion.identity);
+        //Instantiate(debugParticlePrefab, targetConnection.transform.position, Quaternion.identity);
 
         return playerFound;
     }
@@ -335,6 +335,8 @@ public abstract class EnnemyHandler : MonoBehaviour
         }
         rb.velocity = knockBack;
     }
+
+    public abstract bool TestCounter();
 
     public IEnumerator Hurt()
     {
