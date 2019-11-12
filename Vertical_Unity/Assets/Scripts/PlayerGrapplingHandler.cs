@@ -19,7 +19,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
     public float tractionForce;
     public float tractionAirDensity;
     public float maxTractionSpeed;
-    [Range(0,180)] public float momentumAngle;
+    [Range(1,3)] public float momentumAmplification;
     public float startTractionPropulsion;
     [Space]
     [Range(0,100)] public float velocityKeptReleasingHook;
@@ -186,8 +186,8 @@ public class PlayerGrapplingHandler : MonoBehaviour
                     else
                     {
                         currentHook = Instantiate(hookPrefab, shootPoint.position, Quaternion.identity);
-                        hookRb.velocity = shootDirection * shootForce;
                         hookRb = currentHook.GetComponent<Rigidbody2D>();
+                        hookRb.velocity = shootDirection * shootForce;
                     }
                 }
                 else if (!shootFlag && Input.GetAxisRaw("RTAxis") == 0)
@@ -228,13 +228,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
                 {
                     if(resetMomentumOnTraction)
                     {
-                        float angle = Vector2.Angle(rb.velocity, tractionDirection);
-                        if (angle < momentumAngle)
-                        {
-                            angle = 0;
-                        }
-
-                        float startTractionVelocity = rb.velocity.magnitude * Mathf.Cos(Mathf.Deg2Rad * angle);
+                        float startTractionVelocity = rb.velocity.magnitude * Mathf.Cos(Mathf.Pow(Mathf.Deg2Rad * Vector2.Angle(rb.velocity, tractionDirection), momentumAmplification));
 
                         if (startTractionVelocity < 0)
                         {
