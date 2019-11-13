@@ -7,6 +7,7 @@ public abstract class Kick : ScriptableObject
     public new string name;
     public int level;
     public Sprite icon;
+    public GameObject kickEffect;
 
     public float propelingForce;
     public Vector2 hitCollidingSize;
