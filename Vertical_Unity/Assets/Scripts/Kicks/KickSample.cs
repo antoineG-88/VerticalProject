@@ -8,30 +8,25 @@ using UnityEngine;
 /// </summary>
 public class KickSample: Kick
 {
-    public float damagePerHit;
-    public float criticalDamage;
     public float stunTime;
 
-    public float ennemyKnockBackForce;
-    public Vector2 addedEnnemyKnockBack;
-
-    private int repetition = 0;
-    private float damageToDeal;
-    public override void Use(EnnemyHandler ennemy)
+    public float enemyKnockBackForce;
+    public Vector2 addedEnemyKnockBack;
+    public override IEnumerator Use(GameObject player, Quaternion kickRotation)
     {
-        damageToDeal = damagePerHit;
-        if (repetition <= 2)
-        {
-            repetition++;
-        }
-        if(repetition > 2 && GameData.playerGrapplingHandler.attachedObject == null)
-        {
-            repetition = 0;
-            damageToDeal = criticalDamage;
-        }
-        Vector2 kickDirection = new Vector2(ennemy.transform.position.x - GameData.playerMovement.transform.position.x, ennemy.transform.position.y - GameData.playerMovement.transform.position.y).normalized;
+        GameObject kickEffect = Instantiate(kickVisualEffect, player.transform);
+        kickEffect.transform.localRotation = Quaternion.Euler(0.0f, 0.0f, Vector2.SignedAngle(Vector2.right, GameData.playerGrapplingHandler.tractionDirection));
+
+        yield return new WaitForSeconds(timeBeforeKick);
+
+        GameData.playerAttackManager.Hit();
+    }
+
+    public override void DealDamageToEnemy(EnemyHandler enemy)
+    {
+        Vector2 kickDirection = new Vector2(enemy.transform.position.x - GameData.playerMovement.transform.position.x, enemy.transform.position.y - GameData.playerMovement.transform.position.y).normalized;
         GameData.playerMovement.DisableControl(0.3f, false);
-        ennemy.TakeDamage(damageToDeal, kickDirection * ennemyKnockBackForce + addedEnnemyKnockBack, stunTime);
+        enemy.TakeDamage(1, kickDirection * enemyKnockBackForce + addedEnemyKnockBack, stunTime);
         GameData.playerGrapplingHandler.ReleaseHook();
     }
 }

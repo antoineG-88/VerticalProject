@@ -3,21 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using Pathfinding;
 
-public abstract class EnnemyHandler : MonoBehaviour
+public abstract class EnemyHandler : MonoBehaviour
 {
-    [Header("Ennemy basic settings")]
+    [Header("Enemy basic settings")]
     public new string name;
-    public float maxHealth;
+    public int maxHealth;
     public Color hurtColor;
     public float invulnerableTime;
-    [Header("Ennemy pathfinding settings")]
+    [Header("Enemy pathfinding settings")]
     public float nextWaypointDistance;
     [Space]
     public float pathUpdatingFrequency;
     public float connectionJumpTime;
     public float pathfindingJumpWeight;
     public float pathFindingJumpCooldown;
-    [Header("Ennemy technical settings")]
+    [Header("Enemy technical settings")]
     public Transform feetPos;
     public float groundCheckWidth;
     public float groundCheckThickness;
@@ -27,12 +27,21 @@ public abstract class EnnemyHandler : MonoBehaviour
     public bool pauseAI;
     public GameObject debugParticlePrefab;
 
-    [HideInInspector] public float currentHealth;
+    [HideInInspector] public int currentHealth;
     [HideInInspector] public bool isInvulnerable;
+
     [HideInInspector] public bool isStunned;
+    [HideInInspector] public float stunTimeRemaining;
+    [HideInInspector] public bool isHacked;
+    [HideInInspector] public float hackTimeRemaining;
+    [HideInInspector] public bool isNoGravity;
+    [HideInInspector] public float noGravityTimeRemaining;
+    [HideInInspector] public bool isSlowed;
+    [HideInInspector] public float slowTimeRemaining;
     [HideInInspector] public bool isInControl;
+    [HideInInspector] public float noControlTimeRemaining;
+
     [HideInInspector] public bool isAffectedByGravity;
-    [HideInInspector] public bool isTouchingPlayer;
     [HideInInspector] public Rigidbody2D rb;
 
     [HideInInspector] public Seeker seeker;
@@ -63,7 +72,6 @@ public abstract class EnnemyHandler : MonoBehaviour
         isInControl = true;
         isInvulnerable = false;
         isAffectedByGravity = true;
-        isTouchingPlayer = false;
         currentHealth = maxHealth;
         pJumpCDRemaining = 0;
 
@@ -74,39 +82,23 @@ public abstract class EnnemyHandler : MonoBehaviour
     {
         UpdatePath();
 
-        if (path != null)
-        {
-            if (currentWaypoint >= path.vectorPath.Count)
-            {
-                pathEndReached = true;
-            }
-            else
-            {
-                pathEndReached = false;
-
-                pathDirection = (path.vectorPath[currentWaypoint] - transform.position).normalized;
-
-                if (Vector2.Distance(transform.position, path.vectorPath[currentWaypoint]) < nextWaypointDistance)
-                {
-                    currentWaypoint++;
-                }
-            }
-        }
-
-        isStunned = pauseAI;
+        EffectUpdate();
     }
 
     public void HandlerFixedUpdate()
     {
-        DetectPlayer();
+
     }
 
-    void CalculatePath()
+    #region Pathfinding
+
+
+    public void CalculatePath()
     {
         seeker.StartPath(transform.position, targetPathfindingPosition, OnPathComplete);
     }
 
-    void OnPathComplete(Path p)
+    private void OnPathComplete(Path p)
     {
         if(!p.error)
         {
@@ -118,15 +110,11 @@ public abstract class EnnemyHandler : MonoBehaviour
     public PlatformHandler GetCurrentPlatform()
     {
         PlatformHandler platform = null;
-        Collider2D collider = Physics2D.OverlapCircle(feetPos.position, 1.2f, LayerMask.GetMask("Walkable"));
+        Collider2D collider = Physics2D.OverlapCircle(feetPos.position, 1.2f, LayerMask.GetMask("Ground"));
         if(collider != null && (currentPlatform == null || currentPlatform.gameObject != collider.gameObject))
         {
             //Debug.Log("Set current platform for " + gameObject.name + " to " + collider.gameObject.name);
-            platform = collider.GetComponent<PlatformHandler>();  //DANGEROUS ------------------------------ !!
-        }
-        else
-        {
-            //Debug.Log("No platform found");
+            platform = collider.GetComponent<PlatformHandler>();
         }
 
         return platform;
@@ -269,8 +257,6 @@ public abstract class EnnemyHandler : MonoBehaviour
 
     private void UpdatePath()
     {
-        //CalculatePath();
-
         if (timeBeforeNextGroundPathUpdate <= 0 && IsOnGround())
         {
             timeBeforeNextGroundPathUpdate = pathUpdatingFrequency;
@@ -285,6 +271,27 @@ public abstract class EnnemyHandler : MonoBehaviour
         if(pJumpCDRemaining > 0)
         {
             pJumpCDRemaining -= Time.deltaTime;
+        }
+
+
+
+        if (path != null)
+        {
+            if (currentWaypoint >= path.vectorPath.Count)
+            {
+                pathEndReached = true;
+            }
+            else
+            {
+                pathEndReached = false;
+
+                pathDirection = (path.vectorPath[currentWaypoint] - transform.position).normalized;
+
+                if (Vector2.Distance(transform.position, path.vectorPath[currentWaypoint]) < nextWaypointDistance)
+                {
+                    currentWaypoint++;
+                }
+            }
         }
     }
 
@@ -316,17 +323,23 @@ public abstract class EnnemyHandler : MonoBehaviour
         isInControl = true;
         isInvulnerable = false;
 
-        StartCoroutine(NoControl(0.2f));
+        NoControl(0.2f, false);
     }
+
+
+    #endregion
+
+    #region Combat
+
 
     public abstract void UpdateMovement();
 
-    public void TakeDamage(float damage, Vector2 knockBack, float stunTime)
+    public void TakeDamage(int damage, Vector2 knockBack, float stunTime)
     {
         if (!isInvulnerable)
         {
             currentHealth -= damage;
-            StartCoroutine(Stun(stunTime));
+            Stun(stunTime, false);
             StartCoroutine(Hurt());
             if (currentHealth <= 0)
             {
@@ -353,17 +366,22 @@ public abstract class EnnemyHandler : MonoBehaviour
         Destroy(gameObject);
     }
 
-    private void DetectPlayer()
+
+
+    #endregion
+
+    #region Status test
+
+
+    public bool IsTouchingPlayer()
     {
+        bool isTouchingPlayer = false;
         Collider2D collider = Physics2D.OverlapBox(transform.position, colliderSize, 0.0f, LayerMask.GetMask("Player"));
         if (collider != null)
         {
             isTouchingPlayer = true;
         }
-        else
-        {
-            isTouchingPlayer = false;
-        }
+        return isTouchingPlayer;
     }
 
     private void OnTriggerEnter2D(Collider2D collider)
@@ -373,6 +391,24 @@ public abstract class EnnemyHandler : MonoBehaviour
             GameData.playerGrapplingHandler.AttachHook(gameObject);
         }
     }
+
+    public bool IsOnGround()
+    {
+        bool isGrounded = false;
+        if (Physics2D.OverlapBox(feetPos.position, new Vector2(groundCheckWidth, groundCheckThickness), 0.0f, walkableMask) != null)
+        {
+            isGrounded = true;
+        }
+
+        return isGrounded;
+    }
+
+
+
+    #endregion
+
+    #region Effects
+
 
     public void Propel(Vector2 directedForce, bool resetHorizontalVelocity, bool resetVerticalVelocity)
     {
@@ -399,28 +435,179 @@ public abstract class EnnemyHandler : MonoBehaviour
         rb.velocity = new Vector2(newVelocity.x, newVelocity.y);
     }
 
-    public bool IsOnGround()
+    private void EffectUpdate()
     {
-        bool isGrounded = false;
-        if (Physics2D.OverlapBox(feetPos.position, new Vector2(groundCheckWidth, groundCheckThickness), 0.0f, walkableMask) != null)
+        if(stunTimeRemaining > 0)
         {
-            isGrounded = true;
+            stunTimeRemaining -= Time.deltaTime;
+        }
+        else
+        {
+            isStunned = false;
         }
 
-        return isGrounded;
+        if (hackTimeRemaining > 0)
+        {
+            hackTimeRemaining -= Time.deltaTime;
+        }
+        else
+        {
+            isHacked = false;
+        }
+
+        if (noGravityTimeRemaining > 0)
+        {
+            noGravityTimeRemaining -= Time.deltaTime;
+        }
+        else
+        {
+            isNoGravity = false;
+        }
+
+        if (slowTimeRemaining > 0)
+        {
+            slowTimeRemaining -= Time.deltaTime;
+        }
+        else
+        {
+            isSlowed = false;
+        }
+
+        if (noControlTimeRemaining > 0)
+        {
+            noControlTimeRemaining -= Time.deltaTime;
+        }
+        else
+        {
+            isInControl = true;
+        }
+
+        if(pauseAI)
+        {
+            isStunned = pauseAI;
+        }
     }
 
-    public IEnumerator Stun(float stunTime)
+    public void Stun(float duration, bool isAdded)
     {
-        isStunned = true;
-        yield return new WaitForSeconds(stunTime);
-        isStunned = false;
+        if (isAdded)
+        {
+            stunTimeRemaining += duration;
+        }
+        else if (stunTimeRemaining < duration)
+        {
+            if(duration != 0)
+            {
+                stunTimeRemaining = duration;
+            }
+            else
+            {
+                stunTimeRemaining = 0;
+            }
+        }
+
+        if(stunTimeRemaining > 0)
+        {
+            isStunned = true;
+        }
     }
 
-    public IEnumerator NoControl(float noControlTime)
+    public void NoControl(float duration, bool isAdded)
     {
-        isInControl = false;
-        yield return new WaitForSeconds(noControlTime);
-        isInControl = true;
+        if (isAdded)
+        {
+            noControlTimeRemaining += duration;
+        }
+        else if (noControlTimeRemaining < duration)
+        {
+            if (duration != 0)
+            {
+                noControlTimeRemaining = duration;
+            }
+            else
+            {
+                noControlTimeRemaining = 0;
+            }
+        }
+
+        if (noControlTimeRemaining > 0)
+        {
+            isInControl = false;
+        }
     }
+
+    public void Hack(float duration, bool isAdded)
+    {
+        if (isAdded)
+        {
+            hackTimeRemaining += duration;
+        }
+        else if (hackTimeRemaining < duration)
+        {
+            if (duration != 0)
+            {
+                hackTimeRemaining = duration;
+            }
+            else
+            {
+                hackTimeRemaining = 0;
+            }
+        }
+
+        if (hackTimeRemaining > 0)
+        {
+            isHacked = true;
+        }
+    }
+
+    public void Slow(float duration, bool isAdded)
+    {
+        if (isAdded)
+        {
+            slowTimeRemaining += duration;
+        }
+        else if (slowTimeRemaining < duration)
+        {
+            if (duration != 0)
+            {
+                slowTimeRemaining = duration;
+            }
+            else
+            {
+                slowTimeRemaining = 0;
+            }
+        }
+
+        if (slowTimeRemaining > 0)
+        {
+            isSlowed = true;
+        }
+    }
+
+    public void NoGravity(float duration, bool isAdded)
+    {
+        if (isAdded)
+        {
+            noGravityTimeRemaining += duration;
+        }
+        else if (noGravityTimeRemaining < duration)
+        {
+            if (duration != 0)
+            {
+                noGravityTimeRemaining = duration;
+            }
+            else
+            {
+                noGravityTimeRemaining = 0;
+            }
+        }
+
+        if (noGravityTimeRemaining > 0)
+        {
+            isNoGravity = true;
+        }
+    }
+
+
+    #endregion
 }

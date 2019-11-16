@@ -5,9 +5,9 @@ using UnityEngine;
 public abstract class Kick : ScriptableObject
 {
     public new string name;
-    public int level;
+    [TextArea] public string description;
     public Sprite icon;
-    public GameObject kickEffect;
+    public GameObject kickVisualEffect;
 
     public float propelingForce;
     public Vector2 hitCollidingSize;
@@ -15,16 +15,19 @@ public abstract class Kick : ScriptableObject
 
     private Collider2D hitCollider;
     
-    public abstract void Use(EnnemyHandler ennemy);
+    public abstract IEnumerator Use(GameObject player, Quaternion kickRotation);
 
-    public Collider2D HitTest()
+    public abstract void DealDamageToEnemy(EnemyHandler enemy);
+
+    public GameObject HitTest(LayerMask layerTested)
     {
-        hitCollider = Physics2D.OverlapBox((Vector2)GameData.playerMovement.transform.position + GameData.playerGrapplingHandler.tractionDirection * hitCollidingSize.x / 2, hitCollidingSize, Vector2.SignedAngle(Vector2.right, GameData.playerGrapplingHandler.tractionDirection), LayerMask.GetMask("Ennemy","Ring"));
-        if (hitCollider != null && hitCollider.CompareTag("Ennemy"))
+        GameObject objectFound = null;
+        hitCollider = Physics2D.OverlapBox((Vector2)GameData.playerMovement.transform.position + GameData.playerGrapplingHandler.tractionDirection * hitCollidingSize.x / 2, hitCollidingSize, Vector2.SignedAngle(Vector2.right, GameData.playerGrapplingHandler.tractionDirection), layerTested);
+        if (hitCollider != null)
         {
-            return hitCollider;
+            objectFound = hitCollider.gameObject;
         }
 
-        return null;
+        return objectFound;
     }
 }

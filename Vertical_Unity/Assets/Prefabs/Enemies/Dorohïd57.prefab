@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 5285105932516836634}
   m_Layer: 11
   m_Name: "Doroh\xEFd57"
-  m_TagString: Ennemy
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -79,7 +79,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   name: Mechant robot
-  maxHealth: 300
+  maxHealth: 10
   hurtColor: {r: 0.9245283, g: 0.37068352, b: 0.37068352, a: 1}
   invulnerableTime: 0.2
   nextWaypointDistance: 1
@@ -100,9 +100,16 @@ MonoBehaviour:
   currentHealth: 0
   isInvulnerable: 0
   isStunned: 0
+  stunTimeRemaining: 0
+  isHacked: 0
+  hackTimeRemaining: 0
+  isNoGravity: 0
+  noGravityTimeRemaining: 0
+  isSlowed: 0
+  slowTimeRemaining: 0
   isInControl: 0
+  noControlTimeRemaining: 0
   isAffectedByGravity: 0
-  isTouchingPlayer: 0
   rb: {fileID: 0}
   seeker: {fileID: 0}
   currentWaypoint: 0

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Pathfinding;
-public class EnnemySample : EnnemyHandler
+public class EnemySample : EnemyHandler
 {
     public GameObject previsuDirection;
     [Header("EnnemySample settings")]
@@ -153,21 +153,11 @@ public class EnnemySample : EnnemyHandler
             jumpCooldownRemaining -= Time.deltaTime;
         }
 
-        // Old attack by touching
-        /*if (isTouchingPlayer && cooldownRemaining <= 0 && !GameData.playerGrapplingHandler.isTracting && !isStunned)
-        {
-            Vector2 knockBack = (GameData.playerMovement.transform.position - transform.position).normalized * attackKnockBackForce;
-            knockBack.y += attackKnockBackUp;
-            GameData.playerManager.TakeDamage(damage, knockBack, attackStunTime);
-            cooldownRemaining = attackCooldown;
-            rb.velocity = -knockBack * 0.5f;
-        }*/
-
         if(isAttackJumping)
         {
             if(!isStunned)
             {
-                if (isTouchingPlayer)
+                if (IsTouchingPlayer())
                 {
                     Attack();
                 }
@@ -183,7 +173,7 @@ public class EnnemySample : EnnemyHandler
         if(jumpCooldownRemaining <= 0 && (pathDirectionAngle < 45 || pathDirectionAngle > 135) && Physics2D.OverlapBox(new Vector2(transform.position.x + horiz * jumpAttackTriggerDistance / 2, transform.position.y),new Vector2(jumpAttackTriggerDistance, 1.0f),0.0f,LayerMask.GetMask("Player")) && IsOnGround() && !isStunned)
         {
             Propel(new Vector2(horiz * jumpAttackForce.x, jumpAttackForce.y), true, true);
-            StartCoroutine(NoControl(0.5f));
+            NoControl(0.5f, false);
             isAttackJumping = true;
             jumpCooldownRemaining = jumpCooldown;
         }

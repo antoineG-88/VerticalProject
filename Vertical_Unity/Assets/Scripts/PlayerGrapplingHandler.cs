@@ -132,9 +132,8 @@ public class PlayerGrapplingHandler : MonoBehaviour
                         float angledDirection = (Mathf.Atan2(aimDirection.x, aimDirection.y) * 180 / Mathf.PI - 90) + relativeAngle;
 
                         Vector2 direction = new Vector2(Mathf.Cos((angledDirection) * Mathf.PI / 180), Mathf.Sin((angledDirection) * Mathf.PI / 180));
-                        hit = Physics2D.Raycast(shootPoint.position, direction, ropeLength, LayerMask.GetMask("Ring", "Walkable", "Ennemy"));
-
-                        if (hit && (hit.collider.CompareTag("Ring") || hit.collider.CompareTag("Ennemy")) && nearestRing != hit.collider.gameObject && Vector2.Angle(direction, new Vector2(aimDirection.x, -aimDirection.y)) < minAngleFound)
+                        hit = Physics2D.Raycast(shootPoint.position, direction, ropeLength, LayerMask.GetMask("Ring", "Ground", "Enemy"));
+                        if (hit && (hit.collider.CompareTag("Ring") || hit.collider.CompareTag("Enemy")) && nearestRing != hit.collider.gameObject && Vector2.Angle(direction, new Vector2(aimDirection.x, -aimDirection.y)) < minAngleFound)
                         {
                             nearestRing = hit.collider.gameObject;
                             minAngleFound = Vector2.Angle(direction, new Vector2(aimDirection.x, -aimDirection.y));
@@ -275,8 +274,8 @@ public class PlayerGrapplingHandler : MonoBehaviour
     {
         if (isHooked)
         {
-            RaycastHit2D ringHit = Physics2D.Raycast(transform.position, tractionDirection, ropeLength, LayerMask.GetMask("Ring", "Ennemy", "Walkable"));
-            if (ringHit && !ringHit.collider.CompareTag("Ring") && !ringHit.collider.CompareTag("Ennemy"))
+            RaycastHit2D ringHit = Physics2D.Raycast(transform.position, tractionDirection, ropeLength, LayerMask.GetMask("Ring", "Enemy", "Ground"));
+            if (ringHit && !ringHit.collider.CompareTag("Ring") && !ringHit.collider.CompareTag("Enemy"))
             {
                 BreakRope();
             }
@@ -294,7 +293,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
                 BreakRope();
             }
 
-            if(!isHooked && Physics2D.OverlapCircle(currentHook.transform.position, 0.2f, LayerMask.GetMask("Walkable")))
+            if(!isHooked && Physics2D.OverlapCircle(currentHook.transform.position, 0.2f, LayerMask.GetMask("Ground")))
             {
                 ReleaseHook();
             }
@@ -323,7 +322,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
 
             if(!useGhostHook)
             {
-                if (attachedObject.CompareTag("Ennemy") && Vector2.Distance(currentHook.transform.position, transform.position) < minAttachDistance)
+                if (attachedObject.CompareTag("Enemy") && Vector2.Distance(currentHook.transform.position, transform.position) < minAttachDistance)
                 {
                     BreakRope();
                 }
@@ -345,7 +344,6 @@ public class PlayerGrapplingHandler : MonoBehaviour
         ropeRenderer.enabled = false;
         GameData.playerMovement.inControl = true;
         attachedObject = null;
-        GameData.playerAttackManager.kickUsed = false;
         GameData.playerMovement.isAffectedbyGravity = true;
         distanceJoint.enabled = false;
         if(currentHook != null)

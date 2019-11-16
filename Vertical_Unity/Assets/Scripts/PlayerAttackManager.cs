@@ -15,14 +15,12 @@ public class PlayerAttackManager : MonoBehaviour
     [Range(0.0001f,1.0f)] public float slowMoTimeSpeed;
 
     [HideInInspector] public bool isKicking;
-    [HideInInspector] public bool kickUsed;
     private float remainingTimeBeforeKick;
     private bool isRepropulsing;
 
     private void Start()
     {
         isKicking = false;
-        kickUsed = false;
         kickPreview.SetActive(false);
         kickPreview.transform.localScale = currentKick.hitCollidingSize;
         repropulsionPreview.SetActive(false);
@@ -31,46 +29,43 @@ public class PlayerAttackManager : MonoBehaviour
 
     private void Update()
     {
-        KickTest();
+        KickInput();
     }
 
-    private void KickTest()
+    private void KickInput()
     {
-        if (Input.GetButton("RBButton") && GameData.playerGrapplingHandler.isTracting && !isKicking && !kickUsed)
+        if (Input.GetButton("RBButton") && GameData.playerGrapplingHandler.isTracting && !isKicking)
         {
-            kickUsed = true;
-            remainingTimeBeforeKick = currentKick.timeBeforeKick;
             isKicking = true;
-            kickPreview.SetActive(true);
-        }
-
-        if (remainingTimeBeforeKick > 0)
-        {
-            remainingTimeBeforeKick -= Time.deltaTime;
-        }
-
-        if(remainingTimeBeforeKick <= 0 && isKicking)
-        {
-            Collider2D testedCollider = currentKick.HitTest();
-            if (testedCollider != null)
-            {
-                EnnemyHandler ennemy = testedCollider.GetComponent<EnnemyHandler>();
-                if (!ennemy.TestCounter())
-                {
-                    currentKick.Use(ennemy);
-                    StartCoroutine(Repropulsion());
-                }
-            }
-            isKicking = false;
-            GameData.playerGrapplingHandler.ReleaseHook();
-            kickPreview.SetActive(false);
+            StartCoroutine(currentKick.Use(gameObject, Quaternion.Euler(0.0f, 0.0f, Vector2.SignedAngle(Vector2.right, GameData.playerGrapplingHandler.tractionDirection))));
         }
         
-        if(isKicking)
+        /*if(isKicking)
         {
             kickPreview.transform.position = (Vector2)GameData.playerMovement.transform.position + GameData.playerGrapplingHandler.tractionDirection * currentKick.hitCollidingSize.x / 2;
             kickPreview.transform.rotation = Quaternion.Euler(0.0f, 0.0f, Vector2.SignedAngle(Vector2.right, GameData.playerGrapplingHandler.tractionDirection));
+        }*/
+    }
+
+    public bool Hit()
+    {
+        bool successfullKick = false;
+        GameObject objectHit = currentKick.HitTest(LayerMask.GetMask("Enemy"));
+
+        if (objectHit != null)
+        {
+            EnemyHandler enemy = objectHit.GetComponent<EnemyHandler>();
+            successfullKick = !enemy.TestCounter();
+            if(successfullKick)
+            {
+                currentKick.DealDamageToEnemy(enemy);
+                StartCoroutine(Repropulsion());
+            }
         }
+        isKicking = false;
+        GameData.playerGrapplingHandler.ReleaseHook();
+
+        return successfullKick;
     }
 
     private IEnumerator Repropulsion()

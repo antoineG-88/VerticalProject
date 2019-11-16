@@ -18,7 +18,7 @@ public class PlayerMovement : MonoBehaviour
     public Transform feetPos;
     public float groundCheckThickness = 0.1f;
     public float groundCheckWidth = 1.0f;
-    public LayerMask walkableMask;
+    public LayerMask groundMask;
 
     [HideInInspector] public bool inControl;
     [HideInInspector] public bool isAffectedbyGravity;
@@ -161,7 +161,7 @@ public class PlayerMovement : MonoBehaviour
     public bool IsOnGround()
     {
         bool isGrounded = false;
-        if (Physics2D.OverlapBox(feetPos.position, new Vector2(groundCheckWidth, groundCheckThickness), 0.0f, walkableMask) != null)
+        if (Physics2D.OverlapBox(feetPos.position, new Vector2(groundCheckWidth, groundCheckThickness), 0.0f, groundMask) != null)
         {
             isGrounded = true;
         }
