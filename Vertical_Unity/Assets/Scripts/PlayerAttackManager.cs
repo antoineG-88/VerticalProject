@@ -15,6 +15,7 @@ public class PlayerAttackManager : MonoBehaviour
     [Range(0.0001f,1.0f)] public float slowMoTimeSpeed;
 
     [HideInInspector] public bool isKicking;
+    [HideInInspector] public bool kickButtonPressed;
     private float remainingTimeBeforeKick;
     private bool isRepropulsing;
 
@@ -34,31 +35,53 @@ public class PlayerAttackManager : MonoBehaviour
 
     private void KickInput()
     {
-        if (Input.GetButton("RBButton") && GameData.playerGrapplingHandler.isTracting && !isKicking)
+        if (Input.GetButton("RBButton"))
         {
-            isKicking = true;
-            StartCoroutine(currentKick.Use(gameObject, Quaternion.Euler(0.0f, 0.0f, Vector2.SignedAngle(Vector2.right, GameData.playerGrapplingHandler.tractionDirection))));
+            kickButtonPressed = true;
+            if(GameData.playerGrapplingHandler.isTracting && !isKicking)
+            {
+                isKicking = true;
+                StartCoroutine(currentKick.Use(gameObject, Quaternion.Euler(0.0f, 0.0f, Vector2.SignedAngle(Vector2.right, GameData.playerGrapplingHandler.tractionDirection))));
+            }
         }
-        
-        /*if(isKicking)
+        else
         {
-            kickPreview.transform.position = (Vector2)GameData.playerMovement.transform.position + GameData.playerGrapplingHandler.tractionDirection * currentKick.hitCollidingSize.x / 2;
-            kickPreview.transform.rotation = Quaternion.Euler(0.0f, 0.0f, Vector2.SignedAngle(Vector2.right, GameData.playerGrapplingHandler.tractionDirection));
-        }*/
+            kickButtonPressed = false;
+        }
     }
 
     public bool Hit()
     {
         bool successfullKick = false;
-        GameObject objectHit = currentKick.HitTest(LayerMask.GetMask("Enemy"));
+        List<Collider2D> hitColliders = new List<Collider2D>();
+        GameObject attachedObject = GameData.playerGrapplingHandler.attachedObject;
 
-        if (objectHit != null)
+        if (currentKick.HitTest(attachedObject, ref hitColliders) && attachedObject.CompareTag("Enemy"))
         {
-            EnemyHandler enemy = objectHit.GetComponent<EnemyHandler>();
+            EnemyHandler enemy = attachedObject.GetComponent<EnemyHandler>();
             successfullKick = !enemy.TestCounter();
             if(successfullKick)
             {
-                currentKick.DealDamageToEnemy(enemy);
+                if (!currentKick.isAOE)
+                {
+                    currentKick.DealDamageToEnemy(enemy);
+                }
+                else
+                {
+                    foreach(Collider2D collider in hitColliders)
+                    {
+                        if(collider.CompareTag("Enemy"))
+                        {
+                            currentKick.DealDamageToEnemy(collider.GetComponent<EnemyHandler>());
+                        }
+                    }
+                }
+
+                if(Vector2.Distance(transform.position, attachedObject.transform.position) < currentKick.perfectTimingMaximumDistance)
+                {
+                    currentKick.ApplyPerfectTimingEffect(enemy);
+                }
+
                 StartCoroutine(Repropulsion());
             }
         }

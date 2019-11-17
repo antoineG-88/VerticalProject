@@ -36,6 +36,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
     public GameObject ringHighLighterO;
     [Header("Debug settings")]
     public Color ghostHookColor;
+    public bool displayAutoAimRaycast;
     
     private Rigidbody2D rb;
     private LineRenderer ropeRenderer;
@@ -132,7 +133,17 @@ public class PlayerGrapplingHandler : MonoBehaviour
                         float angledDirection = (Mathf.Atan2(aimDirection.x, aimDirection.y) * 180 / Mathf.PI - 90) + relativeAngle;
 
                         Vector2 direction = new Vector2(Mathf.Cos((angledDirection) * Mathf.PI / 180), Mathf.Sin((angledDirection) * Mathf.PI / 180));
-                        hit = Physics2D.Raycast(shootPoint.position, direction, ropeLength, LayerMask.GetMask("Ring", "Ground", "Enemy"));
+                        Vector2 raycastOrigin = shootPoint.position;
+                        if(instantaneousAttach && useGhostHook)
+                        {
+                            raycastOrigin = (Vector2)transform.position + direction * minAttachDistance;
+
+                            if(displayAutoAimRaycast)
+                            {
+                                Debug.DrawRay(raycastOrigin, direction * ropeLength, Color.cyan);
+                            }
+                        }
+                        hit = Physics2D.Raycast(raycastOrigin, direction, ropeLength, LayerMask.GetMask("Ring", "Ground", "Enemy"));
                         if (hit && (hit.collider.CompareTag("Ring") || hit.collider.CompareTag("Enemy")) && nearestRing != hit.collider.gameObject && Vector2.Angle(direction, new Vector2(aimDirection.x, -aimDirection.y)) < minAngleFound)
                         {
                             nearestRing = hit.collider.gameObject;
@@ -244,10 +255,25 @@ public class PlayerGrapplingHandler : MonoBehaviour
                     }
                 }
 
-                rb.velocity += tractionDirection * tractionForce * Time.deltaTime;
+                if(resetMomentumOnTraction)
+                {
+                    float tractionDirectionAngle = Mathf.Atan(tractionDirection.y / tractionDirection.x);
+                    if(tractionDirection.x < 0)
+                    {
+                        tractionDirectionAngle += Mathf.PI;
+                    }
+                    else if(tractionDirection.y < 0 && tractionDirection.x > 0)
+                    {
+
+                        tractionDirectionAngle += 2 * Mathf.PI;
+                    }
+                    rb.velocity = new Vector2(rb.velocity.magnitude * Mathf.Cos(tractionDirectionAngle), rb.velocity.magnitude * Mathf.Sin(tractionDirectionAngle));
+                }
+
+                rb.velocity += tractionDirection * tractionForce * Time.fixedDeltaTime;
 
                 tractionDragForce = tractionAirDensity * Mathf.Pow(rb.velocity.magnitude, 2) / 2;
-                rb.velocity -= rb.velocity * tractionDragForce * Time.deltaTime;
+                rb.velocity -= rb.velocity * tractionDragForce * Time.fixedDeltaTime;
 
                 if (rb.velocity.magnitude > maxTractionSpeed)
                 {
@@ -345,6 +371,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
         GameData.playerMovement.inControl = true;
         attachedObject = null;
         GameData.playerMovement.isAffectedbyGravity = true;
+        GameData.playerAttackManager.isKicking = false;
         distanceJoint.enabled = false;
         if(currentHook != null)
         {

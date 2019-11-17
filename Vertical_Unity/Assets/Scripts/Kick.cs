@@ -9,25 +9,33 @@ public abstract class Kick : ScriptableObject
     public Sprite icon;
     public GameObject kickVisualEffect;
 
+    public bool isAOE;
     public float propelingForce;
+    public float perfectTimingMaximumDistance;
     public Vector2 hitCollidingSize;
     public float timeBeforeKick;
 
-    private Collider2D hitCollider;
-    
     public abstract IEnumerator Use(GameObject player, Quaternion kickRotation);
 
     public abstract void DealDamageToEnemy(EnemyHandler enemy);
 
-    public GameObject HitTest(LayerMask layerTested)
-    {
-        GameObject objectFound = null;
-        hitCollider = Physics2D.OverlapBox((Vector2)GameData.playerMovement.transform.position + GameData.playerGrapplingHandler.tractionDirection * hitCollidingSize.x / 2, hitCollidingSize, Vector2.SignedAngle(Vector2.right, GameData.playerGrapplingHandler.tractionDirection), layerTested);
-        if (hitCollider != null)
-        {
-            objectFound = hitCollider.gameObject;
-        }
+    public abstract void ApplyPerfectTimingEffect(EnemyHandler enemy);
 
-        return objectFound;
+    public bool HitTest(GameObject attachedObject, ref List<Collider2D> overlappingColliders)
+    {
+        bool hasHit = false;
+        ContactFilter2D contactFilter = new ContactFilter2D();
+        List<Collider2D> colliders = new List<Collider2D>();
+        Physics2D.OverlapBox((Vector2)GameData.playerMovement.transform.position + GameData.playerGrapplingHandler.tractionDirection * hitCollidingSize.x / 2, hitCollidingSize, Vector2.SignedAngle(Vector2.right, GameData.playerGrapplingHandler.tractionDirection), contactFilter, colliders);
+        foreach(Collider2D collider in colliders)
+        {
+            if(collider.gameObject == attachedObject)
+            {
+                hasHit = true;
+            }
+        }
+        overlappingColliders = colliders;
+
+        return hasHit;
     }
 }

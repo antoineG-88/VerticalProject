@@ -20,7 +20,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &5285105932516836633
 Transform:
   m_ObjectHideFlags: 0
@@ -82,6 +82,7 @@ MonoBehaviour:
   maxHealth: 10
   hurtColor: {r: 0.9245283, g: 0.37068352, b: 0.37068352, a: 1}
   invulnerableTime: 0.2
+  useAStar: 0
   nextWaypointDistance: 1
   pathUpdatingFrequency: 0.1
   connectionJumpTime: 0.5
@@ -90,25 +91,16 @@ MonoBehaviour:
   feetPos: {fileID: 5285105933167829694}
   groundCheckWidth: 0.9
   groundCheckThickness: 0.01
-  walkableMask:
+  groundMask:
     serializedVersion: 2
-    m_Bits: 256
-  colliderSize: {x: 1, y: 1}
+    m_Bits: 0
   pauseAI: 0
   debugParticlePrefab: {fileID: 743808000188852099, guid: 1cf7fde50c7c4334dbeb307cefb2d3dd,
     type: 3}
   currentHealth: 0
   isInvulnerable: 0
-  isStunned: 0
-  stunTimeRemaining: 0
-  isHacked: 0
-  hackTimeRemaining: 0
-  isNoGravity: 0
-  noGravityTimeRemaining: 0
-  isSlowed: 0
-  slowTimeRemaining: 0
-  isInControl: 0
-  noControlTimeRemaining: 0
+  currentEffects: []
+  currentEffectFx: []
   isAffectedByGravity: 0
   rb: {fileID: 0}
   seeker: {fileID: 0}
@@ -132,11 +124,13 @@ MonoBehaviour:
   attackKnockBackForce: 12
   attackKnockBackUp: 10
   attackStunTime: 0.3
-  attackCooldown: 1
-  jumpCooldown: 1
+  jumpCooldown: 5
+  jumpAttackColliderSize: {x: 1.2, y: 1.2}
+  chargeTime: 2
+  chargingParticlePrefab: {fileID: 3752266933516004751, guid: 35c7fe67166be4747b76438b512ba823,
+    type: 3}
   jumpAttackTriggerDistance: 3
   jumpAttackForce: {x: 15, y: 5}
-  attackPauseTime: 1
 --- !u!50 &5285105932516836637
 Rigidbody2D:
   serializedVersion: 4

@@ -439,7 +439,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   allowMouseControl: 0
   maxTargetSpeed: 6
-  runningAcceleration: 100
+  runningAcceleration: 80
   groundSlowing: 50
   airAcceleration: 10
   airSlowing: 1
@@ -449,9 +449,10 @@ MonoBehaviour:
   feetPos: {fileID: 4503195423458372692}
   groundCheckThickness: 0.05
   groundCheckWidth: 0.8
-  walkableMask:
+  groundMask:
     serializedVersion: 2
     m_Bits: 256
+  currentPlayerPlatform: {fileID: 0}
   inControl: 0
   isAffectedbyGravity: 0
   gravityForce: 30
@@ -473,18 +474,18 @@ MonoBehaviour:
   shootCooldown: 0.2
   releasingHookDist: 0.5
   useGhostHook: 0
-  minAttachDistance: 1
+  minAttachDistance: 3
   useJoint: 0
   resetMomentumOnTraction: 1
-  tractionForce: 40
-  tractionAirDensity: 0.01
-  maxTractionSpeed: 20
-  momentumAngle: 0
-  startTractionPropulsion: 12
+  tractionForce: 10
+  tractionAirDensity: 0
+  maxTractionSpeed: 13
+  momentumAmplification: 1
+  startTractionPropulsion: 8
   velocityKeptReleasingHook: 70
   useAutoAim: 1
-  widthAimAngle: 45
-  raycastNumber: 90
+  widthAimAngle: 30
+  raycastNumber: 30
   armShoulderO: {fileID: 1014211694}
   shootPoint: {fileID: 1895484423}
   hookPrefab: {fileID: 2211880245883361801, guid: 041f2b0a20ef83746947ff243b04874a,
@@ -515,7 +516,7 @@ MonoBehaviour:
   maxRepropulsionReleaseTime: 2
   slowMoTimeSpeed: 0.033
   isKicking: 0
-  kickUsed: 0
+  kickButtonPressed: 0
 --- !u!114 &1164104435070563982
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -529,8 +530,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxhealth: 800
-  stunColor: {r: 0.9339623, g: 0.629984, b: 0.629984, a: 1}
-  isVulnerable: 1
+  stunColor: {r: 0.7264151, g: 0.099368125, b: 0.099368125, a: 1}
+  isVulnerable: 0
 --- !u!50 &4503195422415338475
 Rigidbody2D:
   serializedVersion: 4

@@ -10,6 +10,7 @@ public class PlayerManager : MonoBehaviour
     public Color stunColor;
     public bool isVulnerable;
 
+    [HideInInspector] public bool isDodging;
     private float currentHealth;
     private Rigidbody2D rb;
     private Color baseColor;
@@ -19,12 +20,15 @@ public class PlayerManager : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         currentHealth = maxhealth;
         baseColor = GetComponent<SpriteRenderer>().color;
+        isDodging = false;
     }
 
-    public void TakeDamage(float damage, Vector2 knockBack, float stunTime)
+    public bool TakeDamage(float damage, Vector2 knockBack, float stunTime)
     {
-        if(isVulnerable)
+        bool tookDamage = false;
+        if(isVulnerable && !isDodging)
         {
+            tookDamage = true;
             currentHealth -= damage;
             GameData.playerMovement.Propel(knockBack, true, true);
             GameData.playerGrapplingHandler.ReleaseHook();
@@ -39,6 +43,8 @@ public class PlayerManager : MonoBehaviour
                 GameData.playerGrapplingHandler.canShoot = false;
             }
         }
+
+        return tookDamage;
     }
 
     public IEnumerator Stun(float stunTime)

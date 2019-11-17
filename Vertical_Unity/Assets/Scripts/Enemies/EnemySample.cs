@@ -17,24 +17,28 @@ public class EnemySample : EnemyHandler
     public float attackKnockBackForce;
     public float attackKnockBackUp;
     public float attackStunTime;
-    public float attackCooldown;
-    public float jumpCooldown;
     [Space]
+    public float jumpCooldown;
+    public Vector2 jumpAttackColliderSize;
+    public float chargeTime;
+    public GameObject chargingParticlePrefab;
     public float jumpAttackTriggerDistance;
+    public float gameRange;
     public Vector2 jumpAttackForce;
-    public float attackPauseTime;
 
-    private float cooldownRemaining;
+    private bool isInrange;
+    private GameObject chargeParticle;
+    private float currentChargedTime;
     private float jumpCooldownRemaining;
     private float pathDirectionAngle;
-    private int horiz;
+    private int xDirection;
     private bool isAttackJumping;
+    private bool isChargingJump;
 
     private void Start()
     {
         HandlerStart();
 
-        cooldownRemaining = 0;
         jumpCooldownRemaining = 0;
         isAttackJumping = false;
     }
@@ -42,30 +46,22 @@ public class EnemySample : EnemyHandler
     private void Update()
     {
         HandlerUpdate();
-
-        UpdateMovement();
-
-        Behavior();
-
-        if(Input.GetKeyDown(KeyCode.P))
-        {
-            if(currentPlatform.IsUnder(GameData.playerManager.gameObject))
-            {
-                Debug.Log("Player is on the same platform as " + gameObject.name);
-            }
-        }
     }
 
     private void FixedUpdate()
     {
         HandlerFixedUpdate();
+
+        UpdateMovement();
+
+        Behavior();
     }
 
     public override void UpdateMovement()
     {
-        if (!isStunned && isInControl)
+        if (!Is(Effect.Stun) && !Is(Effect.NoControl) && !isChargingJump && !isInrange)
         {
-            if(currentPlatform != null && currentPlatform == GameData.gameController.currentPlayerPlatform)
+            if(currentPlatform != null && currentPlatform == GameData.playerMovement.currentPlayerPlatform)
             {
                 targetPathfindingPosition = GameData.playerAttackManager.transform.position;
             }
@@ -80,13 +76,19 @@ public class EnemySample : EnemyHandler
 
             if(targetPathfindingPosition != null)
             {
+                int direction = 1;
+                if(isInrange)
+                {
+                    direction = -1;
+                }
+
                 if(IsOnGround())
                 {
-                    rb.velocity = new Vector2(rb.velocity.x + acceleration * Mathf.Sign(targetPathfindingPosition.x - transform.position.x) * Time.deltaTime, rb.velocity.y);
+                    rb.velocity = new Vector2(rb.velocity.x + acceleration * Mathf.Sign(targetPathfindingPosition.x - transform.position.x) * direction * Time.fixedDeltaTime, rb.velocity.y);
                 }
                 else
                 {
-                    rb.velocity = new Vector2(rb.velocity.x + airControl * Mathf.Sign(targetPathfindingPosition.x - transform.position.x) * Time.deltaTime, rb.velocity.y);
+                    rb.velocity = new Vector2(rb.velocity.x + airControl * Mathf.Sign(targetPathfindingPosition.x - transform.position.x) * direction * Time.fixedDeltaTime, rb.velocity.y);
                 }
 
                 if (Mathf.Abs(rb.velocity.x) > maxSpeed)
@@ -99,7 +101,7 @@ public class EnemySample : EnemyHandler
             {
                 if(IsOnGround())
                 {
-                    rb.velocity = new Vector2(rb.velocity.x + pathDirection.x * acceleration * Time.deltaTime, rb.velocity.y);
+                    rb.velocity = new Vector2(rb.velocity.x + pathDirection.x * acceleration * Time.fixedDeltaTime, rb.velocity.y);
 
                     pathDirectionAngle = -90;
                     if ((currentWaypoint) < path.vectorPath.Count)
@@ -114,7 +116,7 @@ public class EnemySample : EnemyHandler
                 }
                 else
                 {
-                    rb.velocity = new Vector2(rb.velocity.x + pathDirection.x * airControl * Time.deltaTime, rb.velocity.y);
+                    rb.velocity = new Vector2(rb.velocity.x + pathDirection.x * airControl * Time.fixedDeltaTime, rb.velocity.y);
                 }
 
                 if (Mathf.Abs(rb.velocity.x) > maxSpeed)
@@ -125,11 +127,11 @@ public class EnemySample : EnemyHandler
         }
         else
         {
-            if(Mathf.Abs(rb.velocity.x) > 0.2f && IsOnGround())
+            if(Mathf.Abs(rb.velocity.x) > acceleration * Time.fixedDeltaTime && IsOnGround())
             {
-                rb.velocity = new Vector2(rb.velocity.x - Mathf.Sign(rb.velocity.x) * acceleration * Time.deltaTime, rb.velocity.y);
+                rb.velocity = new Vector2(rb.velocity.x - Mathf.Sign(rb.velocity.x) * acceleration * Time.fixedDeltaTime, rb.velocity.y);
             }
-            else if(Mathf.Abs(rb.velocity.x) <= 0.2f && IsOnGround())
+            else if(Mathf.Abs(rb.velocity.x) <= acceleration * Time.fixedDeltaTime && IsOnGround())
             {
                 rb.velocity = new Vector2(0.0f, rb.velocity.y);
             }
@@ -137,45 +139,69 @@ public class EnemySample : EnemyHandler
 
         if(isAffectedByGravity)
         {
-            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y - gravityForce * Time.deltaTime);
+            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y - gravityForce * Time.fixedDeltaTime);
         }
     }
 
     public void Behavior()
     {
-        if(cooldownRemaining > 0)
-        {
-            cooldownRemaining -= Time.deltaTime;
-        }
-
         if (jumpCooldownRemaining > 0)
         {
-            jumpCooldownRemaining -= Time.deltaTime;
+            jumpCooldownRemaining -= Time.fixedDeltaTime;
         }
 
         if(isAttackJumping)
         {
-            if(!isStunned)
+            if(!Is(Effect.Stun) && IsTouchingPlayer())
             {
-                if (IsTouchingPlayer())
-                {
-                    Attack();
-                }
+                Attack();
             }
 
             if(IsOnGround() && jumpCooldownRemaining > 0.2f)
             {
                 isAttackJumping = false;
+                isInvulnerable = false;
             }
         }
 
-        horiz = (int)Mathf.Sign(GameData.playerMovement.transform.position.x - transform.position.x);
-        if(jumpCooldownRemaining <= 0 && (pathDirectionAngle < 45 || pathDirectionAngle > 135) && Physics2D.OverlapBox(new Vector2(transform.position.x + horiz * jumpAttackTriggerDistance / 2, transform.position.y),new Vector2(jumpAttackTriggerDistance, 1.0f),0.0f,LayerMask.GetMask("Player")) && IsOnGround() && !isStunned)
+        xDirection = (int)Mathf.Sign(GameData.playerMovement.transform.position.x - transform.position.x);
+        if ((pathDirectionAngle < 45 || pathDirectionAngle > 135) && Physics2D.OverlapBox(new Vector2(transform.position.x + xDirection * jumpAttackTriggerDistance / 2, transform.position.y), new Vector2(jumpAttackTriggerDistance, 1.0f), 0.0f, LayerMask.GetMask("Player")))
         {
-            Propel(new Vector2(horiz * jumpAttackForce.x, jumpAttackForce.y), true, true);
-            NoControl(0.5f, false);
-            isAttackJumping = true;
-            jumpCooldownRemaining = jumpCooldown;
+            isInrange = true;
+        }
+        else if(isInrange)
+        {
+            isInrange = false;
+        }
+        
+        if(jumpCooldownRemaining <= 0 && isInrange && IsOnGround() && !Is(Effect.Stun))
+        {
+            if(!isChargingJump && !Is(Effect.NoControl))
+            {
+                currentChargedTime = 0;
+                isChargingJump = true;
+                chargeParticle = Instantiate(chargingParticlePrefab, transform);
+            }
+            else if(isChargingJump)
+            {
+                currentChargedTime += Time.fixedDeltaTime;
+
+                if (currentChargedTime > chargeTime)
+                {
+                    isChargingJump = false;
+                    Destroy(chargeParticle);
+                    Propel(new Vector2(xDirection * jumpAttackForce.x, jumpAttackForce.y), true, true);
+                    SetEffect(Effect.NoControl, 0.5f, false);
+                    isAttackJumping = true;
+                    isInvulnerable = true;
+                    jumpCooldownRemaining = jumpCooldown;
+                }
+            }
+        }
+        else if(currentChargedTime > 0)
+        {
+            isChargingJump = false;
+            Destroy(chargeParticle);
         }
     }
 
@@ -196,8 +222,20 @@ public class EnemySample : EnemyHandler
     {
         Vector2 knockBack = (GameData.playerMovement.transform.position - transform.position).normalized * attackKnockBackForce;
         knockBack.y += attackKnockBackUp;
-        GameData.playerManager.TakeDamage(damage, knockBack, attackStunTime);
-        cooldownRemaining = attackCooldown;
-        rb.velocity = -knockBack * 0.5f;
+        if(GameData.playerManager.TakeDamage(damage, knockBack, attackStunTime))
+        {
+            Propel(-knockBack * 0.5f, true, true);
+        }
+    }
+
+    public bool IsTouchingPlayer()
+    {
+        bool isTouchingPlayer = false;
+        Collider2D collider = Physics2D.OverlapBox(transform.position, jumpAttackColliderSize, 0.0f, LayerMask.GetMask("Player"));
+        if (collider != null)
+        {
+            isTouchingPlayer = true;
+        }
+        return isTouchingPlayer;
     }
 }

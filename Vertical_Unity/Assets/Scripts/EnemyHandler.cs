@@ -11,6 +11,7 @@ public abstract class EnemyHandler : MonoBehaviour
     public Color hurtColor;
     public float invulnerableTime;
     [Header("Enemy pathfinding settings")]
+    public bool useAStar;
     public float nextWaypointDistance;
     [Space]
     public float pathUpdatingFrequency;
@@ -21,8 +22,7 @@ public abstract class EnemyHandler : MonoBehaviour
     public Transform feetPos;
     public float groundCheckWidth;
     public float groundCheckThickness;
-    public LayerMask walkableMask;
-    public Vector2 colliderSize;
+    public LayerMask groundMask;
     [Space]
     public bool pauseAI;
     public GameObject debugParticlePrefab;
@@ -30,17 +30,8 @@ public abstract class EnemyHandler : MonoBehaviour
     [HideInInspector] public int currentHealth;
     [HideInInspector] public bool isInvulnerable;
 
-    [HideInInspector] public bool isStunned;
-    [HideInInspector] public float stunTimeRemaining;
-    [HideInInspector] public bool isHacked;
-    [HideInInspector] public float hackTimeRemaining;
-    [HideInInspector] public bool isNoGravity;
-    [HideInInspector] public float noGravityTimeRemaining;
-    [HideInInspector] public bool isSlowed;
-    [HideInInspector] public float slowTimeRemaining;
-    [HideInInspector] public bool isInControl;
-    [HideInInspector] public float noControlTimeRemaining;
-
+    [HideInInspector] public float[] currentEffects;
+    [HideInInspector] public GameObject[] currentEffectFx;
     [HideInInspector] public bool isAffectedByGravity;
     [HideInInspector] public Rigidbody2D rb;
 
@@ -68,12 +59,16 @@ public abstract class EnemyHandler : MonoBehaviour
 
         baseColor = GetComponentInChildren<SpriteRenderer>().color;
         pathEndReached = false;
-        isStunned = false;
-        isInControl = true;
         isInvulnerable = false;
         isAffectedByGravity = true;
         currentHealth = maxHealth;
         pJumpCDRemaining = 0;
+        currentEffects = new float[GameData.gameController.enemyEffects.Count];
+        currentEffectFx = new GameObject[GameData.gameController.enemyEffects.Count];
+        for (int i = 0; i < currentEffects.Length; i++)
+        {
+            currentEffects[i] = 0;
+        }
 
         timeBeforeNextGroundPathUpdate = 0;
     }
@@ -135,7 +130,7 @@ public abstract class EnemyHandler : MonoBehaviour
         testedPlatform.Clear();
         testedPlatform.Add(currentPlatform);
 
-        GameData.gameController.currentPlayerPlatform = null;
+        GameData.playerMovement.currentPlayerPlatform = null;
 
         if (FindNextConnection(currentPlatform, target, feetPos.position) > 0)
         {
@@ -161,12 +156,12 @@ public abstract class EnemyHandler : MonoBehaviour
     {
         //Debug.Log("Testing player presence on " + platform.gameObject.name);
 
-        if (GameData.gameController.currentPlayerPlatform == null && platform.IsUnder(target))
+        if (GameData.playerMovement.currentPlayerPlatform == null && platform.IsUnder(target))
         {
-            GameData.gameController.currentPlayerPlatform = platform;
+            GameData.playerMovement.currentPlayerPlatform = platform;
         }
 
-        if(platform == GameData.gameController.currentPlayerPlatform)
+        if(platform == GameData.playerMovement.currentPlayerPlatform)
         {
             //Debug.Log("Player found on " + platform.gameObject.name + " !");
 
@@ -257,6 +252,11 @@ public abstract class EnemyHandler : MonoBehaviour
 
     private void UpdatePath()
     {
+        if(useAStar)
+        {
+            CalculatePath();
+        }
+
         if (timeBeforeNextGroundPathUpdate <= 0 && IsOnGround())
         {
             timeBeforeNextGroundPathUpdate = pathUpdatingFrequency;
@@ -298,13 +298,13 @@ public abstract class EnemyHandler : MonoBehaviour
     public IEnumerator JumpToConnection(PlatformConnection endConnection)
     {
         Vector2 jumpDifference = endConnection.transform.position - feetPos.position;
-        isInControl = false;
+        SetEffect(Effect.NoControl, connectionJumpTime, false);
         isInvulnerable = true;
         isAffectedByGravity = false;
         float timer = connectionJumpTime;
         pJumpCDRemaining = pathFindingJumpCooldown;
 
-        while(timer > 0 && !isStunned)
+        while(timer > 0 && !Is(Effect.Stun))
         {
             rb.velocity = jumpDifference / connectionJumpTime * Time.deltaTime * 50;
 
@@ -313,17 +313,16 @@ public abstract class EnemyHandler : MonoBehaviour
             timer -= Time.deltaTime;
         }
 
-        if(!isStunned)
+        if(!Is(Effect.Stun))
         {
             transform.position = endConnection.transform.position - feetPos.localPosition;
             Propel(Vector2.zero, true, true);
         }
 
         isAffectedByGravity = true;
-        isInControl = true;
         isInvulnerable = false;
 
-        NoControl(0.2f, false);
+        SetEffect(Effect.NoControl ,0.2f, false);
     }
 
 
@@ -334,19 +333,19 @@ public abstract class EnemyHandler : MonoBehaviour
 
     public abstract void UpdateMovement();
 
-    public void TakeDamage(int damage, Vector2 knockBack, float stunTime)
+    public void TakeDamage(int damage, Vector2 knockBack)
     {
         if (!isInvulnerable)
         {
             currentHealth -= damage;
-            Stun(stunTime, false);
+            SetEffect(Effect.NoControl, invulnerableTime, false);
             StartCoroutine(Hurt());
             if (currentHealth <= 0)
             {
                 StartCoroutine(DeathAnimation());
             }
         }
-        rb.velocity = knockBack;
+        Propel(knockBack, true, true);
     }
 
     public abstract bool TestCounter();
@@ -372,18 +371,6 @@ public abstract class EnemyHandler : MonoBehaviour
 
     #region Status test
 
-
-    public bool IsTouchingPlayer()
-    {
-        bool isTouchingPlayer = false;
-        Collider2D collider = Physics2D.OverlapBox(transform.position, colliderSize, 0.0f, LayerMask.GetMask("Player"));
-        if (collider != null)
-        {
-            isTouchingPlayer = true;
-        }
-        return isTouchingPlayer;
-    }
-
     private void OnTriggerEnter2D(Collider2D collider)
     {
         if (collider.CompareTag("Hook") && !GameData.playerGrapplingHandler.isTracting && !isInvulnerable && currentHealth > 0)
@@ -395,7 +382,7 @@ public abstract class EnemyHandler : MonoBehaviour
     public bool IsOnGround()
     {
         bool isGrounded = false;
-        if (Physics2D.OverlapBox(feetPos.position, new Vector2(groundCheckWidth, groundCheckThickness), 0.0f, walkableMask) != null)
+        if (Physics2D.OverlapBox(feetPos.position, new Vector2(groundCheckWidth, groundCheckThickness), 0.0f, groundMask) != null)
         {
             isGrounded = true;
         }
@@ -437,177 +424,66 @@ public abstract class EnemyHandler : MonoBehaviour
 
     private void EffectUpdate()
     {
-        if(stunTimeRemaining > 0)
+        for(int i = 0; i < currentEffects.Length; i++)
         {
-            stunTimeRemaining -= Time.deltaTime;
+            if(currentEffects[i] > 0)
+            {
+                currentEffects[i] -= Time.deltaTime;
+            }
+            else if(currentEffectFx[i] != null)
+            {
+                Destroy(currentEffectFx[i]);
+            }
+        }
+    }
+
+    public float SetEffect(Effect effect, float duration, bool isAdded)
+    {
+        if(effect.index < 0)
+        {
+            Debug.Log("No corresponding effect found : No effect changed");
         }
         else
         {
-            isStunned = false;
+            if (isAdded)
+            {
+                currentEffects[effect.index] += duration;
+            }
+            else if (currentEffects[effect.index] < duration)
+            {
+                if (duration != 0)
+                {
+                    currentEffects[effect.index] = duration;
+                }
+                else
+                {
+                    currentEffects[effect.index] = 0;
+                }
+            }
         }
 
-        if (hackTimeRemaining > 0)
+        if(currentEffectFx[effect.index] == null && currentEffects[effect.index] > 0 && effect.effectFX != null)
         {
-            hackTimeRemaining -= Time.deltaTime;
-        }
-        else
-        {
-            isHacked = false;
+            currentEffectFx[effect.index] = Instantiate(effect.effectFX, transform);
         }
 
-        if (noGravityTimeRemaining > 0)
-        {
-            noGravityTimeRemaining -= Time.deltaTime;
-        }
-        else
-        {
-            isNoGravity = false;
-        }
-
-        if (slowTimeRemaining > 0)
-        {
-            slowTimeRemaining -= Time.deltaTime;
-        }
-        else
-        {
-            isSlowed = false;
-        }
-
-        if (noControlTimeRemaining > 0)
-        {
-            noControlTimeRemaining -= Time.deltaTime;
-        }
-        else
-        {
-            isInControl = true;
-        }
-
-        if(pauseAI)
-        {
-            isStunned = pauseAI;
-        }
+        return currentEffects[effect.index];
     }
 
-    public void Stun(float duration, bool isAdded)
+    /// <summary>
+    /// Return true if the enemy is affected by the specified effect
+    /// </summary>
+    /// <param name="effect"> The effect to test. Use preset effects from the Effect class like : Effect.Stun </param>
+    /// <returns></returns>
+    public bool Is(Effect effect)
     {
-        if (isAdded)
+        bool isAffected = false;
+        if(currentEffects[effect.index] > 0)
         {
-            stunTimeRemaining += duration;
+            isAffected = true;
         }
-        else if (stunTimeRemaining < duration)
-        {
-            if(duration != 0)
-            {
-                stunTimeRemaining = duration;
-            }
-            else
-            {
-                stunTimeRemaining = 0;
-            }
-        }
-
-        if(stunTimeRemaining > 0)
-        {
-            isStunned = true;
-        }
+        return isAffected;
     }
-
-    public void NoControl(float duration, bool isAdded)
-    {
-        if (isAdded)
-        {
-            noControlTimeRemaining += duration;
-        }
-        else if (noControlTimeRemaining < duration)
-        {
-            if (duration != 0)
-            {
-                noControlTimeRemaining = duration;
-            }
-            else
-            {
-                noControlTimeRemaining = 0;
-            }
-        }
-
-        if (noControlTimeRemaining > 0)
-        {
-            isInControl = false;
-        }
-    }
-
-    public void Hack(float duration, bool isAdded)
-    {
-        if (isAdded)
-        {
-            hackTimeRemaining += duration;
-        }
-        else if (hackTimeRemaining < duration)
-        {
-            if (duration != 0)
-            {
-                hackTimeRemaining = duration;
-            }
-            else
-            {
-                hackTimeRemaining = 0;
-            }
-        }
-
-        if (hackTimeRemaining > 0)
-        {
-            isHacked = true;
-        }
-    }
-
-    public void Slow(float duration, bool isAdded)
-    {
-        if (isAdded)
-        {
-            slowTimeRemaining += duration;
-        }
-        else if (slowTimeRemaining < duration)
-        {
-            if (duration != 0)
-            {
-                slowTimeRemaining = duration;
-            }
-            else
-            {
-                slowTimeRemaining = 0;
-            }
-        }
-
-        if (slowTimeRemaining > 0)
-        {
-            isSlowed = true;
-        }
-    }
-
-    public void NoGravity(float duration, bool isAdded)
-    {
-        if (isAdded)
-        {
-            noGravityTimeRemaining += duration;
-        }
-        else if (noGravityTimeRemaining < duration)
-        {
-            if (duration != 0)
-            {
-                noGravityTimeRemaining = duration;
-            }
-            else
-            {
-                noGravityTimeRemaining = 0;
-            }
-        }
-
-        if (noGravityTimeRemaining > 0)
-        {
-            isNoGravity = true;
-        }
-    }
-
 
     #endregion
 }
