@@ -50,7 +50,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
     private float firstAngle;
     private Vector2 shootDirection;
     private bool shootFlag;
-    private bool isHooked;
+    [HideInInspector] public bool isHooked;
     private float tractionDragForce;
     private DistanceJoint2D distanceJoint;
     private bool isGhostHook;
@@ -175,10 +175,6 @@ public class PlayerGrapplingHandler : MonoBehaviour
                 {
                     shootFlag = false;
                     ReleaseHook();
-                    if(useGhostHook)
-                    {
-                        isGhostHook = true;
-                    }
 
                     if (useAutoAim && instantaneousAttach)
                     {
@@ -195,6 +191,10 @@ public class PlayerGrapplingHandler : MonoBehaviour
                     }
                     else
                     {
+                        if (useGhostHook)
+                        {
+                            isGhostHook = true;
+                        }
                         currentHook = Instantiate(hookPrefab, shootPoint.position, Quaternion.identity);
                         hookRb = currentHook.GetComponent<Rigidbody2D>();
                         hookRb.velocity = shootDirection * shootForce;

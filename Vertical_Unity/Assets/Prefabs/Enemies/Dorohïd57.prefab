@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5285105932516836633}
   - component: {fileID: 5285105932516836632}
   - component: {fileID: 5285105932516836636}
+  - component: {fileID: 6180338084791977403}
   - component: {fileID: 5285105932516836637}
   - component: {fileID: 5285105932516836635}
   - component: {fileID: 5285105932516836634}
@@ -79,26 +80,50 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   name: Mechant robot
-  maxHealth: 10
-  hurtColor: {r: 0.9245283, g: 0.37068352, b: 0.37068352, a: 1}
+  maxHealth: 30
+  hurtColor: {r: 0.3584906, g: 0.06933072, b: 0.106964834, a: 1}
   invulnerableTime: 0.2
+  gravityForce: 30
+  noGravityLinearDrag: 0.8
+  noGravityAngularDrag: 1
+  noGravityRiseUpForce: 1
+  noGravityRiseUpAngularRange: 180
+  noGravityBouncyMaterial: {fileID: 6200000, guid: e00235c0d57775e488d206f15b485065,
+    type: 2}
+  basicMaterial: {fileID: 6200000, guid: 11e62417d5f030e4aa0c6b8f6f06e4d1, type: 2}
+  viewRange: 5
+  viewAngle: 0
+  viewAngleWidth: 60
+  raycastNumber: 10
+  agroRange: 15
   useAStar: 0
   nextWaypointDistance: 1
   pathUpdatingFrequency: 0.1
   connectionJumpTime: 0.5
   pathfindingJumpWeight: 0.5
   pathFindingJumpCooldown: 0.5
+  avoidEffectRadius: 0.5
+  avoidForce: 5
+  minimalAvoidForce: 1
+  avoidDistanceInfluence: 0.2
   feetPos: {fileID: 5285105933167829694}
   groundCheckWidth: 0.9
   groundCheckThickness: 0.01
   groundMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 256
+  collisionCollider: {fileID: 5285105932516836635}
   pauseAI: 0
   debugParticlePrefab: {fileID: 743808000188852099, guid: 1cf7fde50c7c4334dbeb307cefb2d3dd,
     type: 3}
+  showFieldOfView: 1
   currentHealth: 0
   isInvulnerable: 0
+  playerInSight: 0
+  provoked: 0
+  facingRight: 0
+  isOnGround: 0
+  slowEffectScale: 0
   currentEffects: []
   currentEffectFx: []
   isAffectedByGravity: 0
@@ -113,24 +138,35 @@ MonoBehaviour:
   targetConnectedConnection: {fileID: 0}
   timeBeforeNextGroundPathUpdate: 0
   pJumpCDRemaining: 0
-  previsuDirection: {fileID: 5285105934242502177}
   jumpForce: 15
-  maxSpeed: 5
-  acceleration: 30
+  maxSpeed: 3
+  patrolingMaxSpeed: 2
+  acceleration: 100
   airControl: 5
   jumpTriggerAngle: 30
-  gravityForce: 30
   damage: 10
   attackKnockBackForce: 12
   attackKnockBackUp: 10
   attackStunTime: 0.3
-  jumpCooldown: 5
+  jumpCooldown: 3
   jumpAttackColliderSize: {x: 1.2, y: 1.2}
-  chargeTime: 2
+  chargeTime: 1
   chargingParticlePrefab: {fileID: 3752266933516004751, guid: 35c7fe67166be4747b76438b512ba823,
     type: 3}
-  jumpAttackTriggerDistance: 3
+  jumpAttackTriggerDistance: 5
   jumpAttackForce: {x: 15, y: 5}
+--- !u!114 &6180338084791977403
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5285105932516836639}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eaa2eb7cce6ab8540abe2cd47e505e46, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!50 &5285105932516836637
 Rigidbody2D:
   serializedVersion: 4
@@ -165,7 +201,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.038723946, y: -0.031128168}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -176,7 +212,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.7980404, y: 1.3256564}
   m_EdgeRadius: 0
 --- !u!61 &5285105932516836634
 BoxCollider2D:
@@ -191,7 +227,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.044271946, y: -0.03622222}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -202,7 +238,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.3, y: 1.3}
+  m_Size: {x: 1.1758528, y: 1.4495332}
   m_EdgeRadius: 0
 --- !u!1 &5285105933031819331
 GameObject:
@@ -230,7 +266,7 @@ Transform:
   m_GameObject: {fileID: 5285105933031819331}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: -1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 5285105932516836633}
   m_RootOrder: 0
@@ -273,8 +309,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: f3146136827a3b34bb7220c35f1b91da, type: 3}
-  m_Color: {r: 0.6224696, g: 0.8962264, b: 0.30015132, a: 1}
+  m_Sprite: {fileID: 21300000, guid: 327ecd91896465a4c907c23a80c95cf3, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -308,7 +344,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5285105933167829681}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.5, z: 0}
+  m_LocalPosition: {x: -0.018, y: -0.687, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 5285105932516836633}

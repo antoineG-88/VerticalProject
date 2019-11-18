@@ -2,16 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Pathfinding;
-public class EnemySample : EnemyHandler
+public class Traqueur : EnemyHandler
 {
-    public GameObject previsuDirection;
-    [Header("EnnemySample settings")]
+    [Header("Traqueur settings")]
     public float jumpForce;
     public float maxSpeed;
+    public float patrolingMaxSpeed;
     public float acceleration;
     public float airControl;
     public float jumpTriggerAngle;
-    public float gravityForce;
     [Space]
     public float damage;
     public float attackKnockBackForce;
@@ -23,7 +22,7 @@ public class EnemySample : EnemyHandler
     public float chargeTime;
     public GameObject chargingParticlePrefab;
     public float jumpAttackTriggerDistance;
-    public float gameRange;
+    //public float gameRange;
     public Vector2 jumpAttackForce;
 
     private bool isInrange;
@@ -35,17 +34,28 @@ public class EnemySample : EnemyHandler
     private bool isAttackJumping;
     private bool isChargingJump;
 
+    private float patrolDirection;
+    private bool fleeTargetPos;
+    private float fleeDirection;
+    private float currentMaxSpeed;
+
     private void Start()
     {
         HandlerStart();
 
         jumpCooldownRemaining = 0;
         isAttackJumping = false;
+        patrolDirection = 0;
+        pathDirectionAngle = 0;
     }
 
     private void Update()
     {
         HandlerUpdate();
+
+        UpdateFleeDirection();
+
+        ProvocationUpdate();
     }
 
     private void FixedUpdate()
@@ -59,47 +69,84 @@ public class EnemySample : EnemyHandler
 
     public override void UpdateMovement()
     {
-        if (!Is(Effect.Stun) && !Is(Effect.NoControl) && !isChargingJump && !isInrange)
+        if (!Is(Effect.Stun) && !Is(Effect.NoControl) && !Is(Effect.NoGravity) && !isChargingJump)
         {
-            if(currentPlatform != null && currentPlatform == GameData.playerMovement.currentPlayerPlatform)
+            if(provoked)
             {
-                targetPathfindingPosition = GameData.playerAttackManager.transform.position;
-            }
-            else if (targetConnection != null)
-            {
-                targetPathfindingPosition = targetConnection.transform.position;
-                if(Vector2.Distance(feetPos.position, targetConnection.transform.position) < 0.5f && pJumpCDRemaining <= 0)
-                {
-                    StartCoroutine(JumpToConnection(targetConnectedConnection));
-                }
-            }
-
-            if(targetPathfindingPosition != null)
-            {
-                int direction = 1;
+                currentMaxSpeed = maxSpeed;
                 if(isInrange)
                 {
-                    direction = -1;
-                }
-
-                if(IsOnGround())
-                {
-                    rb.velocity = new Vector2(rb.velocity.x + acceleration * Mathf.Sign(targetPathfindingPosition.x - transform.position.x) * direction * Time.fixedDeltaTime, rb.velocity.y);
+                    fleeTargetPos = true;
                 }
                 else
                 {
-                    rb.velocity = new Vector2(rb.velocity.x + airControl * Mathf.Sign(targetPathfindingPosition.x - transform.position.x) * direction * Time.fixedDeltaTime, rb.velocity.y);
+                    fleeTargetPos = false;
                 }
 
-                if (Mathf.Abs(rb.velocity.x) > maxSpeed)
+                patrolDirection = 0;
+                if (currentPlatform != null && currentPlatform == GameData.playerMovement.currentPlayerPlatform)
                 {
-                    rb.velocity = new Vector2(Mathf.Sign(rb.velocity.x) * maxSpeed, rb.velocity.y);
+                    targetPathfindingPosition = GameData.playerAttackManager.transform.position;
+                }
+                else if (targetConnection != null)
+                {
+                    targetPathfindingPosition = targetConnection.transform.position;
+                    if (Vector2.Distance(feetPos.position, targetConnection.transform.position) < 0.5f && pJumpCDRemaining <= 0)
+                    {
+                        StartCoroutine(JumpToConnection(targetConnectedConnection));
+                    }
                 }
             }
-
-            if (path != null && !pathEndReached)
+            else
             {
-                if(IsOnGround())
+                currentMaxSpeed = patrolingMaxSpeed;
+                fleeTargetPos = false;
+                if(patrolDirection == 0)
+                {
+                    patrolDirection = Mathf.Sign(Random.Range(-1.0f, 1.0f));
+                }
+
+                if(IsNearAnEdge(1) && isOnGround)
+                {
+                    patrolDirection = -patrolDirection;
+                }
+
+                targetPathfindingPosition = new Vector2(transform.position.x + patrolDirection, transform.position.y);
+            }
+
+            if (targetPathfindingPosition != null)
+            {
+                float addedVelocity = Mathf.Sign(targetPathfindingPosition.x - transform.position.x) * fleeDirection * Time.fixedDeltaTime;
+
+                if (isOnGround)
+                {
+                    addedVelocity *= acceleration;
+                }
+                else
+                {
+                    addedVelocity *= airControl;
+                }
+
+                if (addedVelocity > 0)
+                {
+                    facingRight = true;
+                }
+                else
+                {
+                    facingRight = false;
+                }
+
+                rb.velocity = new Vector2(rb.velocity.x + addedVelocity, rb.velocity.y);
+
+                if (Mathf.Abs(rb.velocity.x) > currentMaxSpeed * slowEffectScale)
+                {
+                    rb.velocity = new Vector2(Mathf.Sign(rb.velocity.x) * currentMaxSpeed * slowEffectScale, rb.velocity.y);
+                }
+            }
+            #region A* Pathfinding example
+            /*if (path != null && !pathEndReached)
+            {
+                if (isOnGround)
                 {
                     rb.velocity = new Vector2(rb.velocity.x + pathDirection.x * acceleration * Time.fixedDeltaTime, rb.velocity.y);
 
@@ -108,7 +155,7 @@ public class EnemySample : EnemyHandler
                     {
                         pathDirectionAngle = Vector2.SignedAngle(Vector2.right, path.vectorPath[currentWaypoint] - transform.position);
                     }
-                    previsuDirection.transform.localRotation = Quaternion.Euler(0, 0, pathDirectionAngle - 90);
+
                     if (pathDirectionAngle > 90 - jumpTriggerAngle / 2 && pathDirectionAngle < 90 + jumpTriggerAngle / 2)
                     {
                         Propel(Vector2.up * jumpForce, false, true);
@@ -123,27 +170,23 @@ public class EnemySample : EnemyHandler
                 {
                     rb.velocity = new Vector2(Mathf.Sign(rb.velocity.x) * maxSpeed, rb.velocity.y);
                 }
-            }
+            }*/
+            #endregion
         }
         else
         {
-            if(Mathf.Abs(rb.velocity.x) > acceleration * Time.fixedDeltaTime && IsOnGround())
+            if (Mathf.Abs(rb.velocity.x) > acceleration * Time.fixedDeltaTime && isOnGround)
             {
                 rb.velocity = new Vector2(rb.velocity.x - Mathf.Sign(rb.velocity.x) * acceleration * Time.fixedDeltaTime, rb.velocity.y);
             }
-            else if(Mathf.Abs(rb.velocity.x) <= acceleration * Time.fixedDeltaTime && IsOnGround())
+            else if (Mathf.Abs(rb.velocity.x) <= acceleration * Time.fixedDeltaTime && isOnGround)
             {
                 rb.velocity = new Vector2(0.0f, rb.velocity.y);
             }
         }
-
-        if(isAffectedByGravity)
-        {
-            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y - gravityForce * Time.fixedDeltaTime);
-        }
     }
 
-    public void Behavior()
+    private void Behavior()
     {
         if (jumpCooldownRemaining > 0)
         {
@@ -157,7 +200,7 @@ public class EnemySample : EnemyHandler
                 Attack();
             }
 
-            if(IsOnGround() && jumpCooldownRemaining > 0.2f)
+            if(isOnGround && jumpCooldownRemaining > 0.2f)
             {
                 isAttackJumping = false;
                 isInvulnerable = false;
@@ -174,7 +217,7 @@ public class EnemySample : EnemyHandler
             isInrange = false;
         }
         
-        if(jumpCooldownRemaining <= 0 && isInrange && IsOnGround() && !Is(Effect.Stun))
+        if(jumpCooldownRemaining <= 0 && provoked && isInrange && isOnGround && !Is(Effect.Stun) && !Is(Effect.Hack) && !Is(Effect.NoGravity))
         {
             if(!isChargingJump && !Is(Effect.NoControl))
             {
@@ -184,7 +227,7 @@ public class EnemySample : EnemyHandler
             }
             else if(isChargingJump)
             {
-                currentChargedTime += Time.fixedDeltaTime;
+                currentChargedTime += Time.fixedDeltaTime * slowEffectScale;
 
                 if (currentChargedTime > chargeTime)
                 {
@@ -228,7 +271,7 @@ public class EnemySample : EnemyHandler
         }
     }
 
-    public bool IsTouchingPlayer()
+    private bool IsTouchingPlayer()
     {
         bool isTouchingPlayer = false;
         Collider2D collider = Physics2D.OverlapBox(transform.position, jumpAttackColliderSize, 0.0f, LayerMask.GetMask("Player"));
@@ -237,5 +280,32 @@ public class EnemySample : EnemyHandler
             isTouchingPlayer = true;
         }
         return isTouchingPlayer;
+    }
+
+    private void UpdateFleeDirection()
+    {
+        if(fleeTargetPos && fleeDirection != -1)
+        {
+            fleeDirection = -1;
+        }
+        else if(!fleeTargetPos && fleeDirection != 1)
+        {
+            fleeDirection = 1;
+        }
+    }
+
+    private void ProvocationUpdate()
+    {
+        if (!provoked)
+        {
+            if (PlayerInSight() && !Is(Effect.NoControl) && !Is(Effect.Stun))
+            {
+                provoked = true;
+            }
+        }
+        else if(Vector2.Distance(transform.position, GameData.playerMovement.transform.position) > agroRange)
+        {
+            provoked = false;
+        }
     }
 }

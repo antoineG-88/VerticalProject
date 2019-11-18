@@ -10,6 +10,20 @@ public abstract class EnemyHandler : MonoBehaviour
     public int maxHealth;
     public Color hurtColor;
     public float invulnerableTime;
+    public float gravityForce;
+    [Header("NoGravity Effect settings")]
+    public float noGravityLinearDrag;
+    public float noGravityAngularDrag;
+    public float noGravityRiseUpForce;
+    public float noGravityRiseUpAngularRange;
+    public PhysicsMaterial2D noGravityBouncyMaterial;
+    public PhysicsMaterial2D basicMaterial;
+    [Header("Provocation settings")]
+    public float viewRange;
+    public float viewAngle;
+    public float viewAngleWidth;
+    public float raycastNumber;
+    public float agroRange;
     [Header("Enemy pathfinding settings")]
     public bool useAStar;
     public float nextWaypointDistance;
@@ -18,22 +32,39 @@ public abstract class EnemyHandler : MonoBehaviour
     public float connectionJumpTime;
     public float pathfindingJumpWeight;
     public float pathFindingJumpCooldown;
+    [Space]
+    public float avoidEffectRadius;
+    public float avoidForce;
+    public float minimalAvoidForce;
+    public float maximalAvoidForce;
+    public float avoidDistanceInfluence;
     [Header("Enemy technical settings")]
     public Transform feetPos;
     public float groundCheckWidth;
     public float groundCheckThickness;
     public LayerMask groundMask;
+    public Collider2D collisionCollider;
     [Space]
+    [Header("Debug settings")]
     public bool pauseAI;
     public GameObject debugParticlePrefab;
+    public bool showFieldOfView;
+
 
     [HideInInspector] public int currentHealth;
     [HideInInspector] public bool isInvulnerable;
+    [HideInInspector] public bool playerInSight;
+    [HideInInspector] public bool provoked;
+    [HideInInspector] public bool facingRight;
+    [HideInInspector] public bool isOnGround;
+    [HideInInspector] public bool avoidEnemies;
 
+    [HideInInspector] public float slowEffectScale;
     [HideInInspector] public float[] currentEffects;
     [HideInInspector] public GameObject[] currentEffectFx;
     [HideInInspector] public bool isAffectedByGravity;
     [HideInInspector] public Rigidbody2D rb;
+
 
     [HideInInspector] public Seeker seeker;
     [HideInInspector] public Path path;
@@ -46,7 +77,6 @@ public abstract class EnemyHandler : MonoBehaviour
     [HideInInspector] public PlatformConnection targetConnection;
     [HideInInspector] public PlatformConnection targetConnectedConnection;
     [HideInInspector] public float timeBeforeNextGroundPathUpdate;
-
     private List<PlatformHandler> testedPlatform = new List<PlatformHandler>();
     [HideInInspector] public float pJumpCDRemaining;
 
@@ -61,6 +91,9 @@ public abstract class EnemyHandler : MonoBehaviour
         pathEndReached = false;
         isInvulnerable = false;
         isAffectedByGravity = true;
+        provoked = false;
+        playerInSight = false;
+        avoidEnemies = true;
         currentHealth = maxHealth;
         pJumpCDRemaining = 0;
         currentEffects = new float[GameData.gameController.enemyEffects.Count];
@@ -78,14 +111,29 @@ public abstract class EnemyHandler : MonoBehaviour
         UpdatePath();
 
         EffectUpdate();
+
+        if(Input.GetKeyDown(KeyCode.A))
+        {
+            SetEffect(Effect.NoGravity, 1, true);
+        }
+
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            slowEffectScale = 0.5f;
+            SetEffect(Effect.Slow, 1, true);
+        }
     }
 
     public void HandlerFixedUpdate()
     {
+        UpdateGravity();
 
+        AvoidOtherEnemies();
+
+        isOnGround = IsOnGround();
     }
 
-    #region Pathfinding
+    #region Movement
 
 
     public void CalculatePath()
@@ -299,30 +347,66 @@ public abstract class EnemyHandler : MonoBehaviour
     {
         Vector2 jumpDifference = endConnection.transform.position - feetPos.position;
         SetEffect(Effect.NoControl, connectionJumpTime, false);
-        isInvulnerable = true;
         isAffectedByGravity = false;
-        float timer = connectionJumpTime;
+        collisionCollider.isTrigger = true;
+        float timer = connectionJumpTime / slowEffectScale;
         pJumpCDRemaining = pathFindingJumpCooldown;
 
-        while(timer > 0 && !Is(Effect.Stun))
+        while(timer > 0 && !Is(Effect.Stun) && !Is(Effect.NoGravity))
         {
-            rb.velocity = jumpDifference / connectionJumpTime * Time.deltaTime * 50;
+            rb.velocity = jumpDifference / connectionJumpTime * slowEffectScale * Time.deltaTime * 50;
 
             yield return new WaitForEndOfFrame();
 
             timer -= Time.deltaTime;
         }
 
-        if(!Is(Effect.Stun))
+        if(timer <= 0)
         {
             transform.position = endConnection.transform.position - feetPos.localPosition;
             Propel(Vector2.zero, true, true);
+            SetEffect(Effect.NoControl, 0.2f, false);
+        }
+        else
+        {
+            SetEffect(Effect.NoControl, 0, false);
         }
 
+        collisionCollider.isTrigger = false;
         isAffectedByGravity = true;
-        isInvulnerable = false;
+    }
 
-        SetEffect(Effect.NoControl ,0.2f, false);
+    private void AvoidOtherEnemies()
+    {
+        if(avoidEnemies)
+        {
+            ContactFilter2D enemyFilter = new ContactFilter2D();
+            enemyFilter.SetLayerMask(LayerMask.GetMask("Enemy"));
+            List<Collider2D> closeEnemies = new List<Collider2D>();
+            Physics2D.OverlapCircle(transform.position, avoidEffectRadius, enemyFilter, closeEnemies);
+            foreach (Collider2D closeEnemy in closeEnemies)
+            {
+                if (closeEnemy.gameObject != gameObject)
+                {
+                    Vector2 directedForce = ((closeEnemy.transform.position - transform.position).normalized * avoidForce);
+                    if (avoidDistanceInfluence != 0)
+                    {
+                        directedForce /= avoidDistanceInfluence * Vector2.Distance(transform.position, closeEnemy.transform.position);
+                    }
+
+                    if (directedForce.magnitude < minimalAvoidForce)
+                    {
+                        directedForce = directedForce.normalized * minimalAvoidForce;
+                    }
+                    else if (directedForce.magnitude > maximalAvoidForce)
+                    {
+                        directedForce = directedForce.normalized * maximalAvoidForce;
+                    }
+
+                    closeEnemy.GetComponent<EnemyHandler>().Propel(directedForce * Time.fixedDeltaTime, false, false);
+                }
+            }
+        }
     }
 
 
@@ -335,6 +419,7 @@ public abstract class EnemyHandler : MonoBehaviour
 
     public void TakeDamage(int damage, Vector2 knockBack)
     {
+        provoked = true;
         if (!isInvulnerable)
         {
             currentHealth -= damage;
@@ -369,17 +454,18 @@ public abstract class EnemyHandler : MonoBehaviour
 
     #endregion
 
-    #region Status test
+    #region Test
 
     private void OnTriggerEnter2D(Collider2D collider)
     {
-        if (collider.CompareTag("Hook") && !GameData.playerGrapplingHandler.isTracting && !isInvulnerable && currentHealth > 0)
+        if (collider.CompareTag("Hook") && !GameData.playerGrapplingHandler.isTracting && !isInvulnerable && currentHealth > 0 && !GameData.playerGrapplingHandler.isHooked)
         {
+            Debug.Log("attachbyenenmy");
             GameData.playerGrapplingHandler.AttachHook(gameObject);
         }
     }
 
-    public bool IsOnGround()
+    private bool IsOnGround()
     {
         bool isGrounded = false;
         if (Physics2D.OverlapBox(feetPos.position, new Vector2(groundCheckWidth, groundCheckThickness), 0.0f, groundMask) != null)
@@ -390,36 +476,110 @@ public abstract class EnemyHandler : MonoBehaviour
         return isGrounded;
     }
 
+    public bool IsNearAnEdge(float distance)
+    {
+        int direction = -1;
+        if (facingRight)
+        {
+            direction = 1;
+        }
+        return !Physics2D.OverlapCircle(new Vector2(feetPos.position.x + direction * distance, feetPos.position.y - 0.5f), 0.2f ,groundMask);
+    }
 
+    public bool PlayerInSight()
+    {
+        bool playerAhead = false;
+        float startAngle = transform.rotation.eulerAngles.z + viewAngle - viewAngleWidth / 2;
+        float subAngle = viewAngleWidth / raycastNumber;
+        if(!facingRight)
+        {
+            startAngle += 180;
+        }
+
+        for(int i = 0; i < raycastNumber + 1; i++)
+        {
+            float angledDirection = (startAngle + i * subAngle) * Mathf.Deg2Rad;
+
+            Vector2 direction = new Vector2(Mathf.Cos(angledDirection), Mathf.Sin(angledDirection));
+            if(showFieldOfView)
+            {
+                Debug.DrawRay(transform.position, direction * viewRange, Color.white);
+            }
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, viewRange, LayerMask.GetMask("Player", "Ground"));
+            if (hit && hit.collider.CompareTag("Player"))
+            {
+                playerAhead = true;
+            }
+        }
+
+        return playerAhead;
+    }
 
     #endregion
 
     #region Effects
 
+    private void UpdateGravity()
+    {
+        if (!Is(Effect.NoGravity) && !rb.freezeRotation)
+        {
+            rb.SetRotation(0);
+            rb.freezeRotation = true;
+            isAffectedByGravity = true;
+            rb.sharedMaterial = basicMaterial;
+        }
+        else if(Is(Effect.NoGravity) && rb.freezeRotation)
+        {
+            rb.freezeRotation = false;
+            rb.sharedMaterial = noGravityBouncyMaterial;
+            Propel(Vector2.up * noGravityRiseUpForce, false, false);
+            rb.angularVelocity = Random.Range(-noGravityRiseUpAngularRange, noGravityRiseUpAngularRange);
+            rb.angularDrag = noGravityAngularDrag;
+        }
+
+        if(Is(Effect.NoGravity))
+        {
+            isAffectedByGravity = false;
+            float dragForce = noGravityLinearDrag * Mathf.Pow(rb.velocity.magnitude, 2) / 2;
+            rb.velocity -= rb.velocity * dragForce * Time.deltaTime;
+        }
+
+        if (isAffectedByGravity && gravityForce != 0)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y - gravityForce * Time.fixedDeltaTime);
+        }
+    }
 
     public void Propel(Vector2 directedForce, bool resetHorizontalVelocity, bool resetVerticalVelocity)
     {
-        Vector2 newVelocity = Vector2.zero;
-
-        if (resetVerticalVelocity)
+        if(directedForce != null)
         {
-            newVelocity.y = directedForce.y;
+            Vector2 newVelocity = Vector2.zero;
+
+            if (resetVerticalVelocity)
+            {
+                newVelocity.y = directedForce.y;
+            }
+            else
+            {
+                newVelocity.y = rb.velocity.y + directedForce.y;
+            }
+
+            if (resetHorizontalVelocity)
+            {
+                newVelocity.x = directedForce.x;
+            }
+            else
+            {
+                newVelocity.x = rb.velocity.x + directedForce.x;
+            }
+
+            rb.velocity = new Vector2(newVelocity.x, newVelocity.y);
         }
         else
         {
-            newVelocity.y = rb.velocity.y + directedForce.y;
+            Debug.Log("Propel asked velocity for " + gameObject.name + " is not valid. Nan Nan");
         }
-
-        if (resetHorizontalVelocity)
-        {
-            newVelocity.x = directedForce.x;
-        }
-        else
-        {
-            newVelocity.x = rb.velocity.x + directedForce.x;
-        }
-
-        rb.velocity = new Vector2(newVelocity.x, newVelocity.y);
     }
 
     private void EffectUpdate()
@@ -430,18 +590,38 @@ public abstract class EnemyHandler : MonoBehaviour
             {
                 currentEffects[i] -= Time.deltaTime;
             }
-            else if(currentEffectFx[i] != null)
+            else 
             {
-                Destroy(currentEffectFx[i]);
+                if (currentEffectFx[i] != null)
+                {
+                    Destroy(currentEffectFx[i]);
+                }
+
+                if(GameData.gameController.enemyEffects[i] == Effect.Slow)
+                {
+                    slowEffectScale = 1;
+                }
             }
+        }
+
+        if(pauseAI)
+        {
+            SetEffect(Effect.NoControl, 1, false);
         }
     }
 
     public float SetEffect(Effect effect, float duration, bool isAdded)
     {
-        if(effect.index < 0)
+        if(effect == Effect.Slow)
+        {
+            Debug.Log("Slow effect added with a 50% scale. Use the function SetSlowEffect() to specify the scale");
+            slowEffectScale = 0.5f;
+        }
+
+        if(effect == null)
         {
             Debug.Log("No corresponding effect found : No effect changed");
+            Debug.Log(effect.effectName);
         }
         else
         {
@@ -468,6 +648,27 @@ public abstract class EnemyHandler : MonoBehaviour
         }
 
         return currentEffects[effect.index];
+    }
+
+    public void SetSlowEffect(float duration, bool isAdded, float slowScale)
+    {
+        slowEffectScale = slowScale;
+
+        if (isAdded)
+        {
+            currentEffects[Effect.Slow.index] += duration;
+        }
+        else if (currentEffects[Effect.Slow.index] < duration)
+        {
+            if (duration != 0)
+            {
+                currentEffects[Effect.Slow.index] = duration;
+            }
+            else
+            {
+                currentEffects[Effect.Slow.index] = 0;
+            }
+        }
     }
 
     /// <summary>
