@@ -10,14 +10,17 @@ public class PlayerAttackManager : MonoBehaviour
     [Space]
     public GameObject kickPreview;
     [Space]
+    public bool reAimMode;
     public GameObject repropulsionPreview;
     public float maxRepropulsionReleaseTime;
+    public float maxReAimingTime;
     [Range(0.0001f,1.0f)] public float slowMoTimeSpeed;
 
     [HideInInspector] public bool isKicking;
     [HideInInspector] public bool kickButtonPressed;
     private float remainingTimeBeforeKick;
     private bool isRepropulsing;
+    private bool isReAiming;
 
     private void Start()
     {
@@ -60,7 +63,8 @@ public class PlayerAttackManager : MonoBehaviour
         {
             EnemyHandler enemy = attachedObject.GetComponent<EnemyHandler>();
             successfullKick = !enemy.TestCounter();
-            if(successfullKick)
+            GameData.playerGrapplingHandler.ReleaseHook();
+            if (successfullKick)
             {
                 if (!currentKick.isAOE)
                 {
@@ -82,11 +86,17 @@ public class PlayerAttackManager : MonoBehaviour
                     currentKick.ApplyPerfectTimingEffect(enemy);
                 }
 
-                StartCoroutine(Repropulsion());
+                if(reAimMode)
+                {
+                    StartCoroutine(ReAim());
+                }
+                else
+                {
+                    StartCoroutine(Repropulsion());
+                }
             }
         }
         isKicking = false;
-        GameData.playerGrapplingHandler.ReleaseHook();
 
         return successfullKick;
     }
@@ -137,6 +147,28 @@ public class PlayerAttackManager : MonoBehaviour
         {
             GameData.playerMovement.Propel(Vector2.up * currentKick.propelingForce, true, true);
         }
+    }
+
+    private IEnumerator ReAim()
+    {
+        isReAiming = true;
+        Time.timeScale = slowMoTimeSpeed;
+        Time.fixedDeltaTime = 0.02f * Time.timeScale;
+        float timeRemaining = Time.realtimeSinceStartup + maxReAimingTime;
+
+        while (isReAiming && timeRemaining > Time.realtimeSinceStartup)
+        {
+            yield return new WaitForEndOfFrame();
+
+            if (GameData.playerGrapplingHandler.currentHook != null)
+            {
+                isReAiming = false;
+            }
+        }
+
+        isReAiming = false;
+        Time.timeScale = 1.0f;
+        Time.fixedDeltaTime = 0.02f * Time.timeScale;
     }
 
     /// <summary>

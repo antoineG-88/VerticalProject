@@ -34,22 +34,22 @@ public class PlayerGrapplingHandler : MonoBehaviour
     public Transform shootPoint;
     public GameObject hookPrefab;
     public GameObject ringHighLighterO;
+    //public LineRenderer rayRenderer;
     [Header("Debug settings")]
     public Color ghostHookColor;
     public bool displayAutoAimRaycast;
     
     private Rigidbody2D rb;
-    private LineRenderer ropeRenderer;
     private Vector2 aimDirection;
-    private bool isAiming;
-    private GameObject currentHook;
+    private LineRenderer ropeRenderer;
+    [HideInInspector] public bool isAiming;
+    [HideInInspector] public GameObject currentHook;
     private Rigidbody2D hookRb;
     private float timeBeforeNextShoot;
     private GameObject nearestRing;
     private float subwidthAimAngle;
     private float firstAngle;
     private Vector2 shootDirection;
-    private bool shootFlag;
     [HideInInspector] public bool isHooked;
     private float tractionDragForce;
     private DistanceJoint2D distanceJoint;
@@ -63,12 +63,11 @@ public class PlayerGrapplingHandler : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        ropeRenderer = GetComponent<LineRenderer>();
         distanceJoint = GetComponent<DistanceJoint2D>();
+        ropeRenderer = GetComponent<LineRenderer>();
         distanceJoint.enabled = false;
         ringHighLighterO.SetActive(false);
         isAiming = false;
-        shootFlag = true;
         isHooked = false;
         isTracting = false;
         canUseTraction = true;
@@ -166,19 +165,37 @@ public class PlayerGrapplingHandler : MonoBehaviour
                 }
                 else
                 {
-                    shootDirection = aimDirection;
-                    shootDirection.y *= -1;
+                    if(instantaneousAttach)
+                    {
+                        ropeRenderer.enabled = true;
+                        Vector3[] rayPoints = new Vector3[2];
+                        rayPoints[0] = transform.position;
+                        rayPoints[1] = (aimDirection * ropeLength) - (Vector2)transform.position;
+                        ropeRenderer.SetPositions(rayPoints);
+
+                        RaycastHit2D grappleRay = Physics2D.Raycast(transform.position, aimDirection, ropeLength, LayerMask.GetMask("Ring", "Ground", "Enemy"));
+                        if(grappleRay && grappleRay.collider.CompareTag("Ring"))
+                        {
+                            nearestRing = grappleRay.collider.gameObject;
+                        }
+                    }
+                    else
+                    {
+                        shootDirection = aimDirection;
+                        shootDirection.y *= -1;
+                    }
                 }
 
 
-                if (shootFlag && Input.GetAxis("RTAxis") > 0.1f && timeBeforeNextShoot <= 0 && !isHooked)
+                if (GameData.gameController.rightTriggerDown && timeBeforeNextShoot <= 0 && !isHooked)
                 {
-                    shootFlag = false;
+                    timeBeforeNextShoot = shootCooldown;
                     ReleaseHook();
+                    Debug.Log("shooted");
 
-                    if (useAutoAim && instantaneousAttach)
+                    if (instantaneousAttach)
                     {
-                        if(nearestRing != null)
+                        if (nearestRing != null)
                         {
                             currentHook = Instantiate(hookPrefab, nearestRing.transform.position, Quaternion.identity);
                             AttachHook(nearestRing);
@@ -187,6 +204,15 @@ public class PlayerGrapplingHandler : MonoBehaviour
                         else
                         {
                             // No Target Feedback
+                        }
+
+                        if (useAutoAim)
+                        {
+
+                        }
+                        else
+                        {
+
                         }
                     }
                     else
@@ -199,11 +225,6 @@ public class PlayerGrapplingHandler : MonoBehaviour
                         hookRb = currentHook.GetComponent<Rigidbody2D>();
                         hookRb.velocity = shootDirection * shootForce;
                     }
-                }
-                else if (!shootFlag && Input.GetAxisRaw("RTAxis") == 0)
-                {
-                    shootFlag = true;
-                    timeBeforeNextShoot = shootCooldown;
                 }
             }
             else

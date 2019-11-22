@@ -8,10 +8,12 @@ public class GameController : MonoBehaviour
     [HideInInspector] public float rightJoystickHorizontal;
     [HideInInspector] public float rightJoystickVertical;
     [HideInInspector] public float rightTriggerAxis;
+    [HideInInspector] public bool rightTriggerDown;
     [HideInInspector] public bool rightBumper;
 
     public List<Effect> enemyEffects;
 
+    private bool rtaFlag;
     private void Awake()
     {
         GameObject player = GameObject.FindWithTag("Player");
@@ -34,5 +36,20 @@ public class GameController : MonoBehaviour
         rightJoystickVertical = -Input.GetAxis("RJoystickV");
         rightTriggerAxis = Input.GetAxis("RTAxis");
         rightBumper = Input.GetButton("RBButton");
+
+        if (rtaFlag && !rightTriggerDown && rightTriggerAxis > 0.1f)
+        {
+            rightTriggerDown = true;
+        }
+        else if(rightTriggerDown)
+        {
+            rightTriggerDown = false;
+            rtaFlag = false;
+        }
+
+        if(rightTriggerAxis <= 0.1f)
+        {
+            rtaFlag = true;
+        }
     }
 }

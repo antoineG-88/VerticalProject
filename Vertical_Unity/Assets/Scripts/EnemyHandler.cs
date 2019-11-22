@@ -50,7 +50,6 @@ public abstract class EnemyHandler : MonoBehaviour
     public GameObject debugParticlePrefab;
     public bool showFieldOfView;
 
-
     [HideInInspector] public int currentHealth;
     [HideInInspector] public bool isInvulnerable;
     [HideInInspector] public bool playerInSight;
@@ -460,7 +459,6 @@ public abstract class EnemyHandler : MonoBehaviour
     {
         if (collider.CompareTag("Hook") && !GameData.playerGrapplingHandler.isTracting && !isInvulnerable && currentHealth > 0 && !GameData.playerGrapplingHandler.isHooked)
         {
-            Debug.Log("attachbyenenmy");
             GameData.playerGrapplingHandler.AttachHook(gameObject);
         }
     }
