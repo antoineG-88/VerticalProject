@@ -38,7 +38,7 @@ public class PlayerAttackManager : MonoBehaviour
 
     private void KickInput()
     {
-        if (Input.GetButton("RBButton"))
+        if (Input.GetButtonDown("RBButton"))
         {
             kickButtonPressed = true;
             if(GameData.playerGrapplingHandler.isTracting && !isKicking)
@@ -58,12 +58,12 @@ public class PlayerAttackManager : MonoBehaviour
         bool successfullKick = false;
         List<Collider2D> hitColliders = new List<Collider2D>();
         GameObject attachedObject = GameData.playerGrapplingHandler.attachedObject;
+        GameData.playerGrapplingHandler.ReleaseHook();
 
         if (currentKick.HitTest(attachedObject, ref hitColliders) && attachedObject.CompareTag("Enemy"))
         {
             EnemyHandler enemy = attachedObject.GetComponent<EnemyHandler>();
             successfullKick = !enemy.TestCounter();
-            GameData.playerGrapplingHandler.ReleaseHook();
             if (successfullKick)
             {
                 if (!currentKick.isAOE)
