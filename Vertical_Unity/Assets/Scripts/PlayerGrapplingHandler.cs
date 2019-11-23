@@ -35,7 +35,6 @@ public class PlayerGrapplingHandler : MonoBehaviour
     public Transform shootPoint;
     public GameObject hookPrefab;
     public GameObject ringHighLighterO;
-    //public LineRenderer rayRenderer;
     [Header("Debug settings")]
     public Color ghostHookColor;
     public bool displayAutoAimRaycast;

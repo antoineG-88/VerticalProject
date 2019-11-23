@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public bool allowMouseControl;
     [Header("Base movement settings")]
     public float maxTargetSpeed;
     public float runningAcceleration;
