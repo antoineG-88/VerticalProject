@@ -102,12 +102,12 @@ public class PlayerGrapplingHandler : MonoBehaviour
 
         if (canShoot)
         {
-            if (!isAiming && (Mathf.Abs(Input.GetAxisRaw("RJoystickH")) > 0.1f || Mathf.Abs(Input.GetAxisRaw("RJoystickV")) > 0.1f))
+            if (!isAiming && (Mathf.Abs(GameData.gameController.input.rightJoystickHorizontal) > 0.1f || Mathf.Abs(GameData.gameController.input.rightJoystickVertical) > 0.1f))
             {
                 isAiming = true;
                 armShoulderO.SetActive(true);
             }
-            else if (isAiming && Mathf.Abs(Input.GetAxisRaw("RJoystickH")) <= 0.1f && Mathf.Abs(Input.GetAxisRaw("RJoystickV")) <= 0.1f)
+            else if (isAiming && Mathf.Abs(GameData.gameController.input.rightJoystickHorizontal) <= 0.1f && Mathf.Abs(GameData.gameController.input.rightJoystickVertical) <= 0.1f)
             {
                 isAiming = false;
                 if(!keepAim)
@@ -120,7 +120,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
             {
                 if(isAiming)
                 {
-                    aimDirection = new Vector2(Input.GetAxis("RJoystickH"), Input.GetAxis("RJoystickV")).normalized;
+                    aimDirection = new Vector2(GameData.gameController.input.rightJoystickHorizontal, -GameData.gameController.input.rightJoystickVertical).normalized;
                     armShoulderO.transform.rotation = Quaternion.Euler(0.0f, 0.0f, Mathf.Atan2(aimDirection.x, aimDirection.y) * 180 / Mathf.PI - 90);
                 }
 
@@ -197,7 +197,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
                     ringHighLighterO.SetActive(false);
                 }
 
-                if (GameData.gameController.rightTriggerDown && timeBeforeNextShoot <= 0 && !isHooked)
+                if (GameData.gameController.input.rightTriggerDown && timeBeforeNextShoot <= 0 && !isHooked)
                 {
                     timeBeforeNextShoot = shootCooldown;
                     ReleaseHook();
@@ -251,7 +251,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
 
             tractionDirection = (currentHook.transform.position - transform.position).normalized;
 
-            if (canUseTraction && Input.GetAxisRaw("RTAxis") == 1)
+            if (canUseTraction && GameData.gameController.input.rightTriggerAxis == 1)
             {
                 GameData.playerMovement.isAffectedbyGravity = false;
                 GameData.playerMovement.inControl = false;
@@ -305,7 +305,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
                 isTracting = true;
             }
 
-            if(isTracting && (Input.GetAxisRaw("RTAxis") == 0 || (Vector2.Distance(transform.position, currentHook.transform.position) < releasingHookDist)))
+            if(isTracting && (GameData.gameController.input.rightTriggerAxis == 0 || (Vector2.Distance(transform.position, currentHook.transform.position) < releasingHookDist)))
             {
                 rb.velocity *= velocityKeptReleasingHook / 100;
                 isTracting = false;

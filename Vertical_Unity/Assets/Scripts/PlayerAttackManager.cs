@@ -38,7 +38,7 @@ public class PlayerAttackManager : MonoBehaviour
 
     private void KickInput()
     {
-        if (Input.GetButtonDown("RBButton"))
+        if (GameData.gameController.input.rightBumper)
         {
             kickButtonPressed = true;
             if(GameData.playerGrapplingHandler.isTracting && !isKicking)
@@ -115,9 +115,9 @@ public class PlayerAttackManager : MonoBehaviour
             yield return new WaitForEndOfFrame();
 
             aimDirection = Vector2.zero;
-            if(Mathf.Abs(GameData.gameController.rightJoystickHorizontal) > 0.1f || Mathf.Abs(GameData.gameController.rightJoystickVertical) > 0.1f)
+            if(Mathf.Abs(GameData.gameController.input.rightJoystickHorizontal) > 0.1f || Mathf.Abs(GameData.gameController.input.rightJoystickVertical) > 0.1f)
             {
-                aimDirection = new Vector2(GameData.gameController.rightJoystickHorizontal, GameData.gameController.rightJoystickVertical).normalized;
+                aimDirection = new Vector2(GameData.gameController.input.rightJoystickHorizontal, GameData.gameController.input.rightJoystickVertical).normalized;
                 repropulsionPreview.transform.rotation = Quaternion.Euler(0.0f, 0.0f, Mathf.Atan2(aimDirection.x, - aimDirection.y) * 180 / Mathf.PI - 90);
                 repropulsionPreview.SetActive(true);
             }
@@ -126,7 +126,7 @@ public class PlayerAttackManager : MonoBehaviour
                 repropulsionPreview.SetActive(false);
             }
 
-            if (!GameData.gameController.rightBumper)
+            if (!GameData.gameController.input.rightBumper)
             {
                 isRepropulsing = false;
             }

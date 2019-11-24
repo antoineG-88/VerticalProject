@@ -5,18 +5,12 @@ using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
-    public bool useMouseAndKeyboard;
     public List<Effect> enemyEffects;
+    [HideInInspector] public InputManager input;
 
-    [HideInInspector] public float rightJoystickHorizontal;
-    [HideInInspector] public float rightJoystickVertical;
-    [HideInInspector] public float rightTriggerAxis;
-    [HideInInspector] public bool rightTriggerDown;
-    [HideInInspector] public bool rightBumper;
-
-    private bool rtaFlag;
     private void Awake()
     {
+        input = GetComponent<InputManager>();
         GameObject player = GameObject.FindWithTag("Player");
         GameData.Initialize(player.GetComponent<PlayerManager>(), player.GetComponent<PlayerMovement>(), player.GetComponent<PlayerGrapplingHandler>(), player.GetComponent<PlayerAttackManager>(), this);
 
@@ -31,31 +25,6 @@ public class GameController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.R))
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        }
-
-        InputUpdate();
-    }
-
-    private void InputUpdate()
-    {
-        rightJoystickHorizontal = Input.GetAxis("RJoystickH");
-        rightJoystickVertical = -Input.GetAxis("RJoystickV");
-        rightTriggerAxis = Input.GetAxis("RTAxis");
-        rightBumper = Input.GetButton("RBButton");
-
-        if (rtaFlag && !rightTriggerDown && rightTriggerAxis > 0.1f)
-        {
-            rightTriggerDown = true;
-        }
-        else if (rightTriggerDown)
-        {
-            rightTriggerDown = false;
-            rtaFlag = false;
-        }
-
-        if (rightTriggerAxis <= 0.1f)
-        {
-            rtaFlag = true;
         }
     }
 }

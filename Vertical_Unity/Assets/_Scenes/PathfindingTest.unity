@@ -1543,12 +1543,12 @@ PrefabInstance:
     - target: {fileID: 1976976933381308254, guid: a8a52d73fb1b86c44b482db3aeebf115,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 8.8
+      value: 8.98
       objectReference: {fileID: 0}
     - target: {fileID: 1976976933381308254, guid: a8a52d73fb1b86c44b482db3aeebf115,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4.52
+      value: 4.98
       objectReference: {fileID: 0}
     - target: {fileID: 1976976933381308254, guid: a8a52d73fb1b86c44b482db3aeebf115,
         type: 3}
@@ -1655,6 +1655,31 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 52391680}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &828206616 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9134310131610629844, guid: 90bd2f44b45271c4093db3988ad51804,
+    type: 3}
+  m_PrefabInstance: {fileID: 1436799078}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &828206619
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 828206616}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3155786f095b54842baab3e66e53b27b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  useMouseAim: 1
+  useMouseMovement: 0
+  rightJoystickHorizontal: 0
+  rightJoystickVertical: 0
+  rightTriggerAxis: 0
+  rightTriggerDown: 0
+  rightBumper: 0
 --- !u!4 &834929176 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5285105932516836633, guid: 6ed0f5418bcc0ea4eb4bd2daa1128767,
@@ -2199,6 +2224,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 8925220298269711287, guid: e3f711b6d57a4ea4fb09467bc503eb55,
         type: 3}
+    - target: {fileID: 9134310131610629847, guid: 90bd2f44b45271c4093db3988ad51804,
+        type: 3}
+      propertyPath: useMouseAim
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 90bd2f44b45271c4093db3988ad51804, type: 3}
 --- !u!1 &1465166379
