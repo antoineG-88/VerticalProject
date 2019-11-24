@@ -8,6 +8,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
     public bool instantaneousAttach;
     public float shootForce;
     public float ropeLength;
+    public float ropeAttachLengthDifference;
     public float shootCooldown;
     public float releasingHookDist;
     public bool useGhostHook;
@@ -242,6 +243,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
             currentHook.transform.position = attachedObject.transform.position;
             hookRb.velocity = Vector2.zero;
             currentHook.GetComponent<Collider2D>().isTrigger = true;
+            ringHighLighterO.SetActive(false);
 
             ropeRenderer.enabled = true;
             Vector3[] ropePoints = new Vector3[2];
@@ -338,7 +340,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
                 currentHook.transform.rotation = Quaternion.Euler(0.0f, 0.0f, Mathf.Atan2(hookRb.velocity.y, -hookRb.velocity.x) * 180 / Mathf.PI);
             }
 
-            if(Vector2.Distance(transform.position, currentHook.transform.position) > ropeLength + 2)
+            if(Vector2.Distance(transform.position, currentHook.transform.position) > ropeLength + ropeAttachLengthDifference)
             {
                 BreakRope();
             }

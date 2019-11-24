@@ -27,6 +27,7 @@ public abstract class EnemyHandler : MonoBehaviour
     [Header("Enemy pathfinding settings")]
     public bool useAStar;
     public float nextWaypointDistance;
+    public int waypointAhead;
     [Space]
     public float pathUpdatingFrequency;
     public float connectionJumpTime;
@@ -75,7 +76,7 @@ public abstract class EnemyHandler : MonoBehaviour
     [HideInInspector] public PlatformHandler currentPlatform;
     [HideInInspector] public PlatformConnection targetConnection;
     [HideInInspector] public PlatformConnection targetConnectedConnection;
-    [HideInInspector] public float timeBeforeNextGroundPathUpdate;
+    [HideInInspector] public float timeBeforeNextPathUpdate;
     private List<PlatformHandler> testedPlatform = new List<PlatformHandler>();
     [HideInInspector] public float pJumpCDRemaining;
 
@@ -102,7 +103,7 @@ public abstract class EnemyHandler : MonoBehaviour
             currentEffects[i] = 0;
         }
 
-        timeBeforeNextGroundPathUpdate = 0;
+        timeBeforeNextPathUpdate = 0;
     }
 
     public void HandlerUpdate()
@@ -299,46 +300,47 @@ public abstract class EnemyHandler : MonoBehaviour
 
     private void UpdatePath()
     {
-        if(useAStar)
+        if (timeBeforeNextPathUpdate <= 0)
         {
-            CalculatePath();
-        }
+            timeBeforeNextPathUpdate = pathUpdatingFrequency;
 
-        if (timeBeforeNextGroundPathUpdate <= 0 && IsOnGround())
-        {
-            timeBeforeNextGroundPathUpdate = pathUpdatingFrequency;
-            FindGroundPathToTarget(GameData.playerManager.gameObject);
-        }
-
-        if(timeBeforeNextGroundPathUpdate > 0)
-        {
-            timeBeforeNextGroundPathUpdate -= Time.deltaTime;
-        }
-
-        if(pJumpCDRemaining > 0)
-        {
-            pJumpCDRemaining -= Time.deltaTime;
-        }
-
-
-
-        if (path != null)
-        {
-            if (currentWaypoint >= path.vectorPath.Count)
+            if (useAStar)
             {
-                pathEndReached = true;
-            }
-            else
-            {
-                pathEndReached = false;
+                CalculatePath();
 
-                pathDirection = (path.vectorPath[currentWaypoint] - transform.position).normalized;
-
-                if (Vector2.Distance(transform.position, path.vectorPath[currentWaypoint]) < nextWaypointDistance)
+                if (path != null)
                 {
-                    currentWaypoint++;
+                    if (currentWaypoint >= path.vectorPath.Count)
+                    {
+                        pathEndReached = true;
+                    }
+                    else
+                    {
+                        pathEndReached = false;
+
+                        while (Vector2.Distance(transform.position, path.vectorPath[currentWaypoint]) < nextWaypointDistance && path.vectorPath.Count > currentWaypoint + 1)
+                        {
+                            currentWaypoint++;
+                        }
+
+                        pathDirection = (path.vectorPath[currentWaypoint + waypointAhead] - transform.position).normalized;
+                    }
                 }
             }
+            else if (IsOnGround())
+            {
+                FindGroundPathToTarget(GameData.playerManager.gameObject);
+            }
+        }
+
+        if (timeBeforeNextPathUpdate > 0)
+        {
+            timeBeforeNextPathUpdate -= Time.deltaTime;
+        }
+
+        if (pJumpCDRemaining > 0)
+        {
+            pJumpCDRemaining -= Time.deltaTime;
         }
     }
 

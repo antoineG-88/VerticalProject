@@ -13,6 +13,11 @@ public class PlayerMovement : MonoBehaviour
     public float jumpForce;
     public float baseGravityForce;
     [Range(0, 100)] public float jumpXVelocityGain;
+    [Header("Dash settings")]
+    public float dashDistance;
+    public float dashSpeed;
+    public float dashStopDistance;
+    [Range(0, 100)] public float dashVelocityKept;
     [Header("Technical settings")]
     public Transform feetPos;
     public float groundCheckThickness = 0.1f;
@@ -28,6 +33,8 @@ public class PlayerMovement : MonoBehaviour
     private float addedXVelocity;
     private bool jumpFlag;
     private float timeBeforeControl;
+    private bool isDashing;
+    private bool dashFlag;
 
     void Start()
     {
@@ -36,6 +43,8 @@ public class PlayerMovement : MonoBehaviour
         jumpFlag = false;
         inControl = true;
         isAffectedbyGravity = true;
+        isDashing = false;
+        dashFlag = true;
         timeBeforeControl = 0;
         gravityForce = baseGravityForce;
     }
@@ -57,24 +66,31 @@ public class PlayerMovement : MonoBehaviour
 
     private void UpdateInput()
     {
-        if(Input.GetAxis("LJoystickH") != 0 || Input.GetAxisRaw("Horizontal") != 0)
+        if(GameData.gameController.input.leftJoystickHorizontal != 0)
         {
-            targetVelocity.x = Input.GetAxisRaw("Horizontal") == 0 ? Input.GetAxis("LJoystickH") : Input.GetAxisRaw("Horizontal") * maxTargetSpeed;
+            targetVelocity.x = GameData.gameController.input.leftJoystickHorizontal * maxTargetSpeed;
         }
         else if(targetVelocity.x != 0)
         {
             targetVelocity.x = 0;
         }
 
-        if ((Input.GetButton("AButton") || Input.GetButton("Jump")) && IsOnGround())
+        if (GameData.gameController.input.jump && !isDashing && dashFlag /*&& IsOnGround()*/)
         {
-            jumpFlag = true;
+            //jumpFlag = true;
+            dashFlag = false;
+            StartCoroutine(Dash());
+        }
+
+        if(!GameData.gameController.input.jump)
+        {
+            dashFlag = true;
         }
     }
 
     private void UpdateMovement()
     {
-        if(inControl && timeBeforeControl <= 0)
+        if(inControl && timeBeforeControl <= 0 && !isDashing)
         {
             if (targetVelocity.x != rb.velocity.x)
             {
@@ -171,5 +187,23 @@ public class PlayerMovement : MonoBehaviour
         {
             timeBeforeControl = noControlTime;
         }
+    }
+
+    private IEnumerator Dash()
+    {
+        isDashing = true;
+        isAffectedbyGravity = false;
+        Vector2 dashDirection = new Vector2(GameData.gameController.input.leftJoystickHorizontal, GameData.gameController.input.leftJoystickVertical).normalized;
+        Propel(dashDirection * dashSpeed, true, true);
+        float timer = dashDistance / dashSpeed;
+        while(inControl && timer > 0 && !Physics2D.Raycast(transform.position, dashDirection, dashStopDistance, LayerMask.GetMask("Ground")))
+        {
+            timer -= Time.fixedDeltaTime;
+            yield return new WaitForFixedUpdate();
+        }
+
+        isAffectedbyGravity = true;
+        Propel(dashDirection * dashSpeed * dashVelocityKept / 100, true, true);
+        isDashing = false;
     }
 }
