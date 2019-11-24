@@ -153,19 +153,6 @@ public class PlayerGrapplingHandler : MonoBehaviour
                             minAngleFound = Vector2.Angle(direction, new Vector2(aimDirection.x, -aimDirection.y));
                         }
                     }
-
-                    if (selectedRing != null)
-                    {
-                        ringHighLighterO.SetActive(true);
-                        ringHighLighterO.transform.position = selectedRing.transform.position;
-                        shootDirection = new Vector2(selectedRing.transform.position.x - shootPoint.position.x, selectedRing.transform.position.y - shootPoint.position.y).normalized;
-                    }
-                    else
-                    {
-                        shootDirection = aimDirection;
-                        shootDirection.y *= -1;
-                        ringHighLighterO.SetActive(false);
-                    }
                 }
                 else
                 {
@@ -181,19 +168,33 @@ public class PlayerGrapplingHandler : MonoBehaviour
                         Vector3[] rayPoints = new Vector3[2];
                         rayPoints[0] = raycastOrigin;
                         rayPoints[1] = (new Vector2(aimDirection.x, -aimDirection.y) * ropeLength) + raycastOrigin;
-                        ropeRenderer.SetPositions(rayPoints);
 
                         RaycastHit2D grappleRay = Physics2D.Raycast(raycastOrigin, new Vector2(aimDirection.x, -aimDirection.y), ropeLength, LayerMask.GetMask("Ring", "Ground", "Enemy"));
-                        if(grappleRay && (grappleRay.collider.CompareTag("Ring") || grappleRay.collider.CompareTag("Enemy")))
+                        if(grappleRay)
+                        {
+                            rayPoints[1] = grappleRay.point;
+                        }
+
+                        ropeRenderer.SetPositions(rayPoints);
+
+                        if (grappleRay && (grappleRay.collider.CompareTag("Ring") || grappleRay.collider.CompareTag("Enemy")))
                         {
                             selectedRing = grappleRay.collider.gameObject;
                         }
                     }
-                    else
-                    {
-                        shootDirection = aimDirection;
-                        shootDirection.y *= -1;
-                    }
+                }
+
+                if (selectedRing != null)
+                {
+                    ringHighLighterO.SetActive(true);
+                    ringHighLighterO.transform.position = selectedRing.transform.position;
+                    shootDirection = new Vector2(selectedRing.transform.position.x - shootPoint.position.x, selectedRing.transform.position.y - shootPoint.position.y).normalized;
+                }
+                else
+                {
+                    shootDirection = aimDirection;
+                    shootDirection.y *= -1;
+                    ringHighLighterO.SetActive(false);
                 }
 
                 if (GameData.gameController.rightTriggerDown && timeBeforeNextShoot <= 0 && !isHooked)

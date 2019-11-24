@@ -57,16 +57,16 @@ public class PlayerMovement : MonoBehaviour
 
     private void UpdateInput()
     {
-        if(Input.GetAxis("LJoystickH") != 0)
+        if(Input.GetAxis("LJoystickH") != 0 || Input.GetAxisRaw("Horizontal") != 0)
         {
-            targetVelocity.x = Input.GetAxis("LJoystickH") * maxTargetSpeed;
+            targetVelocity.x = Input.GetAxisRaw("Horizontal") == 0 ? Input.GetAxis("LJoystickH") : Input.GetAxisRaw("Horizontal") * maxTargetSpeed;
         }
         else if(targetVelocity.x != 0)
         {
             targetVelocity.x = 0;
         }
 
-        if (Input.GetButton("AButton") && IsOnGround())
+        if ((Input.GetButton("AButton") || Input.GetButton("Jump")) && IsOnGround())
         {
             jumpFlag = true;
         }
