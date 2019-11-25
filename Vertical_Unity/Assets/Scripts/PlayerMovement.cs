@@ -28,7 +28,7 @@ public class PlayerMovement : MonoBehaviour
     [HideInInspector] public bool inControl;
     [HideInInspector] public bool isAffectedbyGravity;
     [HideInInspector] public float gravityForce;
-    private Vector2 targetVelocity;
+    [HideInInspector] public Vector2 targetVelocity;
     private Rigidbody2D rb;
     private float addedXVelocity;
     private bool jumpFlag;
@@ -194,12 +194,24 @@ public class PlayerMovement : MonoBehaviour
         isDashing = true;
         isAffectedbyGravity = false;
         Vector2 dashDirection = new Vector2(GameData.gameController.input.leftJoystickHorizontal, GameData.gameController.input.leftJoystickVertical).normalized;
+        if(dashDirection == Vector2.zero)
+        {
+            dashDirection = Vector2.up;
+        }
+
         Propel(dashDirection * dashSpeed, true, true);
         float timer = dashDistance / dashSpeed;
-        while(inControl && timer > 0 && !Physics2D.Raycast(transform.position, dashDirection, dashStopDistance, LayerMask.GetMask("Ground")))
+        Vector2 origin = transform.position;
+
+        while (inControl && timer > 0 && !Physics2D.Raycast(transform.position, dashDirection, dashStopDistance, LayerMask.GetMask("Ground")))
         {
             timer -= Time.fixedDeltaTime;
             yield return new WaitForFixedUpdate();
+        }
+
+        if(timer <= 0 && !Physics2D.Raycast(origin, dashDirection, dashDistance, LayerMask.GetMask("Ground")))
+        {
+            transform.position = origin + dashDirection * dashDistance;
         }
 
         isAffectedbyGravity = true;

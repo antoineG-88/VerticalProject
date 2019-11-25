@@ -22,7 +22,6 @@ public class Traqueur : EnemyHandler
     public float chargeTime;
     public GameObject chargingParticlePrefab;
     public float jumpAttackTriggerDistance;
-    //public float gameRange;
     public Vector2 jumpAttackForce;
 
     private bool isInrange;

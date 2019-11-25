@@ -19,7 +19,7 @@ public class PlayerManager : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         currentHealth = maxhealth;
-        baseColor = GetComponent<SpriteRenderer>().color;
+        baseColor = GetComponentInChildren<SpriteRenderer>().color;
         isDodging = false;
     }
 
