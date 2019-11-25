@@ -25,6 +25,8 @@ public class WatchBot : EnemyHandler
 
         isPatroling = false;
         provoked = false;
+
+        SetEffect(Effect.Stun, 5, true);
     }
 
     private void Update()
@@ -49,7 +51,7 @@ public class WatchBot : EnemyHandler
             {
                 if (provoked)
                 {
-                    targetPathfindingPosition = GameData.playerMovement.gameObject.transform.position;
+                    targetPathfindingPosition = GameData.playerMovement.gameObject.transform.position; 
                 }
                 else if (!isPatroling)
                 {

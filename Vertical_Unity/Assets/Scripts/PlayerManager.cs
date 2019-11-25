@@ -49,11 +49,11 @@ public class PlayerManager : MonoBehaviour
 
     public IEnumerator Stun(float stunTime)
     {
-        GetComponent<SpriteRenderer>().color = stunColor;
+        GetComponentInChildren<SpriteRenderer>().color = stunColor;
         GameData.playerMovement.inControl = false;
         GameData.playerGrapplingHandler.canShoot = false;
         yield return new WaitForSeconds(stunTime);
-        GetComponent<SpriteRenderer>().color = baseColor;
+        GetComponentInChildren<SpriteRenderer>().color = baseColor;
         GameData.playerMovement.inControl = true;
         GameData.playerGrapplingHandler.canShoot = true;
     }

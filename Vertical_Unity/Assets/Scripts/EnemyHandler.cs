@@ -52,26 +52,26 @@ public abstract class EnemyHandler : MonoBehaviour
     public bool showFieldOfView;
 
     [HideInInspector] public int currentHealth;
-    [HideInInspector] public bool isInvulnerable;
-    [HideInInspector] public bool playerInSight;
-    [HideInInspector] public bool provoked;
+    [HideInInspector] public bool isInvulnerable; // (à modifié)
+    [HideInInspector] public bool playerInSight; // inutile
+    [HideInInspector] public bool provoked; //défint si l'ennemi est provoqué (à modifié)
     [HideInInspector] public bool facingRight;
     [HideInInspector] public bool isOnGround;
     [HideInInspector] public bool avoidEnemies;
 
-    [HideInInspector] public float slowEffectScale;
+    [HideInInspector] public float slowEffectScale; //a mettre en multiplicateur sur les variables affecté par le slow
     [HideInInspector] public float[] currentEffects;
     [HideInInspector] public GameObject[] currentEffectFx;
     [HideInInspector] public bool isAffectedByGravity;
-    [HideInInspector] public Rigidbody2D rb;
+    [HideInInspector] public Rigidbody2D rb; //rigidbody déjà intégré
 
 
     [HideInInspector] public Seeker seeker;
     [HideInInspector] public Path path;
     [HideInInspector] public int currentWaypoint;
     [HideInInspector] public bool pathEndReached;
-    [HideInInspector] public Vector2 pathDirection;
-    [HideInInspector] public Vector2 targetPathfindingPosition;
+    [HideInInspector] public Vector2 pathDirection; //La direction du chemin de pathfinding (à lire)
+    [HideInInspector] public Vector2 targetPathfindingPosition; //targetPathfindingPosition détermine ou la cible du pathfinding (a modifié)
 
     [HideInInspector] public PlatformHandler currentPlatform;
     [HideInInspector] public PlatformConnection targetConnection;

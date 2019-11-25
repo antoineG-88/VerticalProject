@@ -36,6 +36,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
     public Transform shootPoint;
     public GameObject hookPrefab;
     public GameObject ringHighLighterO;
+    public GameObject grapplingStartPointO;
     [Header("Debug settings")]
     public Color ghostHookColor;
     public bool displayAutoAimRaycast;
@@ -61,6 +62,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
     [HideInInspector] public bool isTracting;
     [HideInInspector] public bool canUseTraction;
     [HideInInspector] public bool canShoot;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();

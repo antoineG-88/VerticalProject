@@ -312,7 +312,7 @@ PrefabInstance:
     - target: {fileID: 4503195422415338473, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
         type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4503195422415338473, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
         type: 3}
@@ -450,6 +450,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: WatchBot1 (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 6312095705553650338, guid: a26b0a6c805712744b996ae50874c35c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6312095705553650344, guid: a26b0a6c805712744b996ae50874c35c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -505,6 +510,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6312095705553650351, guid: a26b0a6c805712744b996ae50874c35c,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a26b0a6c805712744b996ae50874c35c, type: 3}
 --- !u!1001 &249498913
@@ -557,7 +567,7 @@ PrefabInstance:
     - target: {fileID: 3060093502972895903, guid: c4961e7684748ed4cb0ce1e36a4e6d12,
         type: 3}
       propertyPath: m_RootOrder
-      value: 5
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 3060093502972895903, guid: c4961e7684748ed4cb0ce1e36a4e6d12,
         type: 3}
@@ -743,7 +753,7 @@ Transform:
   - {fileID: 1971449303}
   - {fileID: 1461702212}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &435535766
 GameObject:
@@ -817,7 +827,7 @@ PrefabInstance:
     - target: {fileID: 5285105932516836639, guid: 6ed0f5418bcc0ea4eb4bd2daa1128767,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5285105932516836633, guid: 6ed0f5418bcc0ea4eb4bd2daa1128767,
         type: 3}
@@ -948,6 +958,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: WatchBot1 (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 6312095705553650338, guid: a26b0a6c805712744b996ae50874c35c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6312095705553650344, guid: a26b0a6c805712744b996ae50874c35c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1001,6 +1016,11 @@ PrefabInstance:
     - target: {fileID: 6312095705553650344, guid: a26b0a6c805712744b996ae50874c35c,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6312095705553650351, guid: a26b0a6c805712744b996ae50874c35c,
+        type: 3}
+      propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -1224,7 +1244,7 @@ PrefabInstance:
     - target: {fileID: 5285105932516836639, guid: 6ed0f5418bcc0ea4eb4bd2daa1128767,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5285105932516836633, guid: 6ed0f5418bcc0ea4eb4bd2daa1128767,
         type: 3}
@@ -1465,80 +1485,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 37769676b309ce24491c682d036f2640, type: 3}
---- !u!1001 &711622761
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 1976976933381308195, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: m_Name
-      value: Main Camera
-      objectReference: {fileID: 0}
-    - target: {fileID: 1976976933381308254, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 8.98
-      objectReference: {fileID: 0}
-    - target: {fileID: 1976976933381308254, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 4.98
-      objectReference: {fileID: 0}
-    - target: {fileID: 1976976933381308254, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -10
-      objectReference: {fileID: 0}
-    - target: {fileID: 1976976933381308254, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1976976933381308254, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1976976933381308254, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1976976933381308254, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1976976933381308254, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1976976933381308254, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1976976933381308254, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1976976933381308254, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1976976933381308253, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: orthographic size
-      value: 9
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: a8a52d73fb1b86c44b482db3aeebf115, type: 3}
 --- !u!4 &730067152 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6312095705553650344, guid: a26b0a6c805712744b996ae50874c35c,
@@ -1638,6 +1584,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: WatchBot1 (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 6312095705553650338, guid: a26b0a6c805712744b996ae50874c35c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6312095705553650344, guid: a26b0a6c805712744b996ae50874c35c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1691,6 +1642,11 @@ PrefabInstance:
     - target: {fileID: 6312095705553650344, guid: a26b0a6c805712744b996ae50874c35c,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6312095705553650351, guid: a26b0a6c805712744b996ae50874c35c,
+        type: 3}
+      propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -2006,6 +1962,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: WatchBot1 (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 6312095705553650338, guid: a26b0a6c805712744b996ae50874c35c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6312095705553650344, guid: a26b0a6c805712744b996ae50874c35c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2059,6 +2020,11 @@ PrefabInstance:
     - target: {fileID: 6312095705553650344, guid: a26b0a6c805712744b996ae50874c35c,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6312095705553650351, guid: a26b0a6c805712744b996ae50874c35c,
+        type: 3}
+      propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -2351,7 +2317,7 @@ Transform:
   - {fileID: 1125845301}
   - {fileID: 600080436}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1470435149
 PrefabInstance:
@@ -2720,7 +2686,7 @@ PrefabInstance:
     - target: {fileID: 5285105932516836639, guid: 6ed0f5418bcc0ea4eb4bd2daa1128767,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5285105932516836633, guid: 6ed0f5418bcc0ea4eb4bd2daa1128767,
         type: 3}
@@ -3132,7 +3098,7 @@ PrefabInstance:
     - target: {fileID: 1368036684051362087, guid: e3ae287a63fbda44ebcefb3ac93170da,
         type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 1368036684051362087, guid: e3ae287a63fbda44ebcefb3ac93170da,
         type: 3}
@@ -3369,6 +3335,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: WatchBot1
       objectReference: {fileID: 0}
+    - target: {fileID: 6312095705553650338, guid: a26b0a6c805712744b996ae50874c35c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6312095705553650344, guid: a26b0a6c805712744b996ae50874c35c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3422,6 +3393,11 @@ PrefabInstance:
     - target: {fileID: 6312095705553650344, guid: a26b0a6c805712744b996ae50874c35c,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6312095705553650351, guid: a26b0a6c805712744b996ae50874c35c,
+        type: 3}
+      propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
