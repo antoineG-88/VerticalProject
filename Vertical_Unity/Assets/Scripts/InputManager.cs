@@ -13,10 +13,13 @@ public class InputManager : MonoBehaviour
     [HideInInspector] public float leftJoystickVertical;
     [HideInInspector] public float rightTriggerAxis;
     [HideInInspector] public bool rightTriggerDown;
+    [HideInInspector] public float leftTriggerAxis;
+    [HideInInspector] public bool leftTriggerDown;
     [HideInInspector] public bool rightBumper;
     [HideInInspector] public bool jump;
 
     private bool rtaFlag;
+    private bool ltaFlag;
 
     void Update()
     {
@@ -39,6 +42,7 @@ public class InputManager : MonoBehaviour
             leftJoystickVertical = Input.GetAxisRaw("Vertical");
 
             rightTriggerAxis = Input.GetMouseButton(0) ? 1 : 0;
+            leftTriggerAxis = Input.GetKey(KeyCode.A) ? 1 : 0;
             rightBumper = Input.GetMouseButton(1);
         }
         else
@@ -49,6 +53,7 @@ public class InputManager : MonoBehaviour
             leftJoystickVertical = Input.GetAxis("LJoystickV");
 
             rightTriggerAxis = Input.GetAxis("RTAxis");
+            leftTriggerAxis = Input.GetAxis("LTAxis");
             rightBumper = Input.GetButton("RBButton");
         }
 
@@ -67,6 +72,21 @@ public class InputManager : MonoBehaviour
         if (rightTriggerAxis <= 0.1f)
         {
             rtaFlag = true;
+        }
+
+        if (ltaFlag && !leftTriggerDown && leftTriggerAxis > 0.1f)
+        {
+            leftTriggerDown = true;
+        }
+        else if (leftTriggerDown)
+        {
+            leftTriggerDown = false;
+            ltaFlag = false;
+        }
+
+        if (leftTriggerAxis <= 0.1f)
+        {
+            ltaFlag = true;
         }
     }
 }

@@ -21,6 +21,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
     public float tractionForce;
     public float tractionAirDensity;
     public float maxTractionSpeed;
+    public bool keepAllMomentum;
     [Range(1,3)] public float momentumAmplification;
     public float startTractionPropulsion;
     [Space]
@@ -255,7 +256,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
 
             tractionDirection = (currentHook.transform.position - transform.position).normalized;
 
-            if (canUseTraction && GameData.gameController.input.rightTriggerAxis == 1)
+            if (canUseTraction && GameData.gameController.input.rightTriggerAxis == 1 && !GameData.playerMovement.isDashing)
             {
                 GameData.playerMovement.isAffectedbyGravity = false;
                 GameData.playerMovement.inControl = false;
@@ -264,7 +265,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
                 {
                     if(resetMomentumOnTraction)
                     {
-                        float startTractionVelocity = rb.velocity.magnitude * Mathf.Cos(Mathf.Pow(Mathf.Deg2Rad * Vector2.Angle(rb.velocity, tractionDirection), momentumAmplification));
+                        float startTractionVelocity = keepAllMomentum ? rb.velocity.magnitude : rb.velocity.magnitude * Mathf.Cos(Mathf.Pow(Mathf.Deg2Rad * Vector2.Angle(rb.velocity, tractionDirection), momentumAmplification));
 
                         if (startTractionVelocity < 0)
                         {

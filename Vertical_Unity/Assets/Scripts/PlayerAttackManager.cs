@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerAttackManager : MonoBehaviour
 {
+    public Power currentPower;
+    [Space]
     public Kick currentKick;
     [Space]
     public Vector2 collideSize;
@@ -21,6 +23,7 @@ public class PlayerAttackManager : MonoBehaviour
     private float remainingTimeBeforeKick;
     private bool isRepropulsing;
     private bool isReAiming;
+    private float powerCooldownRemaining;
 
     private void Start()
     {
@@ -33,10 +36,10 @@ public class PlayerAttackManager : MonoBehaviour
 
     private void Update()
     {
-        KickInput();
+        Input();
     }
 
-    private void KickInput()
+    private void Input()
     {
         if (GameData.gameController.input.rightBumper)
         {
@@ -50,6 +53,17 @@ public class PlayerAttackManager : MonoBehaviour
         else
         {
             kickButtonPressed = false;
+        }
+
+        if(GameData.gameController.input.leftTriggerAxis > 0 && powerCooldownRemaining <= 0)
+        {
+            powerCooldownRemaining = currentPower.cooldown;
+            StartCoroutine(currentPower.Use());
+        }
+
+        if(powerCooldownRemaining > 0)
+        {
+            powerCooldownRemaining -= Time.deltaTime;
         }
     }
 
@@ -181,5 +195,12 @@ public class PlayerAttackManager : MonoBehaviour
         Kick previousKick = currentKick;
         currentKick = newKick;
         return previousKick;
+    }
+
+    public Power ReplaceCurrentPower(Power newPower)
+    {
+        Power previousPower = currentPower;
+        currentPower = newPower;
+        return previousPower;
     }
 }

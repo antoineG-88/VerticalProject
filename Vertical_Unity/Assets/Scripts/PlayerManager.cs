@@ -8,9 +8,11 @@ public class PlayerManager : MonoBehaviour
     public float maxhealth;
     [Header("General debug settings")]
     public Color stunColor;
-    public bool isVulnerable;
+    public bool vulnerable;
 
+    [HideInInspector] public bool isVulnerable;
     [HideInInspector] public bool isDodging;
+    [HideInInspector] public bool isStunned;
     private float currentHealth;
     private Rigidbody2D rb;
     private Color baseColor;
@@ -21,6 +23,12 @@ public class PlayerManager : MonoBehaviour
         currentHealth = maxhealth;
         baseColor = GetComponentInChildren<SpriteRenderer>().color;
         isDodging = false;
+        isStunned = false;
+    }
+
+    private void Update()
+    {
+        isVulnerable = vulnerable ? isVulnerable : false;
     }
 
     public bool TakeDamage(float damage, Vector2 knockBack, float stunTime)
@@ -36,7 +44,7 @@ public class PlayerManager : MonoBehaviour
 
             if (currentHealth <= 0)
             {
-                GetComponent<SpriteRenderer>().enabled = false;
+                GetComponentInChildren<SpriteRenderer>().enabled = false;
                 GetComponent<Collider2D>().enabled = false;
                 rb.simulated = false;
                 GameData.playerMovement.inControl = false;
@@ -52,8 +60,10 @@ public class PlayerManager : MonoBehaviour
         GetComponentInChildren<SpriteRenderer>().color = stunColor;
         GameData.playerMovement.inControl = false;
         GameData.playerGrapplingHandler.canShoot = false;
+        isStunned = true;
         yield return new WaitForSeconds(stunTime);
         GetComponentInChildren<SpriteRenderer>().color = baseColor;
+        isStunned = false;
         GameData.playerMovement.inControl = true;
         GameData.playerGrapplingHandler.canShoot = true;
     }

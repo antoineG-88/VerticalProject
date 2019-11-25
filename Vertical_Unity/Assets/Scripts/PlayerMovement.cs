@@ -10,6 +10,7 @@ public class PlayerMovement : MonoBehaviour
     public float groundSlowing;
     public float airAcceleration;
     public float airSlowing;
+    public float airDragForce;
     public float jumpForce;
     public float baseGravityForce;
     [Range(0, 100)] public float jumpXVelocityGain;
@@ -17,6 +18,9 @@ public class PlayerMovement : MonoBehaviour
     public float dashDistance;
     public float dashSpeed;
     public float dashStopDistance;
+    public bool dashBreakRope;
+    public float dashCooldown;
+    public bool invulnerableDash;
     [Range(0, 100)] public float dashVelocityKept;
     [Header("Technical settings")]
     public Transform feetPos;
@@ -33,8 +37,8 @@ public class PlayerMovement : MonoBehaviour
     private float addedXVelocity;
     private bool jumpFlag;
     private float timeBeforeControl;
-    private bool isDashing;
-    private bool dashFlag;
+    [HideInInspector] public bool isDashing;
+    private float dashCooldownRemaining;
 
     void Start()
     {
@@ -44,7 +48,6 @@ public class PlayerMovement : MonoBehaviour
         inControl = true;
         isAffectedbyGravity = true;
         isDashing = false;
-        dashFlag = true;
         timeBeforeControl = 0;
         gravityForce = baseGravityForce;
     }
@@ -75,16 +78,15 @@ public class PlayerMovement : MonoBehaviour
             targetVelocity.x = 0;
         }
 
-        if (GameData.gameController.input.jump && !isDashing && dashFlag /*&& IsOnGround()*/)
+        if (GameData.gameController.input.jump && !isDashing && dashCooldownRemaining <= 0/*&& IsOnGround()*/)
         {
             //jumpFlag = true;
-            dashFlag = false;
             StartCoroutine(Dash());
         }
 
-        if(!GameData.gameController.input.jump)
+        if(dashCooldownRemaining > 0)
         {
-            dashFlag = true;
+            dashCooldownRemaining -= Time.deltaTime;
         }
     }
 
@@ -139,6 +141,11 @@ public class PlayerMovement : MonoBehaviour
         {
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y - gravityForce * Time.fixedDeltaTime);
         }
+
+        if(!IsOnGround() && !GameData.playerGrapplingHandler.isTracting)
+        {
+            rb.velocity -= rb.velocity.normalized * airDragForce * Time.fixedDeltaTime;
+        }
     }
 
     public bool IsOnGround()
@@ -191,6 +198,11 @@ public class PlayerMovement : MonoBehaviour
 
     private IEnumerator Dash()
     {
+        if(dashBreakRope)
+        {
+            GameData.playerGrapplingHandler.ReleaseHook();
+        }
+        dashCooldownRemaining = (dashDistance / dashSpeed) + 1;
         isDashing = true;
         isAffectedbyGravity = false;
         Vector2 dashDirection = new Vector2(GameData.gameController.input.leftJoystickHorizontal, GameData.gameController.input.leftJoystickVertical).normalized;
@@ -203,9 +215,14 @@ public class PlayerMovement : MonoBehaviour
         float timer = dashDistance / dashSpeed;
         Vector2 origin = transform.position;
 
-        while (inControl && timer > 0 && !Physics2D.Raycast(transform.position, dashDirection, dashStopDistance, LayerMask.GetMask("Ground")))
+        while (!GameData.playerManager.isStunned && timer > 0 && !Physics2D.Raycast(transform.position, dashDirection, dashStopDistance, LayerMask.GetMask("Ground")))
         {
             timer -= Time.fixedDeltaTime;
+            if(invulnerableDash)
+            {
+                GameData.playerManager.isDodging = true;
+            }
+
             yield return new WaitForFixedUpdate();
         }
 
@@ -214,8 +231,10 @@ public class PlayerMovement : MonoBehaviour
             transform.position = origin + dashDirection * dashDistance;
         }
 
+        GameData.playerManager.isDodging = false;
         isAffectedbyGravity = true;
         Propel(dashDirection * dashSpeed * dashVelocityKept / 100, true, true);
         isDashing = false;
+        dashCooldownRemaining = dashCooldown;
     }
 }

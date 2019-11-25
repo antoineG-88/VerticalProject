@@ -11,13 +11,28 @@ public class WatchBot : EnemyHandler
     public float timeBetweenPatrolMoves;
     public float patrolRadius;
     public float stopDistance;
+    public float fleeDistance;
+    [Header("WatchBot range attack settings")]
+    public float rangeAttackTriggerRange;
+    public int projectileNumber;
+    public float attackWidthAngle;
+    public float projectileSpeed;
+    public int projectileDamage;
+    public float rangeAttackCooldown;
+    public float rangeAttackDelay;
+    public float projectileSpawnDistance;
+    public GameObject projectilePrefab;
     [Header("Debug settings")]
     public GameObject particleDebugPrefab;
 
     private Vector2 patrolCenterPosition;
     private bool isPatroling;
-    private bool isArRange;
+    private bool isAtRange;
     private bool targetReached;
+    private bool isFleeing;
+    private float timebeforeRangeAttack;
+    private float rangeAttackCooldownRemaining;
+    private Vector2 aimDirection;
 
     private void Start()
     {
@@ -25,8 +40,11 @@ public class WatchBot : EnemyHandler
 
         isPatroling = false;
         provoked = false;
+        isAtRange = false;
+        isFleeing = false;
 
-        SetEffect(Effect.Stun, 5, true);
+        timebeforeRangeAttack = 0;
+        rangeAttackCooldownRemaining = 0;
     }
 
     private void Update()
@@ -34,6 +52,8 @@ public class WatchBot : EnemyHandler
         HandlerUpdate();
 
         ProvocationUpdate();
+
+        Behavior();
     }
 
     private void FixedUpdate()
@@ -51,7 +71,14 @@ public class WatchBot : EnemyHandler
             {
                 if (provoked)
                 {
-                    targetPathfindingPosition = GameData.playerMovement.gameObject.transform.position; 
+                    if(!isFleeing)
+                    {
+                        targetPathfindingPosition = GameData.playerMovement.gameObject.transform.position;
+                    }
+                    else
+                    {
+                        targetPathfindingPosition = transform.position + (transform.position - GameData.playerMovement.transform.position).normalized * 2;
+                    }
                 }
                 else if (!isPatroling)
                 {
@@ -99,7 +126,68 @@ public class WatchBot : EnemyHandler
         }
         else
         {
-            targetReached = false;
+            if(isAtRange)
+            {
+                targetReached = true;
+            }
+            else
+            {
+                targetReached = false;
+            }
+        }
+    }
+
+    private void Behavior()
+    {
+        if(isAtRange && !Is(Effect.Stun) && !Is(Effect.Hack))
+        {
+            aimDirection = (GameData.playerMovement.transform.position - transform.position).normalized;
+            transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, Vector2.SignedAngle(Vector2.right, aimDirection)));
+
+            if (rangeAttackCooldownRemaining <= 0)
+            {
+                timebeforeRangeAttack -= Time.deltaTime;
+                if (timebeforeRangeAttack <= 0)
+                {
+                    RangeAttack();
+                }
+            }
+        }
+        else
+        {
+            timebeforeRangeAttack = rangeAttackDelay;
+        }
+
+        if (rangeAttackCooldownRemaining > 0)
+        {
+            rangeAttackCooldownRemaining -= Time.deltaTime;
+        }
+
+        float distanceToPlayer = Vector2.Distance(transform.position, GameData.playerMovement.transform.position);
+
+        isAtRange = distanceToPlayer < rangeAttackTriggerRange && distanceToPlayer > fleeDistance && provoked ? true : false;
+        isFleeing = distanceToPlayer < fleeDistance && provoked ? true : false;
+    }
+
+    private void RangeAttack()
+    {
+        rangeAttackCooldownRemaining = rangeAttackCooldown;
+
+        float subAngle = attackWidthAngle / (projectileNumber - 1);
+        float firstAngle = - attackWidthAngle / 2;
+        for (int i = 0; i < projectileNumber; i++)
+        {
+            float relativeAngle = firstAngle + subAngle * i;
+            float angledDirection = Vector2.SignedAngle(Vector2.right, aimDirection) + relativeAngle;
+            Vector2 direction = new Vector2(Mathf.Cos((angledDirection) * Mathf.Deg2Rad), Mathf.Sin((angledDirection) * Mathf.Deg2Rad));
+
+            Vector2 spawnPos = (Vector2)transform.position + direction * projectileSpawnDistance;
+            GameObject newProjectile = Instantiate(projectilePrefab, spawnPos, Quaternion.identity);
+            ProjectileHandler newProjectileHandler = newProjectile.GetComponent<ProjectileHandler>();
+            newProjectileHandler.initialVelocity = direction * projectileSpeed;
+            newProjectileHandler.knockBackForce = 0.5f;
+            newProjectileHandler.destroyTime = 0;
+            newProjectileHandler.damage = projectileDamage;
         }
     }
 

@@ -150,7 +150,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   name: WatchBot
-  maxHealth: 5
+  maxHealth: 1
   hurtColor: {r: 0.8396226, g: 0.099012084, b: 0.14583209, a: 1}
   invulnerableTime: 0.2
   gravityForce: 0
@@ -162,7 +162,7 @@ MonoBehaviour:
     type: 2}
   basicMaterial: {fileID: 6200000, guid: ca4dce0f1fa4f0a4e956e8e72f1f7a41, type: 2}
   viewRange: 8
-  viewAngle: 0
+  viewAngle: 180
   viewAngleWidth: 20
   raycastNumber: 10
   agroRange: 15
@@ -213,6 +213,23 @@ MonoBehaviour:
   pJumpCDRemaining: 0
   acceleration: 15
   maxSpeed: 4
+  slowingForce: 5
+  timeBetweenPatrolMoves: 4
+  patrolRadius: 15
+  stopDistance: 2
+  fleeDistance: 2
+  rangeAttackTriggerRange: 5
+  projectileNumber: 4
+  attackWidthAngle: 45
+  projectileSpeed: 5
+  projectileDamage: 5
+  rangeAttackCooldown: 4
+  rangeAttackDelay: 0.5
+  projectileSpawnDistance: 0.5
+  projectilePrefab: {fileID: 733819507943030622, guid: d718da2d5dc7bf64a86dc8b40ec37cb2,
+    type: 3}
+  particleDebugPrefab: {fileID: 743808000188852099, guid: 1cf7fde50c7c4334dbeb307cefb2d3dd,
+    type: 3}
 --- !u!114 &6312095705553650346
 MonoBehaviour:
   m_ObjectHideFlags: 0
