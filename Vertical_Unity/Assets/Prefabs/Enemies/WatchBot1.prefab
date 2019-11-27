@@ -154,6 +154,7 @@ MonoBehaviour:
   hurtColor: {r: 0.8396226, g: 0.099012084, b: 0.14583209, a: 1}
   invulnerableTime: 0.2
   gravityForce: 0
+  deathAnimationTime: 0.2
   noGravityLinearDrag: 0.1
   noGravityAngularDrag: 1
   noGravityRiseUpForce: 1
@@ -217,18 +218,24 @@ MonoBehaviour:
   timeBetweenPatrolMoves: 4
   patrolRadius: 15
   stopDistance: 2
-  fleeDistance: 2
+  fleeDistance: 3
   rangeAttackTriggerRange: 5
-  projectileNumber: 4
-  attackWidthAngle: 45
-  projectileSpeed: 5
+  projectileNumber: 8
+  attackWidthAngle: 40
+  projectileSpeed: 10
   projectileDamage: 5
-  rangeAttackCooldown: 4
-  rangeAttackDelay: 0.5
+  rangeAttackCooldown: 2
+  rangeAttackDelay: 0.2
   projectileSpawnDistance: 0.5
-  projectilePrefab: {fileID: 733819507943030622, guid: d718da2d5dc7bf64a86dc8b40ec37cb2,
-    type: 3}
+  projectileKnockbackForce: 3
+  projectileLifeTime: 0.5
+  spikeAttackRange: 2
+  spikeAttackDelay: 0.3
+  spikeAttackDamage: 2
+  spikeAttackKnockbackForce: 10
   particleDebugPrefab: {fileID: 743808000188852099, guid: 1cf7fde50c7c4334dbeb307cefb2d3dd,
+    type: 3}
+  projectilePrefab: {fileID: 733819507943030622, guid: d718da2d5dc7bf64a86dc8b40ec37cb2,
     type: 3}
 --- !u!114 &6312095705553650346
 MonoBehaviour:

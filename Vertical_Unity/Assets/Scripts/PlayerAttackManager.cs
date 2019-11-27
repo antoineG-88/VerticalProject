@@ -166,6 +166,7 @@ public class PlayerAttackManager : MonoBehaviour
     private IEnumerator ReAim()
     {
         isReAiming = true;
+        GameData.playerGrapplingHandler.timeBeforeNextShoot = 0;
         Time.timeScale = slowMoTimeSpeed;
         Time.fixedDeltaTime = 0.02f * Time.timeScale;
         float timeRemaining = Time.realtimeSinceStartup + maxReAimingTime;

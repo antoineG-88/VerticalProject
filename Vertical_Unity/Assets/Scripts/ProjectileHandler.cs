@@ -14,7 +14,7 @@ public class ProjectileHandler : MonoBehaviour
     {
         GetComponent<Rigidbody2D>().velocity = initialVelocity;
 
-        if(lifeTime > 0)
+        if (lifeTime > 0)
         {
             StartCoroutine(Despawn());
         }

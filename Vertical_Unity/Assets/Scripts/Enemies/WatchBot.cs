@@ -12,7 +12,7 @@ public class WatchBot : EnemyHandler
     public float patrolRadius;
     public float stopDistance;
     public float fleeDistance;
-    [Header("WatchBot range attack settings")]
+    [Header("Range-attack settings")]
     public float rangeAttackTriggerRange;
     public int projectileNumber;
     public float attackWidthAngle;
@@ -21,9 +21,16 @@ public class WatchBot : EnemyHandler
     public float rangeAttackCooldown;
     public float rangeAttackDelay;
     public float projectileSpawnDistance;
-    public GameObject projectilePrefab;
+    public float projectileKnockbackForce;
+    public float projectileLifeTime;
+    [Header("Spike-attack settings")]
+    public float spikeAttackRange;
+    public float spikeAttackDelay;
+    public float spikeAttackDamage;
+    public float spikeAttackKnockbackForce;
     [Header("Debug settings")]
     public GameObject particleDebugPrefab;
+    public GameObject projectilePrefab;
 
     private Vector2 patrolCenterPosition;
     private bool isPatroling;
@@ -139,9 +146,10 @@ public class WatchBot : EnemyHandler
 
     private void Behavior()
     {
-        if(isAtRange && !Is(Effect.Stun) && !Is(Effect.Hack))
+        aimDirection = (GameData.playerMovement.transform.position - transform.position).normalized;
+
+        if (isAtRange && !Is(Effect.Stun) && !Is(Effect.Hack) && !Is(Effect.NoControl))
         {
-            aimDirection = (GameData.playerMovement.transform.position - transform.position).normalized;
             transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, Vector2.SignedAngle(Vector2.right, aimDirection)));
 
             if (rangeAttackCooldownRemaining <= 0)
@@ -149,7 +157,7 @@ public class WatchBot : EnemyHandler
                 timebeforeRangeAttack -= Time.deltaTime;
                 if (timebeforeRangeAttack <= 0)
                 {
-                    RangeAttack();
+                    //RangeAttack();
                 }
             }
         }
@@ -167,6 +175,11 @@ public class WatchBot : EnemyHandler
 
         isAtRange = distanceToPlayer < rangeAttackTriggerRange && distanceToPlayer > fleeDistance && provoked ? true : false;
         isFleeing = distanceToPlayer < fleeDistance && provoked ? true : false;
+
+        if(distanceToPlayer < spikeAttackRange && !Is(Effect.NoControl))
+        {
+            StartCoroutine(SpikeAttack());
+        }
     }
 
     private void RangeAttack()
@@ -185,9 +198,20 @@ public class WatchBot : EnemyHandler
             GameObject newProjectile = Instantiate(projectilePrefab, spawnPos, Quaternion.identity);
             ProjectileHandler newProjectileHandler = newProjectile.GetComponent<ProjectileHandler>();
             newProjectileHandler.initialVelocity = direction * projectileSpeed;
-            newProjectileHandler.knockBackForce = 0.5f;
+            newProjectileHandler.knockBackForce = projectileKnockbackForce;
             newProjectileHandler.destroyTime = 0;
             newProjectileHandler.damage = projectileDamage;
+            newProjectileHandler.lifeTime = projectileLifeTime;
+        }
+    }
+
+    private IEnumerator SpikeAttack()
+    {
+        SetEffect(Effect.NoControl, spikeAttackDelay, false);
+        yield return new WaitForSeconds(spikeAttackDelay);
+        if (Physics2D.OverlapBox((Vector2)transform.position + aimDirection * spikeAttackRange / 2, new Vector2(spikeAttackRange, 0.5f), Vector2.SignedAngle(Vector2.right, aimDirection), LayerMask.GetMask("Player")) && !GameData.playerGrapplingHandler.isTracting)
+        {
+            GameData.playerManager.TakeDamage(spikeAttackDamage, aimDirection * spikeAttackKnockbackForce, 0.5f);
         }
     }
 

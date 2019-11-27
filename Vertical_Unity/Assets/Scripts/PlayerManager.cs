@@ -6,6 +6,7 @@ public class PlayerManager : MonoBehaviour
 {
     [Header("Initial Player Info")]
     public float maxhealth;
+    public float invulnerableTime;
     [Header("General debug settings")]
     public Color stunColor;
     public bool vulnerable;
@@ -16,6 +17,7 @@ public class PlayerManager : MonoBehaviour
     private float currentHealth;
     private Rigidbody2D rb;
     private Color baseColor;
+    private float invulnerableTimeRemaining;
 
     void Start()
     {
@@ -24,10 +26,20 @@ public class PlayerManager : MonoBehaviour
         baseColor = GetComponentInChildren<SpriteRenderer>().color;
         isDodging = false;
         isStunned = false;
+        invulnerableTimeRemaining = 0;
     }
 
     private void Update()
     {
+        if (invulnerableTimeRemaining > 0)
+        {
+            invulnerableTimeRemaining -= Time.deltaTime;
+        }
+        else
+        {
+            isVulnerable = true;
+        }
+
         isVulnerable = vulnerable ? isVulnerable : false;
     }
 
@@ -41,7 +53,8 @@ public class PlayerManager : MonoBehaviour
             GameData.playerMovement.Propel(knockBack, true, true);
             GameData.playerGrapplingHandler.ReleaseHook();
             StartCoroutine(Stun(stunTime));
-
+            invulnerableTimeRemaining = invulnerableTime;
+            isVulnerable = false;
             if (currentHealth <= 0)
             {
                 GetComponentInChildren<SpriteRenderer>().enabled = false;

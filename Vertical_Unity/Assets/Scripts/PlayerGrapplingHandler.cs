@@ -48,7 +48,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
     [HideInInspector] public bool isAiming;
     [HideInInspector] public GameObject currentHook;
     private Rigidbody2D hookRb;
-    private float timeBeforeNextShoot;
+    [HideInInspector] public float timeBeforeNextShoot;
     private GameObject selectedRing;
     private float subwidthAimAngle;
     private float firstAngle;
@@ -87,6 +87,9 @@ public class PlayerGrapplingHandler : MonoBehaviour
     private void Update()
     {
         ShootManager();
+
+        GameData.gameController.speedText.text = "Speed : " + (rb.velocity.magnitude > 0.01f ? rb.velocity.magnitude : 0);
+        GameData.gameController.debugText.text = "canShoot : " + canShoot;
     }
 
     private void FixedUpdate()
@@ -254,7 +257,8 @@ public class PlayerGrapplingHandler : MonoBehaviour
             ropePoints[1] = currentHook.transform.position;
             ropeRenderer.SetPositions(ropePoints);
 
-            tractionDirection = (currentHook.transform.position - transform.position).normalized;
+            tractionDirection = (currentHook.transform.position - transform.position);
+            tractionDirection.Normalize();
 
             if (canUseTraction && GameData.gameController.input.rightTriggerAxis == 1 && !GameData.playerMovement.isDashing)
             {
@@ -265,15 +269,13 @@ public class PlayerGrapplingHandler : MonoBehaviour
                 {
                     if(resetMomentumOnTraction)
                     {
-                        float startTractionVelocity = keepAllMomentum ? rb.velocity.magnitude : rb.velocity.magnitude * Mathf.Cos(Mathf.Pow(Mathf.Deg2Rad * Vector2.Angle(rb.velocity, tractionDirection), momentumAmplification));
-
+                        float startTractionVelocity = keepAllMomentum ? GameData.playerMovement.IsOnGround() ? 0 : rb.velocity.magnitude : rb.velocity.magnitude * Mathf.Cos(Mathf.Pow(Mathf.Deg2Rad * Vector2.Angle(rb.velocity, tractionDirection), momentumAmplification));
                         if (startTractionVelocity < 0)
                         {
                             startTractionVelocity = 0;
                         }
 
                         startTractionVelocity += startTractionPropulsion;
-
                         rb.velocity = startTractionVelocity * tractionDirection;
                     }
                     else
@@ -333,6 +335,11 @@ public class PlayerGrapplingHandler : MonoBehaviour
             if (ringHit && !ringHit.collider.CompareTag("Ring") && !ringHit.collider.CompareTag("Enemy"))
             {
                 BreakRope();
+            }
+
+            if(attachedObject.CompareTag("Enemy") && attachedObject.GetComponent<EnemyHandler>().isDead)
+            {
+                ReleaseHook();
             }
         }
 

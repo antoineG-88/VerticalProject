@@ -2,9 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
+    public AstarPath astarPath;
+    public Text speedText;
+    public Text debugText;
     public List<Effect> enemyEffects;
     [HideInInspector] public InputManager input;
 
@@ -18,6 +22,11 @@ public class GameController : MonoBehaviour
         {
             enemyEffects[i].index = i;
         }
+    }
+
+    private void Start()
+    {
+        astarPath.graphs[0].Scan();
     }
 
     private void Update()

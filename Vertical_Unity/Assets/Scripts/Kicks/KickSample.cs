@@ -17,10 +17,13 @@ public class KickSample: Kick
     public Vector2 addedEnemyKnockBack;
     public override IEnumerator Use(GameObject player, Quaternion kickRotation)
     {
-        GameObject kickEffect = Instantiate(kickVisualEffect, player.transform);
+        GameObject kickEffect = Instantiate(kickVisualEffect, player.transform.position, player.transform.rotation);
         kickEffect.transform.localRotation = Quaternion.Euler(0.0f, 0.0f, Vector2.SignedAngle(Vector2.right, GameData.playerGrapplingHandler.tractionDirection));
 
-        yield return new WaitForSeconds(timeBeforeKick);
+        if(timeBeforeKick > 0)
+        {
+            yield return new WaitForSeconds(timeBeforeKick);
+        }
 
         GameData.playerAttackManager.Hit();
     }

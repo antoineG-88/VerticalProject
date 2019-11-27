@@ -11,6 +11,7 @@ public abstract class EnemyHandler : MonoBehaviour
     public Color hurtColor;
     public float invulnerableTime;
     public float gravityForce;
+    public float deathAnimationTime;
     [Header("NoGravity Effect settings")]
     public float noGravityLinearDrag;
     public float noGravityAngularDrag;
@@ -58,6 +59,7 @@ public abstract class EnemyHandler : MonoBehaviour
     [HideInInspector] public bool facingRight;
     [HideInInspector] public bool isOnGround;
     [HideInInspector] public bool avoidEnemies;
+    [HideInInspector] public bool isDead;
 
     [HideInInspector] public float slowEffectScale; //a mettre en multiplicateur sur les variables affecté par le slow
     [HideInInspector] public float[] currentEffects;
@@ -94,6 +96,7 @@ public abstract class EnemyHandler : MonoBehaviour
         provoked = false;
         playerInSight = false;
         avoidEnemies = true;
+        isDead = false;
         currentHealth = maxHealth;
         pJumpCDRemaining = 0;
         currentEffects = new float[GameData.gameController.enemyEffects.Count];
@@ -447,7 +450,10 @@ public abstract class EnemyHandler : MonoBehaviour
 
     public IEnumerator DeathAnimation()
     {
-        yield return new WaitForSeconds(0.5f);
+        isDead = true;
+        SetEffect(Effect.NoControl, 50.0f, false);
+        // death Animation
+        yield return new WaitForSeconds(deathAnimationTime);
         Destroy(gameObject);
     }
 
@@ -459,7 +465,7 @@ public abstract class EnemyHandler : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collider)
     {
-        if (collider.CompareTag("Hook") && !GameData.playerGrapplingHandler.isTracting && !isInvulnerable && currentHealth > 0 && !GameData.playerGrapplingHandler.isHooked)
+        if (collider.CompareTag("Hook") && !GameData.playerGrapplingHandler.isTracting && !isInvulnerable && currentHealth > 0 && !GameData.playerGrapplingHandler.isHooked && !isDead)
         {
             GameData.playerGrapplingHandler.AttachHook(gameObject);
         }
