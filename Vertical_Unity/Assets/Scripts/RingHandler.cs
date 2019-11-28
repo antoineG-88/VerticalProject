@@ -6,7 +6,7 @@ public class RingHandler : MonoBehaviour
 {
     private void OnTriggerEnter2D(Collider2D collider)
     {
-        if(collider.CompareTag("Hook"))
+        if(collider.CompareTag("Hook") && GameData.playerGrapplingHandler.attachedObject != gameObject)
         {
             GameData.playerGrapplingHandler.AttachHook(gameObject);
         }
