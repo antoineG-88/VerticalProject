@@ -157,7 +157,7 @@ public class WatchBot : EnemyHandler
                 timebeforeRangeAttack -= Time.deltaTime;
                 if (timebeforeRangeAttack <= 0)
                 {
-                    //RangeAttack();
+                    RangeAttack();
                 }
             }
         }

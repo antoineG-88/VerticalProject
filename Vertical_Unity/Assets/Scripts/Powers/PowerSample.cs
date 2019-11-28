@@ -26,5 +26,6 @@ public class PowerSample : Power
         }
 
         yield return new WaitForFixedUpdate();
+        yield return new WaitForSeconds(0.2f);
     }
 }
