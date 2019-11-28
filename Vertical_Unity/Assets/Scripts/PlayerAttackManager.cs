@@ -74,39 +74,53 @@ public class PlayerAttackManager : MonoBehaviour
         GameObject attachedObject = GameData.playerGrapplingHandler.attachedObject;
         GameData.playerGrapplingHandler.ReleaseHook();
 
-        if (currentKick.HitTest(attachedObject, ref hitColliders) && attachedObject.CompareTag("Enemy"))
+        if (currentKick.HitTest(attachedObject, ref hitColliders) && (attachedObject.CompareTag("Enemy") || attachedObject.CompareTag("Ring")))
         {
-            EnemyHandler enemy = attachedObject.GetComponent<EnemyHandler>();
-            successfullKick = !enemy.TestCounter();
-            if (successfullKick)
+            if(attachedObject.CompareTag("Enemy"))
             {
-                if (!currentKick.isAOE)
+                EnemyHandler enemy = attachedObject.GetComponent<EnemyHandler>();
+                successfullKick = !enemy.TestCounter();
+
+                if (successfullKick)
                 {
-                    currentKick.DealDamageToEnemy(enemy);
-                }
-                else
-                {
-                    foreach(Collider2D collider in hitColliders)
+                    if (!currentKick.isAOE)
                     {
-                        if(collider.CompareTag("Enemy"))
+                        currentKick.DealDamageToEnemy(enemy);
+                    }
+                    else
+                    {
+                        foreach (Collider2D collider in hitColliders)
                         {
-                            currentKick.DealDamageToEnemy(collider.GetComponent<EnemyHandler>());
+                            if (collider.CompareTag("Enemy"))
+                            {
+                                currentKick.DealDamageToEnemy(collider.GetComponent<EnemyHandler>());
+                            }
                         }
                     }
-                }
 
-                if(Vector2.Distance(transform.position, attachedObject.transform.position) < currentKick.perfectTimingMaximumDistance)
-                {
-                    currentKick.ApplyPerfectTimingEffect(enemy);
-                }
+                    if (Vector2.Distance(transform.position, attachedObject.transform.position) < currentKick.perfectTimingMaximumDistance)
+                    {
+                        currentKick.ApplyPerfectTimingEffect(enemy);
+                    }
 
-                if(reAimMode)
-                {
-                    StartCoroutine(ReAim());
+                    if (reAimMode)
+                    {
+                        StartCoroutine(ReAim());
+                    }
+                    else
+                    {
+                        StartCoroutine(Repropulsion());
+                    }
                 }
-                else
+            }
+            else
+            {
+                foreach (Collider2D collider in hitColliders)
                 {
-                    StartCoroutine(Repropulsion());
+                    if (collider.CompareTag("Enemy"))
+                    {
+                        currentKick.DealDamageToEnemy(collider.GetComponent<EnemyHandler>());
+                    }
                 }
             }
         }

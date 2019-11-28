@@ -41,9 +41,9 @@ public class InputManager : MonoBehaviour
             leftJoystickHorizontal = Input.GetAxisRaw("Horizontal");
             leftJoystickVertical = Input.GetAxisRaw("Vertical");
 
-            rightTriggerAxis = Input.GetMouseButton(0) ? 1 : 0;
-            leftTriggerAxis = Input.GetKey(KeyCode.A) ? 1 : 0;
-            rightBumper = Input.GetMouseButton(1);
+            rightTriggerAxis = Input.GetButton("Tract") ? 1 : 0;
+            leftTriggerAxis = Input.GetButton("Power") ? 1 : 0;
+            rightBumper = Input.GetButton("Kick");
         }
         else
         {
@@ -57,7 +57,7 @@ public class InputManager : MonoBehaviour
             rightBumper = Input.GetButton("RBButton");
         }
 
-        jump = Input.GetButton("AButton") || Input.GetButton("Jump") ? true : false;
+        jump = Input.GetButton("AButton") || Input.GetButton("Dash") ? true : false;
 
         if (rtaFlag && !rightTriggerDown && rightTriggerAxis > 0.1f)
         {

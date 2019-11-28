@@ -25,6 +25,7 @@ public abstract class Kick : ScriptableObject
     {
         bool hasHit = false;
         ContactFilter2D contactFilter = new ContactFilter2D();
+        contactFilter.NoFilter();
         List<Collider2D> colliders = new List<Collider2D>();
         Physics2D.OverlapBox((Vector2)GameData.playerMovement.transform.position + GameData.playerGrapplingHandler.tractionDirection * hitCollidingSize.x / 2, hitCollidingSize, Vector2.SignedAngle(Vector2.right, GameData.playerGrapplingHandler.tractionDirection), contactFilter, colliders);
         foreach(Collider2D collider in colliders)

@@ -197,6 +197,7 @@ MonoBehaviour:
   facingRight: 0
   isOnGround: 0
   avoidEnemies: 0
+  isDead: 0
   slowEffectScale: 0
   currentEffects: []
   currentEffectFx: []
@@ -228,7 +229,7 @@ MonoBehaviour:
   rangeAttackDelay: 0.2
   projectileSpawnDistance: 0.5
   projectileKnockbackForce: 3
-  projectileLifeTime: 0.5
+  projectileLifeTime: 0.8
   spikeAttackRange: 2
   spikeAttackDelay: 0.3
   spikeAttackDamage: 2
