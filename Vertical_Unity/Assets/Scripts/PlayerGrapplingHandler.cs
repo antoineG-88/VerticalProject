@@ -43,7 +43,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
     public bool displayAutoAimRaycast;
     
     private Rigidbody2D rb;
-    private Vector2 aimDirection;
+    [HideInInspector] public Vector2 aimDirection;
     private LineRenderer ropeRenderer;
     [HideInInspector] public bool isAiming;
     [HideInInspector] public GameObject currentHook;
