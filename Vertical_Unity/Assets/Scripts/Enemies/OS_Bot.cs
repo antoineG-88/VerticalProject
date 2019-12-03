@@ -153,8 +153,8 @@ public class OS_Bot : EnemyHandler
             {
                 laserLockLine.enabled = true;
                 laserLockLine = GetComponent<LineRenderer>();
-                laserLockLine.SetPosition(0, osbot.transform.position);
-                laserLockLine.SetPosition(1, playerMovement.transform.position);
+               // laserLockLine.SetPosition(0, Osbot.transform.position);
+               // laserLockLine.SetPosition(1, playerMovement.transform.position);
 
                 timebeforeRangeAttack -= Time.deltaTime;
                 if (timebeforeRangeAttack <= 0)
