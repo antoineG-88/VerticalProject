@@ -34,7 +34,7 @@ public class PlayerMovement : MonoBehaviour
     [HideInInspector] public bool isAffectedbyGravity;
     [HideInInspector] public float gravityForce;
     [HideInInspector] public Vector2 targetVelocity;
-    private Rigidbody2D rb;
+    [HideInInspector] public Rigidbody2D rb;
     private float addedXVelocity;
     private bool jumpFlag;
     private float timeBeforeControl;

@@ -258,6 +258,16 @@ PrefabInstance:
       propertyPath: tractionForce
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 2276650194064215076, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
+        type: 3}
+      propertyPath: keepAim
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2276650194064215076, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
+        type: 3}
+      propertyPath: minAttachDistance
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 4503195422415338473, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -545,12 +555,12 @@ PrefabInstance:
     - target: {fileID: 7159774794506747198, guid: 37769676b309ce24491c682d036f2640,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2.592715
+      value: -3.44
       objectReference: {fileID: 0}
     - target: {fileID: 7159774794506747198, guid: 37769676b309ce24491c682d036f2640,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 34.01703
+      value: 32.74
       objectReference: {fileID: 0}
     - target: {fileID: 7159774794506747198, guid: 37769676b309ce24491c682d036f2640,
         type: 3}
@@ -687,44 +697,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 77737637}
   m_CullTransparentMesh: 0
---- !u!1 &81093344 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1976976933381308195, guid: a8a52d73fb1b86c44b482db3aeebf115,
-    type: 3}
-  m_PrefabInstance: {fileID: 924505684}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &81093345
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 81093344}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7618dbccc45ad0d4daf0925538d22223, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  useWallAvoidance: 1
-  followCenterOffset: {x: 0, y: 0}
-  baseLerpSpeed: 0.05
-  edgePointOffset: 1
-  aimOffsetLength: 3
-  roomWidth: 20
-  displayDebugs: 1
-  edges:
-  - {fileID: 1887893707}
-  - {fileID: 1076627225}
-  - {fileID: 45443854}
-  - {fileID: 1919521185}
-  roomsPos:
-  - {fileID: 553682223}
-  - {fileID: 581692552}
-  - {fileID: 238034251}
-  - {fileID: 1314734905}
-  - {fileID: 377461212}
-  - {fileID: 451134315}
-  followPlayer: 0
 --- !u!1001 &95394457
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2823,13 +2795,103 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
         type: 3}
+      propertyPath: roomsPos.Array.size
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
+        type: 3}
+      propertyPath: edges.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
+        type: 3}
       propertyPath: useWallAvoidance
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
         type: 3}
       propertyPath: baseLerpSpeed
-      value: 0.2
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
+        type: 3}
+      propertyPath: edgePointOffset
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
+        type: 3}
+      propertyPath: aimOffsetLength
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
+        type: 3}
+      propertyPath: roomWidth
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
+        type: 3}
+      propertyPath: roomsPos.Array.data[0]
+      value: 
+      objectReference: {fileID: 553682223}
+    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
+        type: 3}
+      propertyPath: roomsPos.Array.data[1]
+      value: 
+      objectReference: {fileID: 581692552}
+    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
+        type: 3}
+      propertyPath: roomsPos.Array.data[2]
+      value: 
+      objectReference: {fileID: 238034251}
+    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
+        type: 3}
+      propertyPath: roomsPos.Array.data[3]
+      value: 
+      objectReference: {fileID: 1314734905}
+    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
+        type: 3}
+      propertyPath: roomsPos.Array.data[4]
+      value: 
+      objectReference: {fileID: 377461212}
+    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
+        type: 3}
+      propertyPath: roomsPos.Array.data[5]
+      value: 
+      objectReference: {fileID: 451134315}
+    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
+        type: 3}
+      propertyPath: edges.Array.data[0]
+      value: 
+      objectReference: {fileID: 1887893707}
+    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
+        type: 3}
+      propertyPath: edges.Array.data[1]
+      value: 
+      objectReference: {fileID: 1076627225}
+    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
+        type: 3}
+      propertyPath: edges.Array.data[2]
+      value: 
+      objectReference: {fileID: 45443854}
+    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
+        type: 3}
+      propertyPath: edges.Array.data[3]
+      value: 
+      objectReference: {fileID: 1919521185}
+    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
+        type: 3}
+      propertyPath: momentumOffsetAmplitude
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
+        type: 3}
+      propertyPath: maxMomentumOffset
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
+        type: 3}
+      propertyPath: displayDebugs
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a8a52d73fb1b86c44b482db3aeebf115, type: 3}
