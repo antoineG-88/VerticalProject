@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Pathfinding;
 
 public class LevelBuilder : MonoBehaviour
 {
@@ -33,7 +34,7 @@ public class LevelBuilder : MonoBehaviour
 
     private bool levelBuilt;
     private bool levelScanned;
-    private AstarPath astarPath;
+    private GridGraph gridGraph;
 
     public enum Direction { Up, Down, Right, Left };
 
@@ -50,6 +51,9 @@ public class LevelBuilder : MonoBehaviour
         if(levelBuilt && !levelScanned)
         {
             levelScanned = true;
+            gridGraph = (GridGraph)AstarPath.active.graphs[0];
+            gridGraph.center = new Vector3(0.0f, 0.0f, 0.0f);
+            gridGraph.SetDimensions(48, 48, 0.5f);
             AstarPath.active.Scan();
         }
     }
