@@ -487,7 +487,6 @@ Transform:
   - {fileID: 4503195423458372692}
   - {fileID: 1014211695}
   - {fileID: 269809584}
-  - {fileID: 1976976932958408759}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -508,24 +507,28 @@ MonoBehaviour:
   groundSlowing: 50
   airAcceleration: 10
   airSlowing: 1
+  airDragForce: 0
   jumpForce: 10
   baseGravityForce: 20
   jumpXVelocityGain: 0
-  dashDistance: 2
-  dashSpeed: 30
+  dashTime: 0
+  dashMaxSpeed: 0
+  dashStartSpeed: 0
+  dashAcceleration: 0
   dashStopDistance: 0.7
+  dashBreakRope: 0
+  dashCooldown: 0
+  invulnerableDash: 0
   dashVelocityKept: 15
   feetPos: {fileID: 4503195423458372692}
   groundCheckThickness: 0.05
   groundCheckWidth: 0.8
-  groundMask:
-    serializedVersion: 2
-    m_Bits: 256
   currentPlayerPlatform: {fileID: 0}
   inControl: 0
   isAffectedbyGravity: 0
   gravityForce: 30
   targetVelocity: {x: 0, y: 0}
+  isDashing: 0
 --- !u!114 &2276650194064215076
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -552,6 +555,7 @@ MonoBehaviour:
   tractionForce: 8
   tractionAirDensity: 0
   maxTractionSpeed: 15
+  keepAllMomentum: 0
   momentumAmplification: 1
   startTractionPropulsion: 8
   velocityKeptReleasingHook: 70
@@ -563,10 +567,12 @@ MonoBehaviour:
   hookPrefab: {fileID: 2211880245883361801, guid: 041f2b0a20ef83746947ff243b04874a,
     type: 3}
   ringHighLighterO: {fileID: 0}
+  grapplingStartPointO: {fileID: 0}
   ghostHookColor: {r: 1, g: 0.65, b: 0, a: 0.4}
   displayAutoAimRaycast: 0
   isAiming: 0
   currentHook: {fileID: 0}
+  timeBeforeNextShoot: 0
   isHooked: 0
   attachedObject: {fileID: 0}
   tractionDirection: {x: 0, y: 0}
@@ -585,6 +591,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ace0fff1111e0d94694c028e1af4ace0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentPower: {fileID: 0}
   currentKick: {fileID: 11400000, guid: b689cc1bf754caf4a82b13749e16d858, type: 2}
   collideSize: {x: 1, y: 1}
   kickPreview: {fileID: 0}
@@ -608,9 +615,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxhealth: 800
+  invulnerableTime: 0
   stunColor: {r: 0.7264151, g: 0.099368125, b: 0.099368125, a: 1}
+  vulnerable: 0
   isVulnerable: 1
   isDodging: 0
+  isStunned: 0
 --- !u!50 &4503195422415338475
 Rigidbody2D:
   serializedVersion: 4
@@ -803,83 +813,3 @@ Transform:
   m_Father: {fileID: 4503195422415338473}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &695594857
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 4503195422415338473}
-    m_Modifications:
-    - target: {fileID: 1976976933381308195, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: m_Name
-      value: Main Camera
-      objectReference: {fileID: 0}
-    - target: {fileID: 1976976933381308254, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1976976933381308254, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1976976933381308254, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -10
-      objectReference: {fileID: 0}
-    - target: {fileID: 1976976933381308254, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1976976933381308254, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1976976933381308254, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1976976933381308254, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1976976933381308254, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 1976976933381308254, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1976976933381308254, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1976976933381308254, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1976976933381308253, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: orthographic size
-      value: 6
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: a8a52d73fb1b86c44b482db3aeebf115, type: 3}
---- !u!4 &1976976932958408759 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1976976933381308254, guid: a8a52d73fb1b86c44b482db3aeebf115,
-    type: 3}
-  m_PrefabInstance: {fileID: 695594857}
-  m_PrefabAsset: {fileID: 0}

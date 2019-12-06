@@ -43,7 +43,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
     public bool displayAutoAimRaycast;
     
     private Rigidbody2D rb;
-    private Vector2 aimDirection;
+    [HideInInspector] public Vector2 aimDirection;
     private LineRenderer ropeRenderer;
     [HideInInspector] public bool isAiming;
     [HideInInspector] public GameObject currentHook;
@@ -176,18 +176,25 @@ public class PlayerGrapplingHandler : MonoBehaviour
                         rayPoints[0] = raycastOrigin;
                         rayPoints[1] = (new Vector2(aimDirection.x, -aimDirection.y) * ropeLength) + raycastOrigin;
 
+                        RaycastHit2D groundGrappleRay = Physics2D.Raycast(transform.position, new Vector2(aimDirection.x, -aimDirection.y), minAttachDistance, LayerMask.GetMask("Ground"));
                         RaycastHit2D grappleRay = Physics2D.Raycast(raycastOrigin, new Vector2(aimDirection.x, -aimDirection.y), ropeLength, LayerMask.GetMask("Ring", "Ground", "Enemy"));
-                        if(grappleRay)
+                        if(!groundGrappleRay)
                         {
-                            rayPoints[1] = grappleRay.point;
+                            if (grappleRay)
+                            {
+                                rayPoints[1] = grappleRay.point;
+                                if (grappleRay.collider.CompareTag("Ring") || grappleRay.collider.CompareTag("Enemy"))
+                                {
+                                    selectedRing = grappleRay.collider.gameObject;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            ropeRenderer.enabled = false;
                         }
 
                         ropeRenderer.SetPositions(rayPoints);
-
-                        if (grappleRay && (grappleRay.collider.CompareTag("Ring") || grappleRay.collider.CompareTag("Enemy")))
-                        {
-                            selectedRing = grappleRay.collider.gameObject;
-                        }
                     }
                 }
 
@@ -307,6 +314,10 @@ public class PlayerGrapplingHandler : MonoBehaviour
                 if (rb.velocity.magnitude > maxTractionSpeed)
                 {
                     rb.velocity = tractionDirection * maxTractionSpeed;
+                }
+                else if(rb.velocity.magnitude < startTractionPropulsion)
+                {
+                    rb.velocity = tractionDirection * startTractionPropulsion;
                 }
 
                 isTracting = true;

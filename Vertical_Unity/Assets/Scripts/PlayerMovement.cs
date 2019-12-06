@@ -15,8 +15,10 @@ public class PlayerMovement : MonoBehaviour
     public float baseGravityForce;
     [Range(0, 100)] public float jumpXVelocityGain;
     [Header("Dash settings")]
-    public float dashDistance;
-    public float dashSpeed;
+    public float dashTime;
+    public float dashMaxSpeed;
+    public float dashStartSpeed;
+    public float dashAcceleration;
     public float dashStopDistance;
     public bool dashBreakRope;
     public float dashCooldown;
@@ -26,14 +28,13 @@ public class PlayerMovement : MonoBehaviour
     public Transform feetPos;
     public float groundCheckThickness = 0.1f;
     public float groundCheckWidth = 1.0f;
-    public LayerMask groundMask;
 
     [HideInInspector] public PlatformHandler currentPlayerPlatform;
     [HideInInspector] public bool inControl;
     [HideInInspector] public bool isAffectedbyGravity;
     [HideInInspector] public float gravityForce;
     [HideInInspector] public Vector2 targetVelocity;
-    private Rigidbody2D rb;
+    [HideInInspector] public Rigidbody2D rb;
     private float addedXVelocity;
     private bool jumpFlag;
     private float timeBeforeControl;
@@ -142,7 +143,7 @@ public class PlayerMovement : MonoBehaviour
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y - gravityForce * Time.fixedDeltaTime);
         }
 
-        if(!IsOnGround() && !GameData.playerGrapplingHandler.isTracting)
+        if(!IsOnGround() && !GameData.playerGrapplingHandler.isTracting && !isDashing)
         {
             rb.velocity -= rb.velocity.normalized * airDragForce * Time.fixedDeltaTime;
         }
@@ -151,7 +152,7 @@ public class PlayerMovement : MonoBehaviour
     public bool IsOnGround()
     {
         bool isGrounded = false;
-        if (Physics2D.OverlapBox(feetPos.position, new Vector2(groundCheckWidth, groundCheckThickness), 0.0f, groundMask) != null)
+        if (Physics2D.OverlapBox(feetPos.position, new Vector2(groundCheckWidth, groundCheckThickness), 0.0f, LayerMask.GetMask("Ground", "Platform")) != null)
         {
             isGrounded = true;
         }
@@ -202,7 +203,7 @@ public class PlayerMovement : MonoBehaviour
         {
             GameData.playerGrapplingHandler.ReleaseHook();
         }
-        dashCooldownRemaining = (dashDistance / dashSpeed) + 1;
+        dashCooldownRemaining = dashTime + 1;
         isDashing = true;
         isAffectedbyGravity = false;
         Vector2 dashDirection = new Vector2(GameData.gameController.input.leftJoystickHorizontal, GameData.gameController.input.leftJoystickVertical).normalized;
@@ -211,8 +212,8 @@ public class PlayerMovement : MonoBehaviour
             dashDirection = Vector2.up;
         }
 
-        Propel(dashDirection * dashSpeed, true, true);
-        float timer = dashDistance / dashSpeed;
+        float currentSpeed = dashStartSpeed;
+        float timer = dashTime;
         Vector2 origin = transform.position;
 
         while (!GameData.playerManager.isStunned && timer > 0 && !Physics2D.Raycast(transform.position, dashDirection, dashStopDistance, LayerMask.GetMask("Ground")))
@@ -223,17 +224,28 @@ public class PlayerMovement : MonoBehaviour
                 GameData.playerManager.isDodging = true;
             }
 
-            yield return new WaitForFixedUpdate();
+            rb.velocity = dashDirection * currentSpeed;
+            currentSpeed += dashAcceleration * Time.fixedDeltaTime;
+
+            if (rb.velocity.magnitude > dashMaxSpeed)
+            {
+                rb.velocity = dashDirection * dashMaxSpeed;
+            }
+
+            if(timer > 0)
+            {
+                yield return new WaitForFixedUpdate();
+            }
         }
 
-        if(timer <= 0 && !Physics2D.Raycast(origin, dashDirection, dashDistance, LayerMask.GetMask("Ground")))
+        /*if(timer <= 0 && !Physics2D.Raycast(origin, dashDirection, dashDistance, LayerMask.GetMask("Ground")))
         {
             transform.position = origin + dashDirection * dashDistance;
-        }
+        }*/
 
         GameData.playerManager.isDodging = false;
         isAffectedbyGravity = true;
-        Propel(dashDirection * dashSpeed * dashVelocityKept / 100, true, true);
+        Propel(dashDirection * currentSpeed * dashVelocityKept / 100, true, true);
         isDashing = false;
         dashCooldownRemaining = dashCooldown;
     }
