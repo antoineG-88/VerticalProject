@@ -22,6 +22,7 @@ public class Room
                 if(part.partPrefab != null)
                 {
                     roomParts[floorIndex, partIndex] = part;
+                    part.room = this;
                 }
                 else
                 {
@@ -47,7 +48,7 @@ public class Room
     {
         public GameObject partPrefab;
         public bool[] openings = new bool[4];
-        [HideInInspector]
-        public int roomIndex;
+        [HideInInspector] public int roomIndex;
+        [HideInInspector] public Room room;
     }
 }

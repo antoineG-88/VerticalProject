@@ -315,29 +315,41 @@ public class LevelBuilder : MonoBehaviour
                         {
                             selectedRoom = potentialRoom;
                             Debug.Log("Room found ! The room " + selectedRoom.name + " has all needed features. Placed at Floor " + (int)gridIndexes.x + " Zone " + (int)gridIndexes.y);
+
+                            for (floorNumber = 0; floorNumber < selectedRoom.roomParts.GetLength(0); floorNumber++)
+                            {
+                                for (int zoneNumber = 0; zoneNumber < selectedRoom.roomParts.GetLength(1); zoneNumber++)
+                                {
+                                    Vector2 relativeIndexes = new Vector2(floorNumber - connectedPartIndexes.x, zoneNumber - connectedPartIndexes.y);
+                                    if (selectedRoom.roomParts[floorNumber, zoneNumber] != null)
+                                    {
+                                        towerGrid[(int)gridIndexes.x + (int)relativeIndexes.x, (int)gridIndexes.y + (int)relativeIndexes.y] = selectedRoom.roomParts[floorNumber, zoneNumber];
+                                        Debug.Log(selectedRoom.name + " part placed on " + (int)gridIndexes.x + (int)relativeIndexes.x + ", " + (int)gridIndexes.y + (int)relativeIndexes.y);
+                                    }
+                                    else
+                                    {
+                                        towerGrid[(int)gridIndexes.x + (int)relativeIndexes.x, (int)gridIndexes.y + (int)relativeIndexes.y] = null;
+                                        Debug.Log(selectedRoom.name + " hole placed on " + (int)gridIndexes.x + (int)relativeIndexes.x + ", " + (int)gridIndexes.y + (int)relativeIndexes.y);
+                                    }
+                                }
+                            }
+
+                            Debug.Log("Now ckecking if" + selectedRoom.name + "is creating unaccessible space");
+
+                            List<Vector2> accessibleZone = new List<Vector2>();
+
+                            for (floorNumber = 0; floorNumber < selectedRoom.roomParts.GetLength(0); floorNumber++)
+                            {
+                                for (int zoneNumber = 0; zoneNumber < selectedRoom.roomParts.GetLength(1); zoneNumber++)
+                                {
+                                    Vector2 relativeIndexes = new Vector2(floorNumber - connectedPartIndexes.x, zoneNumber - connectedPartIndexes.y);
+                                    if (selectedRoom.roomParts[floorNumber, zoneNumber] != null)
+                                    {
+
+                                    }
+                                }
+                            }
                         }
-                    }
-                }
-            }
-        }
-
-
-        if (selectedRoom != null)
-        {
-            for (int floorNumber = 0; floorNumber < selectedRoom.roomParts.GetLength(0); floorNumber++)
-            {
-                for (int zoneNumber = 0; zoneNumber < selectedRoom.roomParts.GetLength(1); zoneNumber++)
-                {
-                    Vector2 relativeIndexes = new Vector2(floorNumber - connectedPartIndexes.x, zoneNumber - connectedPartIndexes.y);
-                    if (selectedRoom.roomParts[floorNumber, zoneNumber] != null)
-                    {
-                        towerGrid[(int)gridIndexes.x + (int)relativeIndexes.x, (int)gridIndexes.y + (int)relativeIndexes.y] = selectedRoom.roomParts[floorNumber, zoneNumber];
-                        Debug.Log(selectedRoom.name + " part placed on " + (int)gridIndexes.x + (int)relativeIndexes.x + ", " + (int)gridIndexes.y + (int)relativeIndexes.y);
-                    }
-                    else
-                    {
-                        towerGrid[(int)gridIndexes.x + (int)relativeIndexes.x, (int)gridIndexes.y + (int)relativeIndexes.y] = null;
-                        Debug.Log(selectedRoom.name + " hole placed on " + (int)gridIndexes.x + (int)relativeIndexes.x + ", " + (int)gridIndexes.y + (int)relativeIndexes.y);
                     }
                 }
             }
@@ -346,7 +358,7 @@ public class LevelBuilder : MonoBehaviour
         return !noMoreRoomAvailable;
     }
 
-    public bool FindNextOpening()
+    private bool FindNextOpening()
     {
         bool openingAvailable = false;
         Vector2 openingIndexes = Vector2.zero;
@@ -486,7 +498,7 @@ public class LevelBuilder : MonoBehaviour
     /// <param name="floorToCheck">The floor number where the part will be checked</param>
     /// <param name="zoneToCheck">The zone number where the part will be checked</param>
     /// <returns></returns>
-    public int CheckFreeOpening(Room.RoomPart part ,int floorToCheck, int zoneToCheck)
+    private int CheckFreeOpening(Room.RoomPart part ,int floorToCheck, int zoneToCheck)
     {
         bool isFree = false;
         int lookedOpening = 0;
@@ -549,7 +561,7 @@ public class LevelBuilder : MonoBehaviour
                         }
                         break;
                     default:
-                        Debug.Log("The opening direction found does correspond to any known");
+                        Debug.Log("The opening direction found does not correspond to any known");
                         break;
                 }
 
@@ -564,7 +576,16 @@ public class LevelBuilder : MonoBehaviour
         return openingFound;
     }
 
-    public IEnumerator CreateTower()
+    private bool CheckUnaccessibleZones(Vector2 startGridIndexes, ref List<Vector2> accessibleZones)
+    {
+        bool isBlocking = true;
+
+
+
+        return isBlocking;
+    }
+
+    private IEnumerator CreateTower()
     {
         Vector2 originGridPos = new Vector2(bottomCenterTowerPos.x - towerWidth * tileLength / 2 + tileLength / 2, bottomCenterTowerPos.y + tileLength / 2);
         for(int floorNumber = 0; floorNumber < towerHeight; floorNumber++)
@@ -591,7 +612,7 @@ public class LevelBuilder : MonoBehaviour
         Debug.Log("Tower created.");
     }
 
-    public void CreateTile(int gridFloor, int gridZone)
+    private void CreateTile(int gridFloor, int gridZone)
     {
         Vector2 originGridPos = new Vector2(bottomCenterTowerPos.x - towerWidth * tileLength / 2 + tileLength / 2, bottomCenterTowerPos.y + tileLength / 2);
         if (towerGrid[gridFloor, gridZone] != null)
