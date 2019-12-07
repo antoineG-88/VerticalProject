@@ -12,8 +12,10 @@ public class OverBot : EnemyHandler
     public float patrolRadius;
     public float stopDistance;
     public float fleeDistance;
-    [Header("Range-attack settings")]
+    [Header("Rush-attack settings")]
+    public float rushTime;
     public float rangeAttackTriggerRange;
+    public float rushVelocity;
     public int projectileNumber;
     public float attackWidthAngle;
     public float projectileSpeed;
@@ -23,8 +25,6 @@ public class OverBot : EnemyHandler
     public float projectileSpawnDistance;
     public float projectileKnockbackForce;
     public float projectileLifeTime;
-    public float shoot_timer = 3.0f;
-    public float t = 0;
     [Header("Debug settings")]
     public GameObject particleDebugPrefab;
     public GameObject projectilePrefab;
@@ -37,6 +37,7 @@ public class OverBot : EnemyHandler
     private float timebeforeRangeAttack;
     private float rangeAttackCooldownRemaining;
     private Vector2 aimDirection;
+
 
     private void Start()
     {
@@ -148,13 +149,13 @@ public class OverBot : EnemyHandler
         if (isAtRange && !Is(Effect.Stun) && !Is(Effect.Hack) && !Is(Effect.NoControl))
         {
             transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, Vector2.SignedAngle(Vector2.right, aimDirection)));
-
+                    
             if (rangeAttackCooldownRemaining <= 0)
             {
                 timebeforeRangeAttack -= Time.deltaTime;
                 if (timebeforeRangeAttack <= 0)
                 {
-                    RangeAttack();
+                   StartCoroutine( RushAttack());
                 }
             }
         }
@@ -175,33 +176,54 @@ public class OverBot : EnemyHandler
 
     }
 
-    private void RangeAttack()
+    private IEnumerator RushAttack()
     {
         rangeAttackCooldownRemaining = rangeAttackCooldown;
 
+        Vector2 rushDirection = GameData.playerMovement.transform.position - transform.position;
+        float timer = rushTime;
+        rushDirection.Normalize();
+        SetEffect(Effect.NoControl, rushTime, false);
+        while (timer > 0)
+        {
+            rb.velocity = rushDirection * rushVelocity;
+            Debug.Log(rb.velocity);
+            timer -= Time.fixedDeltaTime;
+            yield return new WaitForFixedUpdate();
+        }
+        SetEffect(Effect.NoControl, 0, false);
+        // Fin du rush 
+
+
         float subAngle = attackWidthAngle / (projectileNumber - 1);
         float firstAngle = - attackWidthAngle / 2;
-        for (int i = 0; i < projectileNumber; i++)
+        for(int x = 0; x<10; x++)
         {
-            float relativeAngle = firstAngle + subAngle * i;
-            float angledDirection = Vector2.SignedAngle(Vector2.right, aimDirection) + relativeAngle;
-            Vector2 direction = new Vector2(Mathf.Cos((angledDirection) * Mathf.Deg2Rad), Mathf.Sin((angledDirection) * Mathf.Deg2Rad));
+            for (int i = 0; i < projectileNumber; i++)
 
-            Vector2 spawnPos = (Vector2)transform.position + direction * projectileSpawnDistance;
-            GameObject newProjectile = Instantiate(projectilePrefab, spawnPos, Quaternion.identity);
-            ProjectileHandler newProjectileHandler = newProjectile.GetComponent<ProjectileHandler>();
-            t += Time.deltaTime;
-            if (t > shoot_timer)
             {
-                t = 0;
+                float relativeAngle = firstAngle + subAngle * i;
+                float angledDirection = Vector2.SignedAngle(Vector2.right, aimDirection) + relativeAngle;
+                Vector2 direction = new Vector2(Mathf.Cos((angledDirection) * Mathf.Deg2Rad), Mathf.Sin((angledDirection) * Mathf.Deg2Rad));
+
+                Vector2 spawnPos = (Vector2)transform.position + direction * projectileSpawnDistance;
+                GameObject newProjectile = Instantiate(projectilePrefab, spawnPos, Quaternion.identity);
+                ProjectileHandler newProjectileHandler = newProjectile.GetComponent<ProjectileHandler>();
+
+                newProjectileHandler.initialVelocity = direction * projectileSpeed;
+                newProjectileHandler.knockBackForce = projectileKnockbackForce;
+                newProjectileHandler.destroyTime = 0;
+                newProjectileHandler.damage = projectileDamage;
+                newProjectileHandler.lifeTime = projectileLifeTime;
             }
-            newProjectileHandler.initialVelocity = direction * projectileSpeed;
-            newProjectileHandler.knockBackForce = projectileKnockbackForce;
-            newProjectileHandler.destroyTime = 0;
-            newProjectileHandler.damage = projectileDamage;
-            newProjectileHandler.lifeTime = projectileLifeTime;
+            yield return new WaitForSeconds(0.1f);
         }
+            
+        
+
     }
+
+
 
     public override bool TestCounter()
     {

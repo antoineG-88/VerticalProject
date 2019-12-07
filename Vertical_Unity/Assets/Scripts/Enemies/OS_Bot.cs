@@ -12,17 +12,14 @@ public class OS_Bot : EnemyHandler
     public float patrolRadius;
     public float stopDistance;
     public float fleeDistance;
-    [Header("Range-attack settings")]
-    public float rangeAttackTriggerRange;
-    public int projectileNumber;
-    public float attackWidthAngle;
-    public float projectileSpeed;
-    public int projectileDamage;
-    public float rangeAttackCooldown;
-    public float rangeAttackDelay;
-    public float projectileSpawnDistance;
-    public float projectileKnockbackForce;
-    public float projectileLifeTime;
+    [Header("Snip-attack settings")]
+    public float snipAttackCooldown;
+    public float snipAttackLockRange;
+    public float lockingTime;
+    public float chargingTime;
+    public float laserDamage;
+    public float laserBeamTime;
+    public float laserStunTime;
     [Header("Debug settings")]
     public GameObject particleDebugPrefab;
     public GameObject projectilePrefab;
@@ -32,23 +29,24 @@ public class OS_Bot : EnemyHandler
     private bool isAtRange;
     private bool targetReached;
     private bool isFleeing;
-    private float timebeforeRangeAttack;
-    private float rangeAttackCooldownRemaining;
+    private float lockTimeRemaining;
+    private float snipAttackCooldownRemaining;
     private Vector2 aimDirection;
     private LineRenderer laserLockLine;
+    [HideInInspector] public bool isCharging;
 
     private void Start()
     {
         HandlerStart();
-
+        isCharging = false;
         isPatroling = false;
         provoked = false;
         isAtRange = false;
         isFleeing = false;
         laserLockLine = GetComponent<LineRenderer>();
         laserLockLine.enabled = false;
-        timebeforeRangeAttack = 0;
-        rangeAttackCooldownRemaining = 0;
+        lockTimeRemaining = 0;
+        snipAttackCooldownRemaining = 0;
     }
 
     private void Update()
@@ -145,53 +143,87 @@ public class OS_Bot : EnemyHandler
     {
         aimDirection = (GameData.playerMovement.transform.position - transform.position).normalized;
 
-        if (isAtRange && !Is(Effect.Stun) && !Is(Effect.Hack) && !Is(Effect.NoControl))
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, aimDirection, snipAttackLockRange, LayerMask.GetMask("Player", "Ground"));
+
+        if (isAtRange && !Is(Effect.Stun) && !Is(Effect.Hack) && hit && hit.collider.CompareTag("Player") && snipAttackCooldownRemaining <= 0)
         {
+            SetEffect(Effect.NoControl, 0.2f, false);
             transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, Vector2.SignedAngle(Vector2.right, aimDirection)));
+            lockTimeRemaining -= Time.deltaTime;
+            laserLockLine.enabled = true;
+            laserLockLine.SetPosition(0, transform.position);
+            laserLockLine.SetPosition(1, GameData.playerMovement.transform.position);
+            laserLockLine.startWidth = 0.1f;
+            laserLockLine.endWidth = 0.1f;
 
-            if (rangeAttackCooldownRemaining <= 0)
+            if (lockTimeRemaining <= 0)
             {
-                laserLockLine.enabled = true;
-                laserLockLine = GetComponent<LineRenderer>();
-               // laserLockLine.SetPosition(0, Osbot.transform.position);
-               // laserLockLine.SetPosition(1, playerMovement.transform.position);
-
-                timebeforeRangeAttack -= Time.deltaTime;
-                if (timebeforeRangeAttack <= 0)
-                {
-                    RangeAttack();
-                }
+                StartCoroutine(SnipAttack());
             }
         }
         else
         {
-            timebeforeRangeAttack = rangeAttackDelay;
+            lockTimeRemaining = lockingTime;
+            if(!isCharging)
+            {
+                laserLockLine.enabled = false;
+            }
         }
 
-        if (rangeAttackCooldownRemaining > 0)
+        if (snipAttackCooldownRemaining > 0)
         {
-            rangeAttackCooldownRemaining -= Time.deltaTime;
+            snipAttackCooldownRemaining -= Time.deltaTime;
         }
 
         float distanceToPlayer = Vector2.Distance(transform.position, GameData.playerMovement.transform.position);
 
-        isAtRange = distanceToPlayer < rangeAttackTriggerRange && distanceToPlayer > fleeDistance && provoked ? true : false;
+        isAtRange = distanceToPlayer < snipAttackLockRange && distanceToPlayer > fleeDistance && provoked ? true : false;
         isFleeing = distanceToPlayer < fleeDistance && provoked ? true : false;
 
     }
 
-    private void RangeAttack()
+    private IEnumerator SnipAttack()
     {
-        rangeAttackCooldownRemaining = rangeAttackCooldown;
+        snipAttackCooldownRemaining = snipAttackCooldown;
+        Vector2 direction = aimDirection;
+        float timer = chargingTime;
+        laserLockLine.startWidth = 0.3f;
+        laserLockLine.endWidth = 0.3f;
+        isCharging = true;
+        while (timer > 0 && !Is(Effect.Stun) && !Is(Effect.Hack))
+        {
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, 100.0f, LayerMask.GetMask("Player", "Ground"));
+            laserLockLine.enabled = true;
+            laserLockLine.SetPosition(0, transform.position);
+            laserLockLine.SetPosition(1, hit.point);
+            timer -= Time.fixedDeltaTime;
+            yield return new WaitForFixedUpdate();
+        }
+        if (timer <= 0)
+        {
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, 100.0f, LayerMask.GetMask("Ground"));
+            laserLockLine.startWidth = 1f;
+            laserLockLine.endWidth = 1f;
+            laserLockLine.enabled = true;
+            laserLockLine.SetPosition(0, transform.position);
+            laserLockLine.SetPosition(1, hit.point);
+            float laserTimer = laserBeamTime;
 
-        Vector2 spawnPos = (Vector2)transform.position + aimDirection * projectileSpawnDistance;
-        GameObject newProjectile = Instantiate(projectilePrefab, spawnPos, Quaternion.identity);
-        ProjectileHandler newProjectileHandler = newProjectile.GetComponent<ProjectileHandler>();
-        newProjectileHandler.initialVelocity = aimDirection * projectileSpeed;
-        newProjectileHandler.knockBackForce = projectileKnockbackForce;
-        newProjectileHandler.destroyTime = 0;
-        newProjectileHandler.damage = projectileDamage;
-        newProjectileHandler.lifeTime = projectileLifeTime;
+            while (laserTimer > 0)
+            {
+                RaycastHit2D playerHit = Physics2D.Raycast(transform.position, direction, 100.0f, LayerMask.GetMask("Player"));
+                if(playerHit)
+                {
+                    GameData.playerManager.TakeDamage(laserDamage, Vector2.zero, laserStunTime);
+                }
+
+                laserTimer -= Time.fixedDeltaTime;
+                yield return new WaitForFixedUpdate();
+            }
+            laserLockLine.enabled = false;
+            isCharging = false;
+        }
+
     }
 
 
