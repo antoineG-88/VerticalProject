@@ -10,13 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: NewPowerTeleportation
-  m_EditorClassIdentifier: Assembly-CSharp::PowerTeleportation
+  m_Name: PowerFrappeSol
+  m_EditorClassIdentifier: Assembly-CSharp::PowerFrappeSol
   name: 
   description: 
   icon: {fileID: 0}
-  cooldown: 5
+  cooldown: 4
   range: 0
   stunTime: 0
-  timewait: 2
-  TpPoint: {fileID: 862590003055835612, guid: 12f6abfa4ea5cc444a9820b559567673, type: 3}
+  frappevelocity: 15
+  timePosInstantiate: 0.08
+  prefabexplosion: {fileID: 1500574650866506158, guid: 05c923ba3dfe19646b7832a63a075dce,
+    type: 3}
+  explosionRange: 2
+  duration: 10
