@@ -179,7 +179,7 @@ public class OverBot : EnemyHandler
     private IEnumerator RushAttack()
     {
         rangeAttackCooldownRemaining = rangeAttackCooldown;
-
+        isInvulnerable = true;
         Vector2 rushDirection = GameData.playerMovement.transform.position - transform.position;
         float timer = rushTime;
         rushDirection.Normalize();
@@ -192,6 +192,7 @@ public class OverBot : EnemyHandler
             yield return new WaitForFixedUpdate();
         }
         SetEffect(Effect.NoControl, 0, false);
+        isInvulnerable = false;
         // Fin du rush 
 
 

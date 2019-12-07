@@ -26,11 +26,11 @@ public class OS_Bot : EnemyHandler
 
     private Vector2 patrolCenterPosition;
     private bool isPatroling;
-    private bool isAtRange;
+    [HideInInspector] public bool isAtRange;
     private bool targetReached;
     private bool isFleeing;
     private float lockTimeRemaining;
-    private float snipAttackCooldownRemaining;
+    [HideInInspector] public float snipAttackCooldownRemaining;
     private Vector2 aimDirection;
     private LineRenderer laserLockLine;
     [HideInInspector] public bool isCharging;
