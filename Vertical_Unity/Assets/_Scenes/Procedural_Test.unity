@@ -1489,6 +1489,9 @@ MonoBehaviour:
           type: 3}
         openings: 00010101
         roomIndex: 0
+        room:
+          name: 
+          floors: []
   - name: Room2
     floors:
     - roomPartsByFloor:
@@ -1496,6 +1499,9 @@ MonoBehaviour:
           type: 3}
         openings: 01000101
         roomIndex: 0
+        room:
+          name: 
+          floors: []
   - name: Room3
     floors:
     - roomPartsByFloor:
@@ -1503,6 +1509,9 @@ MonoBehaviour:
           type: 3}
         openings: 01010100
         roomIndex: 0
+        room:
+          name: 
+          floors: []
   - name: Room4
     floors:
     - roomPartsByFloor:
@@ -1510,10 +1519,13 @@ MonoBehaviour:
           type: 3}
         openings: 01010001
         roomIndex: 0
+        room:
+          name: 
+          floors: []
   deadEndList: []
   fillerPrefab: {fileID: 778409336111630296, guid: f0f69af25cac0684a9eed2ac813069ce,
     type: 3}
-  mandatoryOpenings: 1
+  mandatoryOpenings: 0
   mandatoryPlacementDirections: 000000000200000003000000
   createIntentionalDeadEnd: 0
   intentionalDeadEndChance: 0

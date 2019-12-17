@@ -14,6 +14,10 @@ public class LevelBuilder : MonoBehaviour
     public GameObject fillerPrefab;
     [Space]
     [Space]
+    public bool fillEmptySpaces;
+    [Space]
+    public bool avoidBlockedOpenings;
+    [Space]
     public bool mandatoryOpenings;
     public List<Direction> mandatoryPlacementDirections;
     public bool createIntentionalDeadEnd;
@@ -35,6 +39,7 @@ public class LevelBuilder : MonoBehaviour
     private bool levelBuilt;
     private bool levelScanned;
     private GridGraph gridGraph;
+    private List<Vector2> accessibleZones = new List<Vector2>();
 
     public enum Direction { Up, Down, Right, Left };
 
@@ -313,39 +318,128 @@ public class LevelBuilder : MonoBehaviour
                         }
                         else
                         {
-                            selectedRoom = potentialRoom;
-                            Debug.Log("Room found ! The room " + selectedRoom.name + " has all needed features. Placed at Floor " + (int)gridIndexes.x + " Zone " + (int)gridIndexes.y);
 
-                            for (floorNumber = 0; floorNumber < selectedRoom.roomParts.GetLength(0); floorNumber++)
+                            bool allRoomOpeningsFree = true;
+                            if (avoidBlockedOpenings)
                             {
-                                for (int zoneNumber = 0; zoneNumber < selectedRoom.roomParts.GetLength(1); zoneNumber++)
+                                floorNumber = 0;
+                                while (allRoomOpeningsFree && floorNumber < potentialRoom.roomParts.GetLength(0))
                                 {
-                                    Vector2 relativeIndexes = new Vector2(floorNumber - connectedPartIndexes.x, zoneNumber - connectedPartIndexes.y);
-                                    if (selectedRoom.roomParts[floorNumber, zoneNumber] != null)
+                                    int zoneNumber = 0;
+                                    while (allRoomOpeningsFree && zoneNumber < potentialRoom.roomParts.GetLength(1))
                                     {
-                                        towerGrid[(int)gridIndexes.x + (int)relativeIndexes.x, (int)gridIndexes.y + (int)relativeIndexes.y] = selectedRoom.roomParts[floorNumber, zoneNumber];
-                                        Debug.Log(selectedRoom.name + " part placed on " + (int)gridIndexes.x + (int)relativeIndexes.x + ", " + (int)gridIndexes.y + (int)relativeIndexes.y);
+                                        Vector2 relativeIndexes = new Vector2(floorNumber - connectedPartIndexes.x, zoneNumber - connectedPartIndexes.y);
+                                        if (potentialRoom.roomParts[floorNumber, zoneNumber] != null
+                                            && potentialRoom.roomParts[floorNumber, zoneNumber].openings.Length > 0)
+                                        {
+                                            allRoomOpeningsFree = CheckIfAllOpeningsAreFree(potentialRoom.roomParts[floorNumber, zoneNumber], (int)gridIndexes.x + (int)relativeIndexes.x, (int)gridIndexes.y + (int)relativeIndexes.y);
+                                        }
+                                        zoneNumber++;
                                     }
-                                    else
-                                    {
-                                        towerGrid[(int)gridIndexes.x + (int)relativeIndexes.x, (int)gridIndexes.y + (int)relativeIndexes.y] = null;
-                                        Debug.Log(selectedRoom.name + " hole placed on " + (int)gridIndexes.x + (int)relativeIndexes.x + ", " + (int)gridIndexes.y + (int)relativeIndexes.y);
-                                    }
+                                    floorNumber++;
                                 }
                             }
 
-                            Debug.Log("Now ckecking if" + selectedRoom.name + "is creating unaccessible space");
 
-                            List<Vector2> accessibleZone = new List<Vector2>();
 
-                            for (floorNumber = 0; floorNumber < selectedRoom.roomParts.GetLength(0); floorNumber++)
+                            if (allRoomOpeningsFree)
                             {
-                                for (int zoneNumber = 0; zoneNumber < selectedRoom.roomParts.GetLength(1); zoneNumber++)
-                                {
-                                    Vector2 relativeIndexes = new Vector2(floorNumber - connectedPartIndexes.x, zoneNumber - connectedPartIndexes.y);
-                                    if (selectedRoom.roomParts[floorNumber, zoneNumber] != null)
-                                    {
+                                selectedRoom = potentialRoom;
+                                Debug.Log("Room found ! The room " + selectedRoom.name + " has all needed features. Placed at Floor " + (int)gridIndexes.x + " Zone " + (int)gridIndexes.y);
 
+                                for (floorNumber = 0; floorNumber < selectedRoom.roomParts.GetLength(0); floorNumber++)
+                                {
+                                    for (int zoneNumber = 0; zoneNumber < selectedRoom.roomParts.GetLength(1); zoneNumber++)
+                                    {
+                                        Vector2 relativeIndexes = new Vector2(floorNumber - connectedPartIndexes.x, zoneNumber - connectedPartIndexes.y);
+                                        if (selectedRoom.roomParts[floorNumber, zoneNumber] != null)
+                                        {
+                                            towerGrid[(int)gridIndexes.x + (int)relativeIndexes.x, (int)gridIndexes.y + (int)relativeIndexes.y] = selectedRoom.roomParts[floorNumber, zoneNumber];
+                                            Debug.Log(selectedRoom.name + " part placed on " + (int)gridIndexes.x + (int)relativeIndexes.x + ", " + (int)gridIndexes.y + (int)relativeIndexes.y);
+                                        }
+                                        else
+                                        {
+                                            towerGrid[(int)gridIndexes.x + (int)relativeIndexes.x, (int)gridIndexes.y + (int)relativeIndexes.y] = null;
+                                            Debug.Log(selectedRoom.name + " hole placed on " + (int)gridIndexes.x + (int)relativeIndexes.x + ", " + (int)gridIndexes.y + (int)relativeIndexes.y);
+                                        }
+                                    }
+                                }
+
+                                if (fillEmptySpaces)
+                                {
+                                    Debug.Log("Now ckecking if " + selectedRoom.name + " is creating unaccessible space");
+
+                                    accessibleZones.Clear();
+                                    bool roomIsBlocking = false;
+
+                                    for (floorNumber = 0; floorNumber < selectedRoom.roomParts.GetLength(0); floorNumber++)
+                                    {
+                                        for (int zoneNumber = 0; zoneNumber < selectedRoom.roomParts.GetLength(1); zoneNumber++)
+                                        {
+                                            Vector2 relativeIndexes = new Vector2(floorNumber - connectedPartIndexes.x, zoneNumber - connectedPartIndexes.y);
+                                            if (selectedRoom.roomParts[floorNumber, zoneNumber] != null)
+                                            {
+                                                List<Vector2> checkedZones = new List<Vector2>();
+                                                int direction = 0;
+                                                Debug.Log("Checking if zone " + gridIndexes.x + relativeIndexes.x + ", " + gridIndexes.y + relativeIndexes.y + " is blocking");
+                                                Vector2 zoneToCheck = Vector2.zero;
+                                                while (!roomIsBlocking && direction < 4)
+                                                {
+                                                    direction++;
+                                                    switch (direction)
+                                                    {
+                                                        case 1:
+                                                            zoneToCheck = new Vector2(gridIndexes.x + relativeIndexes.x + 1, gridIndexes.y + relativeIndexes.y);
+                                                            break;
+
+                                                        case 2:
+                                                            zoneToCheck = new Vector2(gridIndexes.x + relativeIndexes.x - 1, gridIndexes.y + relativeIndexes.y);
+                                                            break;
+
+                                                        case 3:
+                                                            zoneToCheck = new Vector2(gridIndexes.x + relativeIndexes.x, gridIndexes.y + relativeIndexes.y + 1);
+                                                            break;
+
+                                                        case 4:
+                                                            zoneToCheck = new Vector2(gridIndexes.x + relativeIndexes.x, gridIndexes.y + relativeIndexes.y - 1);
+                                                            break;
+
+                                                        default:
+                                                            Debug.LogError("There is no such direction as : " + direction);
+                                                            break;
+                                                    }
+
+                                                    if (!IsNextZoneBlocking(zoneToCheck, 0, ref checkedZones))
+                                                    {
+                                                        accessibleZones.AddRange(checkedZones);
+                                                    }
+                                                    else
+                                                    {
+                                                        roomIsBlocking = true;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    if (roomIsBlocking)
+                                    {
+                                        Debug.Log(selectedRoom.name + " is creating un-accessible space. Removing the room from the tower");
+
+                                        for (floorNumber = 0; floorNumber < selectedRoom.roomParts.GetLength(0); floorNumber++)
+                                        {
+                                            for (int zoneNumber = 0; zoneNumber < selectedRoom.roomParts.GetLength(1); zoneNumber++)
+                                            {
+                                                Vector2 relativeIndexes = new Vector2(floorNumber - connectedPartIndexes.x, zoneNumber - connectedPartIndexes.y);
+                                                if (selectedRoom.roomParts[floorNumber, zoneNumber] != null)
+                                                {
+                                                    towerGrid[(int)gridIndexes.x + (int)relativeIndexes.x, (int)gridIndexes.y + (int)relativeIndexes.y] = null;
+                                                    Debug.Log(selectedRoom.name + " part removed on " + (int)gridIndexes.x + (int)relativeIndexes.x + ", " + (int)gridIndexes.y + (int)relativeIndexes.y);
+                                                }
+                                            }
+                                        }
+
+                                        selectedRoom = null;
                                     }
                                 }
                             }
@@ -576,11 +670,149 @@ public class LevelBuilder : MonoBehaviour
         return openingFound;
     }
 
-    private bool CheckUnaccessibleZones(Vector2 startGridIndexes, ref List<Vector2> accessibleZones)
+    private bool CheckIfAllOpeningsAreFree(Room.RoomPart part, int floorToCheck, int zoneToCheck)
     {
+        bool isAllFree = true;
+        int lookedOpening = 0;
+        int openingFound = -1;
+        while (isAllFree && lookedOpening < 4)
+        {
+            if (part.openings[lookedOpening])
+            {
+                switch (lookedOpening)
+                {
+                    case 0:
+                        if ((floorToCheck + 1) >= towerHeight
+                            || freeOpeningsUnusable.Contains(new Vector2(floorToCheck + 1, zoneToCheck))
+                            || (towerGrid[floorToCheck + 1, zoneToCheck] != null && !towerGrid[floorToCheck + 1, zoneToCheck].openings[1]))
+                        {
+                            isAllFree = false;
+                        }
+                        break;
+
+                    case 1:
+                        if ((floorToCheck - 1) < 0
+                            || freeOpeningsUnusable.Contains(new Vector2(floorToCheck - 1, zoneToCheck))
+                            || (towerGrid[floorToCheck - 1, zoneToCheck] != null && !towerGrid[floorToCheck - 1, zoneToCheck].openings[0]))
+                        {
+                            isAllFree = false;
+                        }
+                        break;
+
+                    case 2:
+                        if ((zoneToCheck + 1) >= towerWidth
+                            || freeOpeningsUnusable.Contains(new Vector2(floorToCheck, zoneToCheck + 1))
+                            || (towerGrid[floorToCheck, zoneToCheck + 1] != null && !towerGrid[floorToCheck, zoneToCheck + 1].openings[3]))
+                        {
+                            isAllFree = false;
+                        }
+                        break;
+
+                    case 3:
+                        if ((zoneToCheck - 1) < 0
+                            || freeOpeningsUnusable.Contains(new Vector2(floorToCheck, zoneToCheck - 1))
+                            || (towerGrid[floorToCheck, zoneToCheck - 1] != null && !towerGrid[floorToCheck, zoneToCheck - 1].openings[2]))
+                        {
+                            isAllFree = false;
+                        }
+                        break;
+                    default:
+                        Debug.LogError("The opening direction found does not correspond to any known");
+                        break;
+                }
+            }
+            lookedOpening++;
+        }
+
+        return isAllFree;
+    }
+
+    private bool IsNextZoneBlocking(Vector2 zoneGridIndexes, int oppositOriginDirection, ref List<Vector2> checkedZones)
+    {
+        Debug.Log("Checking accessibility for zone " + zoneGridIndexes);
+        checkedZones.Add(zoneGridIndexes);
         bool isBlocking = true;
+        int directionToCheck = 0;
+        while(isBlocking && directionToCheck < 4)
+        {
+            directionToCheck++;
+            int oppositDirection = 0;
+            Vector2 zoneToCheck = Vector2.zero;
+            if (directionToCheck != oppositOriginDirection)
+            {
+                switch (directionToCheck)
+                {
+                    case 1:
+                        zoneToCheck = new Vector2(zoneGridIndexes.x + 1, zoneGridIndexes.y);
+                        oppositDirection = 2;
+                        Debug.Log("Checking floor " + zoneToCheck.x + "/ zone " + zoneToCheck.y + ". Direction : Up");
+                        break;
 
+                    case 2:
+                        zoneToCheck = new Vector2(zoneGridIndexes.x - 1, zoneGridIndexes.y);
+                        oppositDirection = 1;
+                        Debug.Log("Checking floor " + zoneToCheck.x + "/ zone " + zoneToCheck.y + ". Direction : Down");
+                        break;
 
+                    case 3:
+                        zoneToCheck = new Vector2(zoneGridIndexes.x, zoneGridIndexes.y + 1);
+                        oppositDirection = 4;
+                        Debug.Log("Checking floor " + zoneToCheck.x + "/ zone " + zoneToCheck.y + ". Direction : Right");
+                        break;
+
+                    case 4:
+                        zoneToCheck = new Vector2(zoneGridIndexes.x, zoneGridIndexes.y - 1);
+                        oppositDirection = 3;
+                        Debug.Log("Checking floor " + zoneToCheck.x + "/ zone " + zoneToCheck.y + ". Direction : Left");
+                        break;
+                    default:
+                        Debug.LogError("There is no such direction as : " + directionToCheck);
+                        break;
+                }
+
+                if (zoneToCheck.x < towerHeight && zoneToCheck.x >= 0 && zoneToCheck.y < towerWidth && zoneToCheck.y >= 0)
+                {
+                    if (towerGrid[(int)zoneToCheck.x, (int)zoneToCheck.y] == null)
+                    {
+                        Debug.Log("Zone " + zoneToCheck + " is empty");
+                        if (!checkedZones.Contains(zoneToCheck))
+                        {
+                            Debug.Log("Zone " + zoneToCheck + " has been already checked");
+                            if (accessibleZones.Contains(zoneToCheck) || !IsNextZoneBlocking(zoneToCheck, oppositDirection, ref checkedZones))
+                            {
+                                Debug.Log("Zone " + zoneGridIndexes + " is accessible because it is adjacent to the accessible zone : " + zoneToCheck);
+                                isBlocking = false;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Debug.Log("Zone " + zoneToCheck + " is already filled, checking if there is corresponding opening");
+                        for (int i = 0; i < 4; i++)
+                        {
+                            if(towerGrid[(int)zoneToCheck.x, (int)zoneToCheck.y].openings[i] && i == oppositDirection - 1)
+                            {
+                                isBlocking = false;
+                                Debug.Log("Zone " + zoneToCheck + " has a corresponding opening !!, making it accessible");
+                            }
+                            else
+                            {
+                                Debug.Log("Zone " + zoneToCheck + " has no corresponding opening");
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    Debug.Log("Zone " + zoneToCheck + " is out of the tower");
+                }
+            }
+        }
+
+        if(isBlocking)
+        {
+            Debug.Log("Zone " + zoneGridIndexes + " is un-accessible");
+        }
 
         return isBlocking;
     }
