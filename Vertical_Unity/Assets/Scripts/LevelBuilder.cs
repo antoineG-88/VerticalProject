@@ -1,8 +1,7 @@
-﻿using System.Collections;
+﻿using Pathfinding;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Pathfinding;
-
 public class LevelBuilder : MonoBehaviour
 {
     [Header("Generation Step timing settings")]
@@ -13,6 +12,8 @@ public class LevelBuilder : MonoBehaviour
     public Vector2 startPositionIndexes;
     public List<Room> roomList;
     public List<Room> deadEndList;
+    public List<Room> rightEdgeList;
+    public List<Room> leftEdgeList;
     public GameObject fillerPrefab;
     [Space]
     [Space]
@@ -33,9 +34,12 @@ public class LevelBuilder : MonoBehaviour
 
     private Room.RoomPart[,] towerGrid;
     private bool[,] zoneChecked;
+    private bool[] checkedFloors;
+    private List<UnCheckedZone> uncheckedZones;
     private List<Vector2> freeOpeningsUnusable = new List<Vector2>();
     private Vector2 nextRoomStart;
     private int nextRoomOpeningDirection;
+    private Vector2 originRoom;
     private int roomBuiltNumber;
 
     private bool levelBuilt;
@@ -45,6 +49,8 @@ public class LevelBuilder : MonoBehaviour
 
     private bool nextRoomFinished;
     private bool roomPlacementSuccess;
+    private bool openingRemaining;
+    private bool nextOpeningResearchFinished;
 
     public enum Direction { Up, Down, Right, Left };
 
@@ -67,6 +73,15 @@ public class LevelBuilder : MonoBehaviour
             gridGraph.SetDimensions(48, 48, 0.5f);
             AstarPath.active.Scan();
         }
+
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            Debug.Log("Listing of unCheckedZones :");
+            foreach(UnCheckedZone unCheckedZone in uncheckedZones)
+            {
+                Debug.Log("Unchecked zone at " + unCheckedZone.gridX + ", " + unCheckedZone.gridY);
+            }
+        }
     }
 
     public IEnumerator BuildLevel()
@@ -74,7 +89,10 @@ public class LevelBuilder : MonoBehaviour
         bool towerCorrectlyBuild = false;
         roomBuiltNumber = 0;
         towerGrid = new Room.RoomPart[towerHeight, towerWidth];
-        zoneChecked = new bool[towerHeight,towerWidth];
+        checkedFloors = new bool[towerHeight];
+        uncheckedZones = UnCheckedZone.CreateUncheckGrid(towerHeight, towerWidth);
+        zoneChecked = new bool[towerHeight, towerWidth];
+
 
         Debug.Log("Beginning Tower creation");
         nextRoomStart = startPositionIndexes;
@@ -94,6 +112,9 @@ public class LevelBuilder : MonoBehaviour
             if (!roomPlacementSuccess)
             {
                 freeOpeningsUnusable.Add(nextRoomStart);
+                uncheckedZones.Remove(UnCheckedZone.GetUncheckZone(uncheckedZones, (int)originRoom.x, (int)originRoom.y));
+                zoneChecked[(int)originRoom.x, (int)originRoom.y] = true;
+                Debug.Log((int)originRoom.x + ", " + (int)originRoom.y + " removed from uncheckedList");
                 Debug.Log("The tile at " + nextRoomStart.x + ", " + nextRoomStart.y + " cannot be used as a connection. Added to unusable list");
                 CreateTile((int)nextRoomStart.x, (int)nextRoomStart.y);
             }
@@ -102,11 +123,16 @@ public class LevelBuilder : MonoBehaviour
                 roomBuiltNumber++;
             }
 
-            openingRemaining = FindNextOpening();
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(loopTime);
 
+            StartCoroutine(FindNextOpening());
+
+            while (!nextOpeningResearchFinished)
+            {
+                yield return new WaitForEndOfFrame();
+            }
         }
-        while (openingRemaining && nextRoomStart.x <= towerHeight - 2 && roomBuiltNumber <= maxRoom);
+        while (openingRemaining && nextRoomStart.x <= towerHeight && roomBuiltNumber <= maxRoom);
 
         if (!openingRemaining)
         {
@@ -125,6 +151,8 @@ public class LevelBuilder : MonoBehaviour
         nextRoomFinished = false;
         bool[] roomsTested = new bool[roomList.Count];
         bool[] deadEndsTested = new bool[deadEndList.Count];
+        bool[] rightEdgesTested = new bool[rightEdgeList.Count];
+        bool[] leftEdgesTested = new bool[leftEdgeList.Count];
         bool isDeadEnd = false;
         Room selectedRoom = null;
         Room potentialRoom = null;
@@ -137,6 +165,14 @@ public class LevelBuilder : MonoBehaviour
         for (int i = 0; i < deadEndsTested.Length; i++)
         {
             deadEndsTested[i] = false;
+        }
+        for (int i = 0; i < rightEdgesTested.Length; i++)
+        {
+            rightEdgesTested[i] = false;
+        }
+        for (int i = 0; i < leftEdgesTested.Length; i++)
+        {
+            leftEdgesTested[i] = false;
         }
 
         if (createIntentionalDeadEnd)
@@ -152,6 +188,8 @@ public class LevelBuilder : MonoBehaviour
         {
             bool roomLeft = false;
             bool deadEndLeft = false;
+            bool rightEdgeLeft = false;
+            bool leftEdgeLeft = false;
 
             if (!isDeadEnd)
             {
@@ -161,6 +199,22 @@ public class LevelBuilder : MonoBehaviour
                     if (!roomTested)
                     {
                         roomLeft = true;
+                    }
+                }
+
+                foreach (bool leftEdgeTested in leftEdgesTested)
+                {
+                    if (!leftEdgeTested)
+                    {
+                        leftEdgeLeft = true;
+                    }
+                }
+
+                foreach (bool rightEdgeTested in rightEdgesTested)
+                {
+                    if (!rightEdgeTested)
+                    {
+                        rightEdgeLeft = true;
                     }
                 }
             }
@@ -190,7 +244,25 @@ public class LevelBuilder : MonoBehaviour
             }
             else
             {
-                if(!isDeadEnd)
+                if (gridIndexes.y == 0 && leftEdgeLeft)
+                {
+                    do
+                    {
+                        y = Random.Range(0, leftEdgeList.Count);
+                    }
+                    while (leftEdgesTested[y]);
+                    potentialRoom = leftEdgeList[y];
+                }
+                else if (gridIndexes.y == (towerWidth - 1) && rightEdgeLeft)
+                {
+                    do
+                    {
+                        y = Random.Range(0, rightEdgeList.Count);
+                    }
+                    while (rightEdgesTested[y]);
+                    potentialRoom = rightEdgeList[y];
+                }
+                else if(!isDeadEnd)
                 {
                     do
                     {
@@ -236,6 +308,15 @@ public class LevelBuilder : MonoBehaviour
                     Debug.Log("The room called : " + potentialRoom.name + " do not have any corresponding opening");
                     if (!isDeadEnd)
                     {
+                        if (gridIndexes.y == 0 && leftEdgeLeft)
+                        {
+                            leftEdgesTested[y] = true;
+                        }
+                        else if (gridIndexes.y == (towerWidth - 1) && rightEdgeLeft)
+                        {
+                            leftEdgesTested[y] = false;
+                        }
+
                         roomsTested[y] = true;
                     }
                     else
@@ -468,7 +549,23 @@ public class LevelBuilder : MonoBehaviour
 
                 if (selectedRoom == null)
                 {
-                    roomsTested[y] = true;
+                    if (!isDeadEnd)
+                    {
+                        if (gridIndexes.y == 0 && leftEdgeLeft)
+                        {
+                            leftEdgesTested[y] = true;
+                        }
+                        else if (gridIndexes.y == (towerWidth - 1) && rightEdgeLeft)
+                        {
+                            leftEdgesTested[y] = false;
+                        }
+
+                        roomsTested[y] = true;
+                    }
+                    else
+                    {
+                        deadEndsTested[y] = true;
+                    }
                 }
             }
         }
@@ -478,25 +575,34 @@ public class LevelBuilder : MonoBehaviour
         //return !noMoreRoomAvailable;
     }
 
-    private bool FindNextOpening()
+    private IEnumerator FindNextOpening()
     {
+        nextOpeningResearchFinished = false;
         bool openingAvailable = false;
         Vector2 openingIndexes = Vector2.zero;
         int openingDirection = -1;
-        int lookedFloor = 0;
-        while(!openingAvailable && lookedFloor < towerHeight)
+        bool floorsRemaining = true;
+
+        int randomFloor = 0;
+        int randomZone = 0;
+        int randomEmptyZone;
+        while (!openingAvailable && floorsRemaining)
         {
-            Debug.Log("Checking floor " + lookedFloor + " for openings");
-            int lookedZone = 0;
-            while (!openingAvailable && lookedZone < towerWidth)
+
+            randomEmptyZone = Random.Range(0, uncheckedZones.Count);
+            randomFloor = uncheckedZones[randomEmptyZone].gridX;
+            randomZone = uncheckedZones[randomEmptyZone].gridY;
+
+            Debug.Log("Checking zone " + randomFloor + ", " + randomZone + " for openings. possibilities : " + uncheckedZones.Count);
+
+            if (!checkedFloors[randomFloor])
             {
-                if (towerGrid[lookedFloor, lookedZone] != null && !zoneChecked[lookedFloor, lookedZone])
+                if (towerGrid[randomFloor, randomZone] != null && !zoneChecked[randomFloor, randomZone])
                 {
-                    Debug.Log("Looking zone " + lookedZone);
-                    Room.RoomPart lookedPart = towerGrid[lookedFloor, lookedZone];
+                    Room.RoomPart lookedPart = towerGrid[randomFloor, randomZone];
                     if (lookedPart.openings.Length > 0)
                     {
-                        Debug.Log("Openings found on Floor " + lookedFloor + " at Zone " + lookedZone);
+                        Debug.Log("Openings found on Floor " + randomFloor + " at Zone " + randomZone);
                         bool freeOpeningsOnZone = false;
                         int lookedOpening = 0;
                         while (!openingAvailable && lookedOpening < 4)
@@ -506,57 +612,53 @@ public class LevelBuilder : MonoBehaviour
                                 switch (lookedOpening)
                                 {
                                     case 0:
-                                        if ((lookedFloor + 1) < towerHeight)
+                                        if ((randomFloor + 1) < towerHeight)
                                         {
-                                            if (towerGrid[lookedFloor + 1, lookedZone] == null
-                                            && !freeOpeningsUnusable.Contains(new Vector2(lookedFloor + 1, lookedZone)))
+                                            if (towerGrid[randomFloor + 1, randomZone] == null)
                                             {
                                                 openingAvailable = true;
                                                 openingDirection = 1;
-                                                openingIndexes = new Vector2(lookedFloor + 1, lookedZone);
-                                                Debug.Log("Free opening found on Zone " + lookedZone + ", floor " + lookedFloor + ". Direction : Up");
+                                                openingIndexes = new Vector2(randomFloor + 1, randomZone);
+                                                Debug.Log("Free opening found on Zone " + randomZone + ", floor " + randomFloor + ". Direction : Up");
                                             }
                                         }
                                         break;
 
                                     case 1:
-                                        if ((lookedFloor - 1) >= 0)
+                                        if ((randomFloor - 1) >= 0)
                                         {
-                                            if (towerGrid[lookedFloor - 1, lookedZone] == null
-                                                && !freeOpeningsUnusable.Contains(new Vector2(lookedFloor - 1, lookedZone)))
+                                            if (towerGrid[randomFloor - 1, randomZone] == null)
                                             {
                                                 openingAvailable = true;
                                                 openingDirection = 0;
-                                                openingIndexes = new Vector2(lookedFloor - 1, lookedZone);
-                                                Debug.Log("Free opening found on Zone " + lookedZone + ", floor " + lookedFloor + ". Direction : Down");
+                                                openingIndexes = new Vector2(randomFloor - 1, randomZone);
+                                                Debug.Log("Free opening found on Zone " + randomZone + ", floor " + randomFloor + ". Direction : Down");
                                             }
                                         }
                                         break;
 
                                     case 2:
-                                        if ((lookedZone + 1) < towerWidth)
+                                        if ((randomZone + 1) < towerWidth)
                                         {
-                                            if (towerGrid[lookedFloor, lookedZone + 1] == null
-                                                && !freeOpeningsUnusable.Contains(new Vector2(lookedFloor, lookedZone + 1)))
+                                            if (towerGrid[randomFloor, randomZone + 1] == null)
                                             {
                                                 openingAvailable = true;
                                                 openingDirection = 3;
-                                                openingIndexes = new Vector2(lookedFloor, lookedZone + 1);
-                                                Debug.Log("Free opening found on Zone " + lookedZone + ", floor " + lookedFloor + ". Direction : Right");
+                                                openingIndexes = new Vector2(randomFloor, randomZone + 1);
+                                                Debug.Log("Free opening found on Zone " + randomZone + ", floor " + randomFloor + ". Direction : Right");
                                             }
                                         }
                                         break;
 
                                     case 3:
-                                        if ((lookedZone - 1) >= 0)
+                                        if ((randomZone - 1) >= 0)
                                         {
-                                            if (towerGrid[lookedFloor, lookedZone - 1] == null
-                                            && !freeOpeningsUnusable.Contains(new Vector2(lookedFloor, lookedZone - 1)))
+                                            if (towerGrid[randomFloor, randomZone - 1] == null)
                                             {
                                                 openingAvailable = true;
                                                 openingDirection = 2;
-                                                openingIndexes = new Vector2(lookedFloor, lookedZone - 1);
-                                                Debug.Log("Free opening found on Zone " + lookedZone + ", floor " + lookedFloor + ". Direction : Left");
+                                                openingIndexes = new Vector2(randomFloor, randomZone - 1);
+                                                Debug.Log("Free opening found on Zone " + randomZone + ", floor " + randomFloor + ". Direction : Left");
                                             }
                                         }
                                         break;
@@ -567,7 +669,7 @@ public class LevelBuilder : MonoBehaviour
 
                                 if (!openingAvailable)
                                 {
-                                    Debug.Log("The opening found at " + lookedFloor + ", " + lookedZone + " is blocked");
+                                    Debug.Log("The opening found at " + randomFloor + ", " + randomZone + " is blocked");
                                 }
                                 else
                                 {
@@ -579,36 +681,73 @@ public class LevelBuilder : MonoBehaviour
 
                         if (!freeOpeningsOnZone)
                         {
-                            zoneChecked[lookedFloor, lookedZone] = true;
-                            Debug.Log("Zone " + lookedFloor + ", " + lookedZone + " fully blocked : added to skipList");
+                            zoneChecked[randomFloor, randomZone] = true;
+                            uncheckedZones.Remove(UnCheckedZone.GetUncheckZone(uncheckedZones, randomFloor, randomZone));
+                            Debug.Log("Zone " + randomFloor + ", " + randomZone + " fully blocked : added to skipList");
                         }
                     }
                     else
                     {
-                        Debug.Log("No openings on Zone " + lookedFloor + ", " + lookedZone + " : added to skipList");
-                        zoneChecked[lookedFloor, lookedZone] = true;
+                        zoneChecked[randomFloor, randomZone] = true;
+                        uncheckedZones.Remove(UnCheckedZone.GetUncheckZone(uncheckedZones, randomFloor, randomZone));
+                        Debug.Log("No openings on Zone " + randomFloor + ", " + randomZone + " : added to skipList");
                     }
                 }
                 else
                 {
-                    //Debug.Log(" Zone " + lookedZone + " Floor " + lookedFloor + " is empty");
+                    if(towerGrid[randomFloor, randomZone] == null)
+                    {
+                        Debug.Log("Zone " + randomFloor + ", " + randomZone + " is null");
+                    }
                 }
-                lookedZone++;
+
+                checkedFloors[randomFloor] = true;
+                for (int i = 0; i < towerWidth; i++)
+                {
+                    if (!zoneChecked[randomFloor, i])
+                    {
+                        checkedFloors[randomFloor] = false;
+                    }
+                }
+
+                if(checkedFloors[randomFloor] == true)
+                {
+                    Debug.Log("---Floor " + randomFloor + " isFullyBlocked ");
+                }
             }
-            lookedFloor++;
+            else
+            {
+                Debug.Log("Floor " + randomFloor + "checked");
+            }
+
+
+            floorsRemaining = false;
+            for (int i = 0; i < towerHeight - 1; i++)
+            {
+                if (!checkedFloors[i])
+                {
+                    floorsRemaining = true;
+                }
+            }
+            Debug.Log("Floors remaining");
+            yield return new WaitForEndOfFrame();
         }
 
         if(openingAvailable)
         {
             nextRoomStart = openingIndexes;
             nextRoomOpeningDirection = openingDirection;
+            originRoom = new Vector2(randomFloor, randomZone);
         }
         else
         {
+            originRoom = startPositionIndexes;
             Debug.Log("No free opening Available. Mission failed :,(");
         }
 
-        return openingAvailable;
+        openingRemaining = openingAvailable;
+        nextOpeningResearchFinished = true;
+        //return openingAvailable;
     }
 
     /// <summary>
@@ -889,6 +1028,68 @@ public class LevelBuilder : MonoBehaviour
         foreach (Room deadEnd in deadEndList)
         {
             deadEnd.Rearrange();
+        }
+
+        foreach (Room leftEdge in leftEdgeList)
+        {
+            leftEdge.Rearrange();
+        }
+
+        foreach (Room rightEdge in rightEdgeList)
+        {
+            rightEdge.Rearrange();
+        }
+    }
+
+    private class UnCheckedZone
+    {
+        public int gridX;
+        public int gridY;
+
+        public UnCheckedZone(int xGridPos, int yGridPos)
+        {
+            gridX = xGridPos;
+            gridY = yGridPos;
+        }
+
+        public static List<UnCheckedZone> CreateUncheckGrid(int towerH, int towerW)
+        {
+            List<UnCheckedZone> uncheckZone = new List<UnCheckedZone>();
+
+            for(int i = 0; i < towerH; i++)
+            {
+                for(int t = 0; t < towerW; t++)
+                {
+                    uncheckZone.Add(new UnCheckedZone(i, t));
+                }
+            }
+
+            return uncheckZone;
+        }
+
+        public static UnCheckedZone GetUncheckZone(List<UnCheckedZone> zones, int floor, int zone)
+        {
+
+            UnCheckedZone unCheckedZone = null;
+            int i = 0;
+            while (i < zones.Count && unCheckedZone == null)
+            {
+                if (zones[i].gridX == floor && zones[i].gridY == zone)
+                {
+                    zones.RemoveAt(i);
+                    unCheckedZone = zones[i];
+                    Debug.Log("Uncheck Zone found at " + i);
+                    break;
+                }
+                i++;
+            }
+
+            if(unCheckedZone != null)
+            {
+                Debug.Log("Unchecked zone " + floor + ", " + zone + "coudn't be removed from the list");
+            }
+
+            return unCheckedZone;
         }
     }
 }
