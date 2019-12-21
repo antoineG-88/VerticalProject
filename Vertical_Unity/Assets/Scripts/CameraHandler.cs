@@ -54,7 +54,7 @@ public class CameraHandler : MonoBehaviour
             new Vector2(targetPos.x - (mainCamera.orthographicSize * 16 / 9 - edgePointOffset), targetPos.y - (mainCamera.orthographicSize - edgePointOffset))  // 4 : Bas gauche
         };
 
-        if(displayDebugs)
+        if(displayDebugs && edges.Count > 0)
         {
             for (int i = 0; i < 4; i++)
             {

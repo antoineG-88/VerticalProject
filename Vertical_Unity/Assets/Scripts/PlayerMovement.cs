@@ -40,6 +40,8 @@ public class PlayerMovement : MonoBehaviour
     private float timeBeforeControl;
     [HideInInspector] public bool isDashing;
     private float dashCooldownRemaining;
+    private Collider2D passThroughPlatform;
+    private float passThroughTime;
 
     void Start()
     {
@@ -79,15 +81,35 @@ public class PlayerMovement : MonoBehaviour
             targetVelocity.x = 0;
         }
 
-        if (GameData.gameController.input.jump && !isDashing && dashCooldownRemaining <= 0/*&& IsOnGround()*/)
+        if (GameData.gameController.input.jump && !isDashing && dashCooldownRemaining <= 0)
         {
-            //jumpFlag = true;
             StartCoroutine(Dash());
         }
 
         if(dashCooldownRemaining > 0)
         {
             dashCooldownRemaining -= Time.deltaTime;
+        }
+
+        if(GameData.gameController.input.leftJoystickVertical < 0)
+        {
+            RaycastHit2D hit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + 2.0f), Vector2.down, 5.0f, LayerMask.GetMask("Platform"));
+            if(hit && passThroughPlatform == null && IsOnGround())
+            {
+                passThroughTime = 0.5f;
+                passThroughPlatform = hit.collider;
+                Physics2D.IgnoreCollision(passThroughPlatform, GetComponent<Collider2D>());
+            }
+        }
+        else if (passThroughPlatform != null && passThroughTime <= 0)
+        {
+            Physics2D.IgnoreCollision(passThroughPlatform, GetComponent<Collider2D>(), false);
+            passThroughPlatform = null;
+        }
+
+        if(passThroughTime > 0)
+        {
+            passThroughTime -= Time.deltaTime;
         }
     }
 
