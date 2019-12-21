@@ -16,11 +16,11 @@ public class Over_Bot_Anim : MonoBehaviour
     {
         if (overBot.timebeforeRushAttack > 0 && overBot.isAtRange && overBot.rushAttackCooldownRemaining <= 0)
         {
-            anim.SetBool("OverBot_Tir", true);
+            anim.SetBool("RushAttack", true);
         }
         else
         {
-            anim.SetBool("OverBot_Tir", false);
+            anim.SetBool("RushAttack", false);
         }
     }
 }
