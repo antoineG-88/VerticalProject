@@ -34,11 +34,11 @@ public class WatchBot : EnemyHandler
 
     private Vector2 patrolCenterPosition;
     private bool isPatroling;
-    private bool isAtRange;
+    [HideInInspector] public bool isAtRange;
     private bool targetReached;
     private bool isFleeing;
-    private float timebeforeRangeAttack;
-    private float rangeAttackCooldownRemaining;
+    [HideInInspector] public float timebeforeRangeAttack;
+    [HideInInspector] public float rangeAttackCooldownRemaining;
     private Vector2 aimDirection;
 
     private void Start()
