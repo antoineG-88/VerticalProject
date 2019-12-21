@@ -8,15 +8,14 @@ using UnityEngine;
 /// </summary>
 public class PowerFrappeSol : Power
 {
-    public float range;
-    public float stunTime;
+   
     public float frappevelocity;
     public float timePosInstantiate;
     private GameObject explosion;
     public GameObject prefabexplosion;
     public float explosionRange;
     public float duration;
-
+    public float size;
     private List<Vector2> effectPositions = new List<Vector2>();
 
     public override IEnumerator Use()
@@ -35,11 +34,11 @@ public class PowerFrappeSol : Power
             }
             yield return new WaitForFixedUpdate();
             timer -= Time.fixedDeltaTime;
-            Debug.Log(timer);
         }
         for (int i = 0; i < effectPositions.Count; i++)
         {
             explosion = Instantiate(prefabexplosion, effectPositions[i], Quaternion.identity);
+            explosion.transform.localScale = new Vector2(size, size);
         }
 
         ContactFilter2D filter = new ContactFilter2D();
