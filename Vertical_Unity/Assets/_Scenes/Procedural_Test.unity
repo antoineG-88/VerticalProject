@@ -246,7 +246,7 @@ PrefabInstance:
         type: 3}
       propertyPath: currentPower
       value: 
-      objectReference: {fileID: 11400000, guid: 8e841c51f9332cf41bb7a58b41b86949,
+      objectReference: {fileID: 11400000, guid: 42b3e901275612d439f1dc10ac2fb341,
         type: 2}
     - target: {fileID: 4744132222942516713, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
         type: 3}
@@ -1014,11 +1014,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Main Camera
       objectReference: {fileID: 0}
-    - target: {fileID: 1976976933381308195, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1976976933381308254, guid: a8a52d73fb1b86c44b482db3aeebf115,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1074,114 +1069,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1976976933381308253, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: orthographic size
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: roomsPos.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: edges.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: useWallAvoidance
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: baseLerpSpeed
-      value: 0.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: edgePointOffset
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: aimOffsetLength
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: roomWidth
-      value: 24
-      objectReference: {fileID: 0}
     - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
         type: 3}
       propertyPath: roomsPos.Array.data[0]
-      value: 
-      objectReference: {fileID: 2046632184}
-    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: roomsPos.Array.data[1]
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: roomsPos.Array.data[2]
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: roomsPos.Array.data[3]
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: roomsPos.Array.data[4]
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: roomsPos.Array.data[5]
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: edges.Array.data[0]
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: edges.Array.data[1]
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: edges.Array.data[2]
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: edges.Array.data[3]
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: momentumOffsetAmplitude
-      value: 20
-      objectReference: {fileID: 0}
-    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: maxMomentumOffset
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: displayDebugs
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
-        type: 3}
-      propertyPath: roomsPos.Array.data[6]
       value: 
       objectReference: {fileID: 2046632184}
     m_RemovedComponents: []

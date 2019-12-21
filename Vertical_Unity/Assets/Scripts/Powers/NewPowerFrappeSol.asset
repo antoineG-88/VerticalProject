@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: NewPowerFrappeSol
   m_EditorClassIdentifier: Assembly-CSharp::PowerFrappeSol
-  name: Frappesol
+  name: Frappe
   description: 
   icon: {fileID: 0}
-  cooldown: 0
+  cooldown: 1
   frappevelocity: 18
-  timePosInstantiate: 0.1
+  timePosInstantiate: 0.2
   prefabexplosion: {fileID: 1500574650866506158, guid: 05c923ba3dfe19646b7832a63a075dce,
     type: 3}
-  explosionRange: 0
-  duration: 0
-  size: 1.2
+  explosionRange: 3.5
+  duration: 2
+  size: 3.5
