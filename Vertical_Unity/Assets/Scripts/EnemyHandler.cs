@@ -19,6 +19,9 @@ public abstract class EnemyHandler : MonoBehaviour
     public float noGravityRiseUpAngularRange;
     public PhysicsMaterial2D noGravityBouncyMaterial;
     public PhysicsMaterial2D basicMaterial;
+    [Header("Magnetism Effect settings")]
+    public float repulsionForce;
+    public float repulsionRange;
     [Header("Provocation settings")]
     public float viewRange;
     public float viewAngle;
@@ -130,6 +133,8 @@ public abstract class EnemyHandler : MonoBehaviour
     public void HandlerFixedUpdate()
     {
         UpdateGravity();
+
+        UpdateMagnetism();
 
         AvoidOtherEnemies();
 
@@ -690,6 +695,28 @@ public abstract class EnemyHandler : MonoBehaviour
             isAffected = true;
         }
         return isAffected;
+    }
+
+    private void UpdateMagnetism()
+    {
+        if(Is(Effect.Magnetism))
+        {
+            ContactFilter2D filter = new ContactFilter2D();
+            filter.SetLayerMask(LayerMask.GetMask("Enemy"));
+            List<Collider2D> colliders = new List<Collider2D>();
+            Physics2D.OverlapCircle(transform.position, repulsionRange, filter, colliders);
+
+            if (colliders.Count > 0)
+            {
+                foreach (Collider2D collider in colliders)
+                {
+                    EnemyHandler closeEnemy = collider.GetComponent<EnemyHandler>();
+                    Vector2 direction = closeEnemy.transform.position - transform.position;
+                    direction.Normalize();
+                    closeEnemy.Propel(direction * repulsionForce, true, true);
+                }
+            }
+        }
     }
 
     #endregion

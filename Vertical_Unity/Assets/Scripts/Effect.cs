@@ -83,4 +83,19 @@ public class Effect
             return null;
         }
     }
+
+    public static Effect Magnetism
+    {
+        get
+        {
+            foreach (Effect effect in GameData.gameController.enemyEffects)
+            {
+                if (effect.effectName == "Magnetism")
+                {
+                    return effect;
+                }
+            }
+            return null;
+        }
+    }
 }
