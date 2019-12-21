@@ -10,17 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: NewPowerProjectil
-  m_EditorClassIdentifier: Assembly-CSharp::PowerProjectil
-  name: 
+  m_Name: NewPowerBallClear
+  m_EditorClassIdentifier: Assembly-CSharp::PowerBallClear
+  name: Ballclear
   description: 
   icon: {fileID: 0}
-  cooldown: 0
-  projectilPrefab: {fileID: 862590003055835612, guid: da06935b70cb45142b73181d05e65b5c,
-    type: 3}
-  lauchingSpeed: 10
-  returnSpeed: 8
-  timeDisapear: 5
-  minDistance: 0.5
-  slowTime: 5
-  slowAmplitude: 0.1
+  cooldown: 1
+  range: 3.5
+  sprite: {fileID: 1500574650866506158, guid: 05c923ba3dfe19646b7832a63a075dce, type: 3}
+  size: 3.5
