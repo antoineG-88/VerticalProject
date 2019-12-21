@@ -31,11 +31,11 @@ public class OverBot : EnemyHandler
 
     private Vector2 patrolCenterPosition;
     private bool isPatroling;
-    private bool isAtRange;
+    [HideInInspector] public bool isAtRange;
     private bool targetReached;
     private bool isFleeing;
-    private float timebeforeRangeAttack;
-    private float rangeAttackCooldownRemaining;
+    [HideInInspector] public float timebeforeRushAttack;
+    [HideInInspector] public float rushAttackCooldownRemaining;
     private Vector2 aimDirection;
 
 
@@ -48,8 +48,8 @@ public class OverBot : EnemyHandler
         isAtRange = false;
         isFleeing = false;
 
-        timebeforeRangeAttack = 0;
-        rangeAttackCooldownRemaining = 0;
+        timebeforeRushAttack = 0;
+        rushAttackCooldownRemaining = 0;
     }
 
     private void Update()
@@ -150,10 +150,10 @@ public class OverBot : EnemyHandler
         {
             transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, Vector2.SignedAngle(Vector2.right, aimDirection)));
                     
-            if (rangeAttackCooldownRemaining <= 0)
+            if (rushAttackCooldownRemaining <= 0)
             {
-                timebeforeRangeAttack -= Time.deltaTime;
-                if (timebeforeRangeAttack <= 0)
+                timebeforeRushAttack -= Time.deltaTime;
+                if (timebeforeRushAttack <= 0)
                 {
                    StartCoroutine( RushAttack());
                 }
@@ -161,12 +161,12 @@ public class OverBot : EnemyHandler
         }
         else
         {
-            timebeforeRangeAttack = rangeAttackDelay;
+            timebeforeRushAttack = rangeAttackDelay;
         }
 
-        if (rangeAttackCooldownRemaining > 0)
+        if (rushAttackCooldownRemaining > 0)
         {
-            rangeAttackCooldownRemaining -= Time.deltaTime;
+            rushAttackCooldownRemaining -= Time.deltaTime;
         }
 
         float distanceToPlayer = Vector2.Distance(transform.position, GameData.playerMovement.transform.position);
@@ -178,7 +178,7 @@ public class OverBot : EnemyHandler
 
     private IEnumerator RushAttack()
     {
-        rangeAttackCooldownRemaining = rangeAttackCooldown;
+        rushAttackCooldownRemaining = rangeAttackCooldown;
         isInvulnerable = true;
         Vector2 rushDirection = GameData.playerMovement.transform.position - transform.position;
         float timer = rushTime;
