@@ -17,7 +17,7 @@ public class OS_Bot : EnemyHandler
     public float snipAttackLockRange;
     public float lockingTime;
     public float chargingTime;
-    public float laserDamage;
+    public int laserDamage;
     public float laserBeamTime;
     public float laserStunTime;
     [Header("Debug settings")]

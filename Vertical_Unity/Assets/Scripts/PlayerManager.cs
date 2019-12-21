@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerManager : MonoBehaviour
 {
     [Header("Initial Player Info")]
-    public float maxhealth;
+    public int maxhealth;
     public float invulnerableTime;
     [Header("General debug settings")]
     public Color stunColor;
@@ -14,7 +14,7 @@ public class PlayerManager : MonoBehaviour
     [HideInInspector] public bool isVulnerable;
     [HideInInspector] public bool isDodging;
     [HideInInspector] public bool isStunned;
-    private float currentHealth;
+    private int currentHealth;  // à récupérer pour l'interface
     private Rigidbody2D rb;
     private Color baseColor;
     private float invulnerableTimeRemaining;
@@ -43,7 +43,7 @@ public class PlayerManager : MonoBehaviour
         isVulnerable = vulnerable ? isVulnerable : false;
     }
 
-    public bool TakeDamage(float damage, Vector2 knockBack, float stunTime)
+    public bool TakeDamage(int damage, Vector2 knockBack, float stunTime)
     {
         bool tookDamage = false;
         if(isVulnerable && !isDodging)

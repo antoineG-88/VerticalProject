@@ -26,7 +26,7 @@ public class WatchBot : EnemyHandler
     [Header("Spike-attack settings")]
     public float spikeAttackRange;
     public float spikeAttackDelay;
-    public float spikeAttackDamage;
+    public int spikeAttackDamage;
     public float spikeAttackKnockbackForce;
     [Header("Debug settings")]
     public GameObject particleDebugPrefab;

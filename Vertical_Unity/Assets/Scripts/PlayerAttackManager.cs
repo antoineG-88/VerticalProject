@@ -23,7 +23,7 @@ public class PlayerAttackManager : MonoBehaviour
     private float remainingTimeBeforeKick;
     private bool isRepropulsing;
     private bool isReAiming;
-    private float powerCooldownRemaining;
+    [HideInInspector] public float powerCooldownRemaining; // à récupérer pour l'interface
 
     private void Start()
     {

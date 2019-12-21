@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ProjectileHandler : MonoBehaviour
 {
-    [HideInInspector] public float damage;
+    [HideInInspector] public int damage;
     [HideInInspector] public float knockBackForce;
     [HideInInspector] public float destroyTime;
     [HideInInspector] public float lifeTime;

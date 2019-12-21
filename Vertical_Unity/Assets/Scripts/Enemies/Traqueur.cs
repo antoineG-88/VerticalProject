@@ -12,7 +12,7 @@ public class Traqueur : EnemyHandler
     public float airControl;
     public float jumpTriggerAngle;
     [Space]
-    public float damage;
+    public int damage;
     public float attackKnockBackForce;
     public float attackKnockBackUp;
     public float attackStunTime;

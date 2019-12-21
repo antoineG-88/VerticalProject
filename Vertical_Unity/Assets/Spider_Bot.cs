@@ -7,7 +7,7 @@ public class Spider_Bot : EnemyHandler
     [Header("OverBot settings")]
     public float jumpSpeed;
     [Header("JumpShot")]
-    public float jumpShotDamage;
+    public int jumpShotDamage;
     public float jumpShotKnockbackForce;
     public float jumpShotStunTime;
     public float detectionRange;

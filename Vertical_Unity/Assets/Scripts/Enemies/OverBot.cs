@@ -187,7 +187,6 @@ public class OverBot : EnemyHandler
         while (timer > 0)
         {
             rb.velocity = rushDirection * rushVelocity;
-            Debug.Log(rb.velocity);
             timer -= Time.fixedDeltaTime;
             yield return new WaitForFixedUpdate();
         }
