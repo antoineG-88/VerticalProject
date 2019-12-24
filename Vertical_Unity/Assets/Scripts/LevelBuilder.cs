@@ -4,11 +4,12 @@ using System.Collections.Generic;
 using UnityEngine;
 public class LevelBuilder : MonoBehaviour
 {
-    [Header("Generation Step timing settings")]
+    [Header("Generation Step debug settings")]
     public bool instantCreation;
     public float timeBetweenRoomCreation;
     public float timeTestingRoom;
     public float timeSearchingOpening;
+    public List<Color> gizmoColor;
     [Header("Generation settings")]
     public int towerWidth;
     public int towerHeight;
@@ -40,8 +41,9 @@ public class LevelBuilder : MonoBehaviour
     private bool[] checkedFloors;
     private List<Coord> emptyZones;
     private List<Coord> freeOpeningsUnusable = new List<Coord>();
+    private List<Coord> checkedZones = new List<Coord>();
     private List<Coord> accessibleZones = new List<Coord>();
-    private List<Coord> cursedZones = new List<Coord>();
+    private List<Coord> freeOpeningZones = new List<Coord>();
     private Coord nextRoomStart;
     private int nextRoomOpeningDirection;
     private Coord originRoom;
@@ -56,7 +58,7 @@ public class LevelBuilder : MonoBehaviour
     private bool openingRemaining;
     private bool nextOpeningResearchFinished;
 
-    private List<ZoneGismo> currentlyDrawnZoneGismos = new List<ZoneGismo>();
+    private List<ZoneGizmo> currentlyDrawnZoneGismos = new List<ZoneGizmo>();
 
     public enum Direction { Up, Down, Right, Left };
 
@@ -123,7 +125,7 @@ public class LevelBuilder : MonoBehaviour
                 roomBuiltNumber++;
             }
 
-            if(emptyZones.Count > 0)
+            if(accessibleZones.Count > 0)
             {
                 StartCoroutine(FindNextRandomOpening());
 
@@ -425,13 +427,14 @@ public class LevelBuilder : MonoBehaviour
                             bool allRoomOpeningsFree = true;
                             if (avoidBlockedOpenings)
                             {
+                                freeOpeningZones.Clear();
                                 floorNumber = 0;
                                 while (allRoomOpeningsFree && floorNumber < potentialRoom.roomParts.GetLength(0))
                                 {
                                     int zoneNumber = 0;
                                     while (allRoomOpeningsFree && zoneNumber < potentialRoom.roomParts.GetLength(1))
                                     {
-                                        //yield return new WaitForEndOfFrame();
+                                        //yield return new WaitForEndOfFrame(); ------------------------------------------------------------------------------------------------------------------------------
                                         Coord relativeIndexes = new Coord(floorNumber - connectedPartIndexes.x, zoneNumber - connectedPartIndexes.y);
                                         if (potentialRoom.roomParts[floorNumber, zoneNumber] != null
                                             && potentialRoom.roomParts[floorNumber, zoneNumber].openings.Length > 0)
@@ -446,6 +449,8 @@ public class LevelBuilder : MonoBehaviour
 
                             if (allRoomOpeningsFree)
                             {
+                                accessibleZones.AddRange(freeOpeningZones);
+
                                 selectedRoom = potentialRoom;
                                 Debug.Log("Room found ! The room " + selectedRoom.name + " has all needed features. Placed at Floor " + gridIndexes.x + " Zone " + gridIndexes.y);
 
@@ -472,7 +477,7 @@ public class LevelBuilder : MonoBehaviour
                                 {
                                     Debug.Log("Now ckecking if " + selectedRoom.name + " is creating unaccessible space");
 
-                                    accessibleZones.Clear();
+                                    checkedZones.Clear();
                                     bool roomIsBlocking = false;
 
                                     for (floorNumber = 0; floorNumber < selectedRoom.roomParts.GetLength(0); floorNumber++)
@@ -514,7 +519,7 @@ public class LevelBuilder : MonoBehaviour
 
                                                     if (!IsNextZoneBlocking(zoneToCheck, 0, ref checkedZones))
                                                     {
-                                                        accessibleZones.AddRange(checkedZones);
+                                                        this.checkedZones.AddRange(checkedZones);
                                                     }
                                                     else
                                                     {
@@ -549,6 +554,7 @@ public class LevelBuilder : MonoBehaviour
                             else
                             {
                                 Debug.Log("Some openings on " + potentialRoom.name + " are blocked");
+                                freeOpeningZones.Clear();
                             }
                         }
                     }
@@ -765,7 +771,8 @@ public class LevelBuilder : MonoBehaviour
         Debug.Log("Searching new free random opening");
         nextOpeningResearchFinished = false;
 
-        List<Coord> currentlyAccessibleZone = new List<Coord>(emptyZones);
+        //List<Coord> currentlyAccessibleZone = Coord.GetListUnion(accessibleZones, emptyZones);
+        List<Coord> currentlyAccessibleZone = accessibleZones;
         int openingDirection = -1;
         int nextOpening = -1;
 
@@ -815,17 +822,19 @@ public class LevelBuilder : MonoBehaviour
 
                         if (part != null)
                         {
-                            currentlyDrawnZoneGismos.Clear();
-                            ZoneGismo.Draw(nearbyZone, 0, timeSearchingOpening, this);
-                            ZoneGismo.Draw(randomZone, 0, timeSearchingOpening, this);
                             if (!instantCreation && timeSearchingOpening > 0)
+                            {
+                                currentlyDrawnZoneGismos.Clear();
+                                ZoneGizmo.Draw(nearbyZone, gizmoColor[0], timeSearchingOpening, this);
+                                ZoneGizmo.Draw(randomZone, gizmoColor[0], timeSearchingOpening, this);
                                 yield return new WaitForSeconds(timeSearchingOpening);
+                            }
                             if(part.openings[openingDirection])
                             {
                                 openingFound = true;
                                 nextOpening = checkDirection;
                                 Debug.Log("Opening found for empty zone " + randomZone.x + ", " + randomZone.y + " connected " + openingDirection);
-                                ZoneGismo.Draw(nearbyZone, 2, timeSearchingOpening, this);
+                                ZoneGizmo.Draw(nearbyZone, gizmoColor[2], timeSearchingOpening, this);
                             }
                             if (!instantCreation && timeSearchingOpening > 0)
                                 yield return new WaitForSeconds(timeSearchingOpening);
@@ -834,7 +843,8 @@ public class LevelBuilder : MonoBehaviour
 
                     if(!openingFound)
                     {
-                        ZoneGismo.Draw(nearbyZone, 1, timeSearchingOpening, this);
+                        if (!instantCreation && timeSearchingOpening > 0)
+                            ZoneGizmo.Draw(nearbyZone, gizmoColor[1], timeSearchingOpening, this);
                     }
 
                     checkDirection++;
@@ -856,14 +866,17 @@ public class LevelBuilder : MonoBehaviour
             }
             else
             {
-                currentlyDrawnZoneGismos.Clear();
-                foreach (Coord accessZone in currentlyAccessibleZone)
+                if (!instantCreation && timeSearchingOpening > 0)
                 {
-                    ZoneGismo.Draw(accessZone, 2, 1f, this);
+                    currentlyDrawnZoneGismos.Clear();
+                    foreach (Coord accessZone in currentlyAccessibleZone)
+                    {
+                        ZoneGizmo.Draw(accessZone, gizmoColor[2], 1f, this);
+                    }
                 }
             }
-            if (!instantCreation)
-                yield return new WaitForSeconds(timeTestingRoom);
+            if (!instantCreation && timeSearchingOpening > 0)
+                yield return new WaitForSeconds(timeSearchingOpening);
         }
 
         if (openingFound)
@@ -978,34 +991,98 @@ public class LevelBuilder : MonoBehaviour
                 switch (lookedOpening)
                 {
                     case 0:
-                        if ((floorToCheck + 1) >= towerHeight
-                            || (towerGrid[floorToCheck + 1, zoneToCheck] != null && !towerGrid[floorToCheck + 1, zoneToCheck].openings[1]))
+                        if((floorToCheck + 1) >= towerHeight)
                         {
                             isAllFree = false;
+                        }
+                        else
+                        {
+                            if (towerGrid[floorToCheck + 1, zoneToCheck] != null)
+                            {
+                                if (!towerGrid[floorToCheck + 1, zoneToCheck].openings[1])
+                                {
+                                    isAllFree = false;
+                                }
+                            }
+                            else
+                            {
+                                if (Coord.GetZone(accessibleZones, floorToCheck + 1, zoneToCheck) == null)
+                                {
+                                    freeOpeningZones.Add(new Coord(floorToCheck + 1, zoneToCheck));
+                                }
+                            }
                         }
                         break;
 
                     case 1:
-                        if ((floorToCheck - 1) < 0
-                            || (towerGrid[floorToCheck - 1, zoneToCheck] != null && !towerGrid[floorToCheck - 1, zoneToCheck].openings[0]))
+                        if ((floorToCheck - 1) < 0)
                         {
                             isAllFree = false;
+                        }
+                        else
+                        {
+                            if (towerGrid[floorToCheck - 1, zoneToCheck] != null)
+                            {
+                                if (!towerGrid[floorToCheck - 1, zoneToCheck].openings[0])
+                                {
+                                    isAllFree = false;
+                                }
+                            }
+                            else
+                            {
+                                if (Coord.GetZone(accessibleZones, floorToCheck - 1, zoneToCheck) == null)
+                                {
+                                    freeOpeningZones.Add(new Coord(floorToCheck - 1, zoneToCheck));
+                                }
+                            }
                         }
                         break;
 
                     case 2:
-                        if ((zoneToCheck + 1) >= towerWidth
-                            || (towerGrid[floorToCheck, zoneToCheck + 1] != null && !towerGrid[floorToCheck, zoneToCheck + 1].openings[3]))
+                        if ((zoneToCheck + 1) >= towerWidth)
                         {
                             isAllFree = false;
+                        }
+                        else
+                        {
+                            if (towerGrid[floorToCheck, zoneToCheck + 1] != null)
+                            {
+                                if (!towerGrid[floorToCheck, zoneToCheck + 1].openings[3])
+                                {
+                                    isAllFree = false;
+                                }
+                            }
+                            else
+                            {
+                                if (Coord.GetZone(accessibleZones, floorToCheck, zoneToCheck + 1) == null)
+                                {
+                                    freeOpeningZones.Add(new Coord(floorToCheck, zoneToCheck + 1));
+                                }
+                            }
                         }
                         break;
 
                     case 3:
-                        if ((zoneToCheck - 1) < 0
-                            || (towerGrid[floorToCheck, zoneToCheck - 1] != null && !towerGrid[floorToCheck, zoneToCheck - 1].openings[2]))
+                        if ((zoneToCheck - 1) < 0)
                         {
                             isAllFree = false;
+                        }
+                        else
+                        {
+                            if (towerGrid[floorToCheck, zoneToCheck - 1] != null)
+                            {
+                                if (!towerGrid[floorToCheck, zoneToCheck - 1].openings[2])
+                                {
+                                    isAllFree = false;
+                                }
+                            }
+                            else
+                            {
+                                if (Coord.GetZone(accessibleZones, floorToCheck, zoneToCheck - 1) == null)
+                                {
+                                    freeOpeningZones.Add(new Coord(floorToCheck, zoneToCheck - 1));
+                                }
+                            }
                         }
                         break;
                     default:
@@ -1070,7 +1147,7 @@ public class LevelBuilder : MonoBehaviour
                         if (!checkedZones.Contains(zoneToCheck))
                         {
                             Debug.Log("Zone " + zoneToCheck + " has been already checked");
-                            if (accessibleZones.Contains(zoneToCheck) || !IsNextZoneBlocking(zoneToCheck, oppositDirection, ref checkedZones))
+                            if (this.checkedZones.Contains(zoneToCheck) || !IsNextZoneBlocking(zoneToCheck, oppositDirection, ref checkedZones))
                             {
                                 Debug.Log("Zone " + zoneGridIndexes + " is accessible because it is adjacent to the accessible zone : " + zoneToCheck);
                                 isBlocking = false;
@@ -1141,16 +1218,17 @@ public class LevelBuilder : MonoBehaviour
         GameObject roomInstantiated = null;
         if (towerGrid[zoneToCreate.x, zoneToCreate.y] != null)
         {
-            roomInstantiated = Instantiate(towerGrid[zoneToCreate.x, zoneToCreate.y].partPrefab, Coord.ZoneToPos(zoneToCreate, this), Quaternion.identity);
+            roomInstantiated = Instantiate(towerGrid[zoneToCreate.x, zoneToCreate.y].partPrefab, Coord.ZoneToTowerPos(zoneToCreate, this), Quaternion.identity);
             roomInstantiated.name = towerGrid[zoneToCreate.x, zoneToCreate.y].partPrefab.name + "  >  " + zoneToCreate.x + " / " + zoneToCreate.y;
         }
         else
         {
-            roomInstantiated = Instantiate(fillerPrefab, Coord.ZoneToPos(zoneToCreate, this), Quaternion.identity);
+            roomInstantiated = Instantiate(fillerPrefab, Coord.ZoneToTowerPos(zoneToCreate, this), Quaternion.identity);
             roomInstantiated.name = fillerPrefab.name + "  >  " + zoneToCreate.x + " / " + zoneToCreate.y;
         }
+        accessibleZones.Remove(Coord.GetZone(accessibleZones, zoneToCreate.x, zoneToCreate.y));
         emptyZones.Remove(Coord.GetZone(emptyZones, zoneToCreate.x, zoneToCreate.y));
-        Debug.Log("Creating tile at " + zoneToCreate.x + ", " + zoneToCreate.y + ". Removed from emptyZones.");
+        Debug.Log("Creating tile at " + zoneToCreate.x + ", " + zoneToCreate.y + ". Removed from accessibleZones. " + accessibleZones.Count + " accessibleZones remaining");
     }
 
     public void ReArrangeRooms()
@@ -1176,7 +1254,6 @@ public class LevelBuilder : MonoBehaviour
         }
     }
 
-
     [System.Serializable]
     public class Coord
     {
@@ -1187,6 +1264,27 @@ public class LevelBuilder : MonoBehaviour
         {
             x = xGridPos;
             y = yGridPos;
+        }
+
+        /// <summary>
+        /// Return the union of two list, all items common in both lists
+        /// </summary>
+        /// <param name="coordList1">The tiniest list</param>
+        /// <param name="coordList2">The bigger list</param>
+        /// <returns></returns>
+        public static List<Coord> GetListUnion(List<Coord> coordList1, List<Coord> coordList2)
+        {
+            List<Coord> unionList = new List<Coord>();
+
+            foreach(Coord list1Zone in coordList1)
+            {
+                if(Coord.GetZone(coordList2, list1Zone.x, list1Zone.y) != null)
+                {
+                    unionList.Add(list1Zone);
+                }
+            }
+
+            return unionList;
         }
 
         public static List<Coord> CreateFullZoneGrid(int towerH, int towerW)
@@ -1204,6 +1302,13 @@ public class LevelBuilder : MonoBehaviour
             return zones;
         }
 
+        /// <summary>
+        /// Return the zone from the list with the same coordinates, if not found return null
+        /// </summary>
+        /// <param name="zones">The list where the zone will be searched</param>
+        /// <param name="floor">x coordinate in the tower</param>
+        /// <param name="zone">y coordinate in the tower</param>
+        /// <returns></returns>
         public static Coord GetZone(List<Coord> zones, int floor, int zone)
         {
             Coord zoneFound = null;
@@ -1221,13 +1326,13 @@ public class LevelBuilder : MonoBehaviour
 
             if(zoneFound == null)
             {
-                Debug.Log("The zone " + floor + ", " + zone + " coudn't be removed from the list " + zones.ToString());
+                Debug.Log("The zone " + floor + ", " + zone + " is not in the list ");
             }
 
             return zoneFound;
         }
 
-        public static Vector2 ZoneToPos(Coord zone, LevelBuilder level)
+        public static Vector2 ZoneToTowerPos(Coord zone, LevelBuilder level)
         {
             Vector2 pos = Vector2.zero;
 
@@ -1245,29 +1350,16 @@ public class LevelBuilder : MonoBehaviour
         }
     }
 
-    public class ZoneGismo
+    public class ZoneGizmo
     {
         public Coord zone;
         public Color color;
         public float remainingTime;
 
-        public ZoneGismo(Coord _zone, int _color, float _time)
+        public ZoneGizmo(Coord _zone, Color _color, float _time)
         {
             zone = _zone;
-            switch(_color)
-            {
-                case 0:
-                    color = new Color(0, 0, 1, 0.3f);
-                    break;
-
-                case 1:
-                    color = new Color(1, 0, 0, 0.3f);
-                    break;
-
-                case 2:
-                    color = new Color(0, 1, 0, 0.3f);
-                    break;
-            }
+            color = _color;
             remainingTime = _time;
         }
 
@@ -1277,9 +1369,9 @@ public class LevelBuilder : MonoBehaviour
         /// <param name="zone"></param>
         /// <param name="color">0 for blue, 1 for red, 2 for green</param>
         /// <returns></returns>
-        public static void Draw(Coord zone, int color, float appearingTime, LevelBuilder level)
+        public static void Draw(Coord zone, Color color, float appearingTime, LevelBuilder level)
         {
-            level.currentlyDrawnZoneGismos.Add(new ZoneGismo(zone, color, appearingTime));
+            level.currentlyDrawnZoneGismos.Add(new ZoneGizmo(zone, color, appearingTime));
         }
     }
 
@@ -1290,7 +1382,7 @@ public class LevelBuilder : MonoBehaviour
             if(currentlyDrawnZoneGismos[i].remainingTime > 0)
             {
                 Gizmos.color = currentlyDrawnZoneGismos[i].color;
-                Gizmos.DrawCube(Coord.ZoneToPos(currentlyDrawnZoneGismos[i].zone, this), new Vector2(tileLength, tileLength));
+                Gizmos.DrawCube(Coord.ZoneToTowerPos(currentlyDrawnZoneGismos[i].zone, this), new Vector2(tileLength, tileLength));
                 currentlyDrawnZoneGismos[i].remainingTime -= Time.deltaTime;
             }
             else

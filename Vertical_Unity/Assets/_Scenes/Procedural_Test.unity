@@ -626,14 +626,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   instantCreation: 0
-  timeBetweenRoomCreation: 0.02
+  timeBetweenRoomCreation: 0.01
   timeTestingRoom: 0
-  timeSearchingOpening: 0.01
-  towerWidth: 3
-  towerHeight: 35
+  timeSearchingOpening: 0
+  gizmoColor:
+  - {r: 0, g: 0.92708635, b: 1, a: 0.2901961}
+  - {r: 0.6886792, g: 0, b: 0.3068029, a: 0.4117647}
+  - {r: 0.62455136, g: 0.8901961, b: 0.09803922, a: 0.25882354}
+  towerWidth: 15
+  towerHeight: 15
   startPositionIndexes:
-    x: 0
-    y: 1
+    x: 7
+    y: 7
   roomList:
   - name: Room1
     floors:
@@ -642,9 +646,6 @@ MonoBehaviour:
           type: 3}
         openings: 00010101
         roomIndex: 0
-        room:
-          name: 
-          floors: []
   - name: Room2
     floors:
     - roomPartsByFloor:
@@ -652,9 +653,6 @@ MonoBehaviour:
           type: 3}
         openings: 01000101
         roomIndex: 0
-        room:
-          name: 
-          floors: []
   - name: Room3
     floors:
     - roomPartsByFloor:
@@ -662,9 +660,6 @@ MonoBehaviour:
           type: 3}
         openings: 01010100
         roomIndex: 0
-        room:
-          name: 
-          floors: []
   - name: Room4
     floors:
     - roomPartsByFloor:
@@ -672,9 +667,6 @@ MonoBehaviour:
           type: 3}
         openings: 01010001
         roomIndex: 0
-        room:
-          name: 
-          floors: []
   deadEndList: []
   rightEdgeList: []
   leftEdgeList:
@@ -685,17 +677,11 @@ MonoBehaviour:
           type: 3}
         openings: 00000100
         roomIndex: 0
-        room:
-          name: 
-          floors: []
     - roomPartsByFloor:
       - partPrefab: {fileID: 4628311813676121157, guid: c26162533642a4e4d927474837cd35e8,
           type: 3}
         openings: 01000100
         roomIndex: 0
-        room:
-          name: 
-          floors: []
   fillerPrefab: {fileID: 778409336111630296, guid: f0f69af25cac0684a9eed2ac813069ce,
     type: 3}
   fillEmptySpaces: 0
@@ -707,7 +693,7 @@ MonoBehaviour:
   creatingTime: 0
   bottomCenterTowerPos: {x: 0, y: -5}
   tileLength: 24
-  maxRoom: 500
+  maxRoom: 2000
 --- !u!4 &833065595
 Transform:
   m_ObjectHideFlags: 0
@@ -916,6 +902,21 @@ PrefabInstance:
       propertyPath: m_Name
       value: A_
       objectReference: {fileID: 0}
+    - target: {fileID: 1444916539395562212, guid: 69ca3f1f046cf8d48abbcca71eef52eb,
+        type: 3}
+      propertyPath: data.dataString
+      value: UEsDBBQAAAgIAAAIIexGIzpMcQIAABcFAAALACQAZ3JhcGgwLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQFlVE1z2jAQ/SuMzoWxjYG4txYI6YEkE9rJxRchr7EGWfJIcoBk+O9dycZ2KRekffvx9u3KX4RLUwGzSm80z7YqA/J9RNyZfBv14BOc6UHJHf+Em887z2zhnKj3eaOWK7SHLsyoEqzm7Ic8COccoLGWPFe6XGcHWCpjDZpzKgwgpJV10RJNXyNyxr9x4kIueIoW7vSJpyQYXfHIQFrQA9fZJI7jRRCtx8G8DVpMAvxFs8WsjR2Hk2Qahg/JYo5uM5+olkzQsoLMddXnm3WVY+8msd/WI5i4fEwJwU1Ll9hL5eXYVQVocHpknGL3nmKE1wL4obDtpYt9yXMDtpVG08uKaxSxSUp+qkbZkppjQ+yDitqViWZzT6pJuv0PH4cezrUqn251w8DVsAVnxzd6YdTYgfRD86onHnp9TlQc6V7AewHyWW20qmWGoNW1C60NRKv+2rW2LIAde3tD9c5YV73gN72Dblaj69V3f14KXu698HFj2Anl5fbrARpH8wsJ++UxbQq0OhZ/DPymh+GWtcAj18Yi1HYpHb29qrVzJWuvmeumtkulJXhzS7oCSYW9vGIaez/CO2xQ9g55pO49tcVb7PZM7kK8ufcPgjvoVZ26YZlCnbZgipfaCi6hJ+2AZ9RpqaRsNmyoyS1sV+ucskHYoebZv6tF2D5Ppkkc5GweZ2wajfchTYI9LPCJPkAUxcTvHpfYJxWvDdFWHpya7JNL3LPbZ2a00bTy255petrwz1INCXKZqx3TAPKlSdExB41V8F1m64yjQjuwlks/cPKVEqHYEbK0q5n6Vtdnq2naZ0lJxT+UdZaULP2HJSVXcv0LUEsDBBQAAAgIAAAIIeyGnLaDbAAAAHcAAAAJACQAbWV0YS5qc29uCgAgAAAAAAABABgAAIA+1d6xnQEAgD7V3rGdAQCAPtXesZ0Bq1YqSy0qzszPU7JSMNEz0rPQUVBKL0osyCgGChiCOKWZKSB2tFJyUpqlsaWJQVqymUlKsrGRbpJhoqVBUqq5kbmBRaqRkYlSLFB9SWVBql9ibipET0BiSUZaZl5KZl66nntRZoo7yGil2FoAUEsBAi0AFAAACAgAAAgh7EYjOkxxAgAAFwUAAAsAJAAAAAAAAAAAAAAAAAAAAGdyYXBoMC5qc29uCgAgAAAAAAABABgAAIA+1d6xnQEAgD7V3rGdAQCAPtXesZ0BUEsBAi0AFAAACAgAAAgh7IactoNsAAAAdwAAAAkAJAAAAAAAAAAAAAAAvgIAAG1ldGEuanNvbgoAIAAAAAAAAQAYAACAPtXesZ0BAIA+1d6xnQEAgD7V3rGdAVBLBQYAAAAAAgACALgAAAB1AwAAAAA=
+      objectReference: {fileID: 0}
+    - target: {fileID: 1444916539395562212, guid: 69ca3f1f046cf8d48abbcca71eef52eb,
+        type: 3}
+      propertyPath: scanOnStartup
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1444916539395562212, guid: 69ca3f1f046cf8d48abbcca71eef52eb,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1444916539395562213, guid: 69ca3f1f046cf8d48abbcca71eef52eb,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -979,21 +980,6 @@ PrefabInstance:
     - target: {fileID: 1444916539395562213, guid: 69ca3f1f046cf8d48abbcca71eef52eb,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1444916539395562212, guid: 69ca3f1f046cf8d48abbcca71eef52eb,
-        type: 3}
-      propertyPath: data.dataString
-      value: UEsDBBQAAAgIAAAIIexGIzpMcQIAABcFAAALACQAZ3JhcGgwLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQFlVE1z2jAQ/SuMzoWxjYG4txYI6YEkE9rJxRchr7EGWfJIcoBk+O9dycZ2KRekffvx9u3KX4RLUwGzSm80z7YqA/J9RNyZfBv14BOc6UHJHf+Em887z2zhnKj3eaOWK7SHLsyoEqzm7Ic8COccoLGWPFe6XGcHWCpjDZpzKgwgpJV10RJNXyNyxr9x4kIueIoW7vSJpyQYXfHIQFrQA9fZJI7jRRCtx8G8DVpMAvxFs8WsjR2Hk2Qahg/JYo5uM5+olkzQsoLMddXnm3WVY+8msd/WI5i4fEwJwU1Ll9hL5eXYVQVocHpknGL3nmKE1wL4obDtpYt9yXMDtpVG08uKaxSxSUp+qkbZkppjQ+yDitqViWZzT6pJuv0PH4cezrUqn251w8DVsAVnxzd6YdTYgfRD86onHnp9TlQc6V7AewHyWW20qmWGoNW1C60NRKv+2rW2LIAde3tD9c5YV73gN72Dblaj69V3f14KXu698HFj2Anl5fbrARpH8wsJ++UxbQq0OhZ/DPymh+GWtcAj18Yi1HYpHb29qrVzJWuvmeumtkulJXhzS7oCSYW9vGIaez/CO2xQ9g55pO49tcVb7PZM7kK8ufcPgjvoVZ26YZlCnbZgipfaCi6hJ+2AZ9RpqaRsNmyoyS1sV+ucskHYoebZv6tF2D5Ppkkc5GweZ2wajfchTYI9LPCJPkAUxcTvHpfYJxWvDdFWHpya7JNL3LPbZ2a00bTy255petrwz1INCXKZqx3TAPKlSdExB41V8F1m64yjQjuwlks/cPKVEqHYEbK0q5n6Vtdnq2naZ0lJxT+UdZaULP2HJSVXcv0LUEsDBBQAAAgIAAAIIeyGnLaDbAAAAHcAAAAJACQAbWV0YS5qc29uCgAgAAAAAAABABgAAIA+1d6xnQEAgD7V3rGdAQCAPtXesZ0Bq1YqSy0qzszPU7JSMNEz0rPQUVBKL0osyCgGChiCOKWZKSB2tFJyUpqlsaWJQVqymUlKsrGRbpJhoqVBUqq5kbmBRaqRkYlSLFB9SWVBql9ibipET0BiSUZaZl5KZl66nntRZoo7yGil2FoAUEsBAi0AFAAACAgAAAgh7EYjOkxxAgAAFwUAAAsAJAAAAAAAAAAAAAAAAAAAAGdyYXBoMC5qc29uCgAgAAAAAAABABgAAIA+1d6xnQEAgD7V3rGdAQCAPtXesZ0BUEsBAi0AFAAACAgAAAgh7IactoNsAAAAdwAAAAkAJAAAAAAAAAAAAAAAvgIAAG1ldGEuanNvbgoAIAAAAAAAAQAYAACAPtXesZ0BAIA+1d6xnQEAgD7V3rGdAVBLBQYAAAAAAgACALgAAAB1AwAAAAA=
-      objectReference: {fileID: 0}
-    - target: {fileID: 1444916539395562212, guid: 69ca3f1f046cf8d48abbcca71eef52eb,
-        type: 3}
-      propertyPath: scanOnStartup
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1444916539395562212, guid: 69ca3f1f046cf8d48abbcca71eef52eb,
-        type: 3}
-      propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []

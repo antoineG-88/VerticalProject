@@ -2249,7 +2249,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4224617563954070489
 Transform:
   m_ObjectHideFlags: 0
@@ -3218,6 +3218,8 @@ MonoBehaviour:
   noGravityBouncyMaterial: {fileID: 6200000, guid: e00235c0d57775e488d206f15b485065,
     type: 2}
   basicMaterial: {fileID: 6200000, guid: ca4dce0f1fa4f0a4e956e8e72f1f7a41, type: 2}
+  repulsionForce: 0
+  repulsionRange: 0
   viewRange: 8
   viewAngle: 180
   viewAngleWidth: 20
@@ -3294,6 +3296,9 @@ MonoBehaviour:
     type: 3}
   projectilePrefab: {fileID: 733819507943030622, guid: d718da2d5dc7bf64a86dc8b40ec37cb2,
     type: 3}
+  isAtRange: 0
+  timebeforeRangeAttack: 0
+  rangeAttackCooldownRemaining: 0
 --- !u!114 &7870544832410823763
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3465,7 +3470,7 @@ SpriteRenderer:
   m_Size: {x: 1.0625, y: 0.96875}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!95 &7870544832431950517
@@ -3549,6 +3554,8 @@ MonoBehaviour:
   noGravityBouncyMaterial: {fileID: 6200000, guid: e00235c0d57775e488d206f15b485065,
     type: 2}
   basicMaterial: {fileID: 6200000, guid: ca4dce0f1fa4f0a4e956e8e72f1f7a41, type: 2}
+  repulsionForce: 0
+  repulsionRange: 0
   viewRange: 8
   viewAngle: 180
   viewAngleWidth: 20
@@ -3625,6 +3632,9 @@ MonoBehaviour:
     type: 3}
   projectilePrefab: {fileID: 733819507943030622, guid: d718da2d5dc7bf64a86dc8b40ec37cb2,
     type: 3}
+  isAtRange: 0
+  timebeforeRangeAttack: 0
+  rangeAttackCooldownRemaining: 0
 --- !u!114 &7870544832838608845
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3796,7 +3806,7 @@ SpriteRenderer:
   m_Size: {x: 1.0625, y: 0.96875}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!95 &7870544832859930923
@@ -3880,6 +3890,8 @@ MonoBehaviour:
   noGravityBouncyMaterial: {fileID: 6200000, guid: e00235c0d57775e488d206f15b485065,
     type: 2}
   basicMaterial: {fileID: 6200000, guid: ca4dce0f1fa4f0a4e956e8e72f1f7a41, type: 2}
+  repulsionForce: 0
+  repulsionRange: 0
   viewRange: 8
   viewAngle: 180
   viewAngleWidth: 20
@@ -3956,6 +3968,9 @@ MonoBehaviour:
     type: 3}
   projectilePrefab: {fileID: 733819507943030622, guid: d718da2d5dc7bf64a86dc8b40ec37cb2,
     type: 3}
+  isAtRange: 0
+  timebeforeRangeAttack: 0
+  rangeAttackCooldownRemaining: 0
 --- !u!114 &7870544833086435980
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4127,7 +4142,7 @@ SpriteRenderer:
   m_Size: {x: 1.0625, y: 0.96875}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!95 &7870544833098650730
