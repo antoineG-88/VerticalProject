@@ -5,11 +5,14 @@ using UnityEngine;
 public class LevelBuilder : MonoBehaviour
 {
     [Header("Generation Step timing settings")]
-    public float loopTime;
+    public bool instantCreation;
+    public float timeBetweenRoomCreation;
+    public float timeTestingRoom;
+    public float timeSearchingOpening;
     [Header("Generation settings")]
     public int towerWidth;
     public int towerHeight;
-    public Vector2 startPositionIndexes;
+    public Coord startPositionIndexes;
     public List<Room> roomList;
     public List<Room> deadEndList;
     public List<Room> rightEdgeList;
@@ -35,22 +38,25 @@ public class LevelBuilder : MonoBehaviour
     private Room.RoomPart[,] towerGrid;
     private bool[,] zoneChecked;
     private bool[] checkedFloors;
-    private List<UnCheckedZone> uncheckedZones;
-    private List<Vector2> freeOpeningsUnusable = new List<Vector2>();
-    private Vector2 nextRoomStart;
+    private List<Coord> emptyZones;
+    private List<Coord> freeOpeningsUnusable = new List<Coord>();
+    private List<Coord> accessibleZones = new List<Coord>();
+    private List<Coord> cursedZones = new List<Coord>();
+    private Coord nextRoomStart;
     private int nextRoomOpeningDirection;
-    private Vector2 originRoom;
+    private Coord originRoom;
     private int roomBuiltNumber;
 
     private bool levelBuilt;
     private bool levelScanned;
     private GridGraph gridGraph;
-    private List<Vector2> accessibleZones = new List<Vector2>();
 
     private bool nextRoomFinished;
     private bool roomPlacementSuccess;
     private bool openingRemaining;
     private bool nextOpeningResearchFinished;
+
+    private List<ZoneGismo> currentlyDrawnZoneGismos = new List<ZoneGismo>();
 
     public enum Direction { Up, Down, Right, Left };
 
@@ -73,35 +79,28 @@ public class LevelBuilder : MonoBehaviour
             gridGraph.SetDimensions(48, 48, 0.5f);
             AstarPath.active.Scan();
         }
-
-        if(Input.GetKeyDown(KeyCode.Space))
-        {
-            Debug.Log("Listing of unCheckedZones :");
-            foreach(UnCheckedZone unCheckedZone in uncheckedZones)
-            {
-                Debug.Log("Unchecked zone at " + unCheckedZone.gridX + ", " + unCheckedZone.gridY);
-            }
-        }
     }
 
     public IEnumerator BuildLevel()
     {
-        bool towerCorrectlyBuild = false;
+        //bool towerCorrectlyBuild = false;
         roomBuiltNumber = 0;
         towerGrid = new Room.RoomPart[towerHeight, towerWidth];
         checkedFloors = new bool[towerHeight];
-        uncheckedZones = UnCheckedZone.CreateUncheckGrid(towerHeight, towerWidth);
+        emptyZones = Coord.CreateFullZoneGrid(towerHeight, towerWidth);
         zoneChecked = new bool[towerHeight, towerWidth];
 
 
         Debug.Log("Beginning Tower creation");
         nextRoomStart = startPositionIndexes;
         nextRoomOpeningDirection = 3;
-        bool openingRemaining = true;
+        openingRemaining = true;
 
         do
         {
             Debug.Log("Start building room number " + (roomBuiltNumber + 1));
+
+
             StartCoroutine(PlaceNextRoom(nextRoomStart, nextRoomOpeningDirection));
 
             while (!nextRoomFinished)
@@ -112,27 +111,36 @@ public class LevelBuilder : MonoBehaviour
             if (!roomPlacementSuccess)
             {
                 freeOpeningsUnusable.Add(nextRoomStart);
-                uncheckedZones.Remove(UnCheckedZone.GetUncheckZone(uncheckedZones, (int)originRoom.x, (int)originRoom.y));
-                zoneChecked[(int)originRoom.x, (int)originRoom.y] = true;
-                Debug.Log((int)originRoom.x + ", " + (int)originRoom.y + " removed from uncheckedList");
-                Debug.Log("The tile at " + nextRoomStart.x + ", " + nextRoomStart.y + " cannot be used as a connection. Added to unusable list");
-                CreateTile((int)nextRoomStart.x, (int)nextRoomStart.y);
+                zoneChecked[originRoom.x, originRoom.y] = true;
+                Debug.Log("The tile at " + nextRoomStart.x + ", " + nextRoomStart.y + " cannot be used as a connection. Added to unusable list, Filling it with roomFiller");
+                if (towerGrid[nextRoomStart.x, nextRoomStart.y] == null)
+                {
+                    CreateTile(nextRoomStart);
+                }
             }
             else
             {
                 roomBuiltNumber++;
             }
 
-            yield return new WaitForSeconds(loopTime);
-
-            StartCoroutine(FindNextOpening());
-
-            while (!nextOpeningResearchFinished)
+            if(emptyZones.Count > 0)
             {
-                yield return new WaitForEndOfFrame();
+                StartCoroutine(FindNextRandomOpening());
+
+                while (!nextOpeningResearchFinished)
+                {
+                    yield return new WaitForEndOfFrame();
+                }
             }
+            else
+            {
+                openingRemaining = false;
+            }
+
+            if(!instantCreation && timeBetweenRoomCreation > 0)
+                yield return new WaitForSeconds(timeBetweenRoomCreation);
         }
-        while (openingRemaining && nextRoomStart.x <= towerHeight && roomBuiltNumber <= maxRoom);
+        while (openingRemaining && roomBuiltNumber <= maxRoom);
 
         if (!openingRemaining)
         {
@@ -146,7 +154,7 @@ public class LevelBuilder : MonoBehaviour
         //StartCoroutine(CreateTower());
     }
 
-    public IEnumerator PlaceNextRoom(Vector2 gridIndexes, int openingDirection)
+    public IEnumerator PlaceNextRoom(Coord gridIndexes, int openingDirection)
     {
         nextRoomFinished = false;
         bool[] roomsTested = new bool[roomList.Count];
@@ -157,7 +165,7 @@ public class LevelBuilder : MonoBehaviour
         Room selectedRoom = null;
         Room potentialRoom = null;
         bool noMoreRoomAvailable = false;
-        Vector2 connectedPartIndexes = Vector2.zero;
+        Coord connectedPartIndexes = new Coord(0, 0);
         for (int i = 0; i < roomsTested.Length; i++)
         {
             roomsTested[i] = false;
@@ -335,15 +343,15 @@ public class LevelBuilder : MonoBehaviour
                         {
                             if (potentialRoom.roomParts[floorNumber, zoneNumber] != null)
                             {
-                                Vector2 relativeIndexes = new Vector2(floorNumber - connectedPartIndexes.x, zoneNumber - connectedPartIndexes.y);
-                                if (gridIndexes.x + relativeIndexes.x < 0 || gridIndexes.y + relativeIndexes.y < 0 || gridIndexes.x + relativeIndexes.x >= towerHeight || gridIndexes.y + relativeIndexes.y >= towerWidth || towerGrid[(int)gridIndexes.x + (int)relativeIndexes.x, (int)gridIndexes.y + (int)relativeIndexes.y] != null)
+                                Coord relativeIndexes = new Coord(floorNumber - connectedPartIndexes.x, zoneNumber - connectedPartIndexes.y);
+                                if (gridIndexes.x + relativeIndexes.x < 0 || gridIndexes.y + relativeIndexes.y < 0 || gridIndexes.x + relativeIndexes.x >= towerHeight || gridIndexes.y + relativeIndexes.y >= towerWidth || towerGrid[gridIndexes.x + relativeIndexes.x, gridIndexes.y + relativeIndexes.y] != null)
                                 {
                                     enoughSpace = false;
-                                    Debug.Log("The tile at " + ((int)gridIndexes.x + (int)relativeIndexes.x) + ", " + ((int)gridIndexes.y + (int)relativeIndexes.y) + " is already filled");
+                                    Debug.Log("The tile at " + (gridIndexes.x + relativeIndexes.x) + ", " + (gridIndexes.y + relativeIndexes.y) + " is already filled");
                                 }
                                 else
                                 {
-                                    Debug.Log("The " + potentialRoom + "'s part (" + floorNumber + ", " + zoneNumber + ") can be placed on the tower at " + ((int)gridIndexes.x + (int)relativeIndexes.x) + ", " + ((int)gridIndexes.y + (int)relativeIndexes.y));
+                                    Debug.Log("The " + potentialRoom + "'s part (" + floorNumber + ", " + zoneNumber + ") can be placed on the tower at " + (gridIndexes.x + relativeIndexes.x) + ", " + (gridIndexes.y + relativeIndexes.y));
                                 }
                             }
                             zoneNumber++;
@@ -366,24 +374,23 @@ public class LevelBuilder : MonoBehaviour
                     }
                     else
                     {
-                        Debug.Log(potentialRoom.name + " can fit in the tower. Positioned at Floor " + (int)gridIndexes.x + " Zone " + (int)gridIndexes.y);
+                        Debug.Log(potentialRoom.name + " can fit in the tower. Positioned at Floor " + gridIndexes.x + " Zone " + gridIndexes.y);
 
                         if(mandatoryOpenings && !isDeadEnd)
                         {
-                            Debug.Log("Now checking mandatory openings for " + potentialRoom.name + " at " + (int)gridIndexes.x + ", " + (int)gridIndexes.y);
+                            Debug.Log("Now checking mandatory openings for " + potentialRoom.name + " at " + gridIndexes.x + ", " + gridIndexes.y);
                             floorNumber = 0;
                             while (!createMandatoryFreeOpening && floorNumber < potentialRoom.roomParts.GetLength(0))
                             {
                                 int zoneNumber = 0;
                                 while (!createMandatoryFreeOpening && zoneNumber < potentialRoom.roomParts.GetLength(1))
                                 {
-                                    Vector2 relativeIndexes = new Vector2(floorNumber - connectedPartIndexes.x, zoneNumber - connectedPartIndexes.y);
+                                    Coord relativeIndexes = new Coord(floorNumber - connectedPartIndexes.x, zoneNumber - connectedPartIndexes.y);
                                     if (potentialRoom.roomParts[floorNumber, zoneNumber] != null
                                         && potentialRoom.roomParts[floorNumber, zoneNumber].openings.Length > 0)
                                     {
                                         Vector2 followingIndexes = Vector2.zero;
-                                        int opposedOpening = 0;
-                                        int openingDirectionFound = CheckFreeOpening(potentialRoom.roomParts[floorNumber, zoneNumber], (int)gridIndexes.x + (int)relativeIndexes.x, (int)gridIndexes.y + (int)relativeIndexes.y);
+                                        int openingDirectionFound = CheckFreeOpening(potentialRoom.roomParts[floorNumber, zoneNumber], gridIndexes.x + relativeIndexes.x, gridIndexes.y + relativeIndexes.y);
                                         if (openingDirectionFound != -1)
                                         {
                                             if ((openingDirectionFound == 0 && mandatoryPlacementDirections.Contains(Direction.Up))
@@ -424,12 +431,12 @@ public class LevelBuilder : MonoBehaviour
                                     int zoneNumber = 0;
                                     while (allRoomOpeningsFree && zoneNumber < potentialRoom.roomParts.GetLength(1))
                                     {
-                                        yield return new WaitForEndOfFrame();
-                                        Vector2 relativeIndexes = new Vector2(floorNumber - connectedPartIndexes.x, zoneNumber - connectedPartIndexes.y);
+                                        //yield return new WaitForEndOfFrame();
+                                        Coord relativeIndexes = new Coord(floorNumber - connectedPartIndexes.x, zoneNumber - connectedPartIndexes.y);
                                         if (potentialRoom.roomParts[floorNumber, zoneNumber] != null
                                             && potentialRoom.roomParts[floorNumber, zoneNumber].openings.Length > 0)
                                         {
-                                            allRoomOpeningsFree = CheckIfAllOpeningsAreFree(potentialRoom.roomParts[floorNumber, zoneNumber], (int)gridIndexes.x + (int)relativeIndexes.x, (int)gridIndexes.y + (int)relativeIndexes.y);
+                                            allRoomOpeningsFree = CheckIfAllOpeningsAreFree(potentialRoom.roomParts[floorNumber, zoneNumber], gridIndexes.x + relativeIndexes.x, gridIndexes.y + relativeIndexes.y);
                                         }
                                         zoneNumber++;
                                     }
@@ -440,23 +447,23 @@ public class LevelBuilder : MonoBehaviour
                             if (allRoomOpeningsFree)
                             {
                                 selectedRoom = potentialRoom;
-                                Debug.Log("Room found ! The room " + selectedRoom.name + " has all needed features. Placed at Floor " + (int)gridIndexes.x + " Zone " + (int)gridIndexes.y);
+                                Debug.Log("Room found ! The room " + selectedRoom.name + " has all needed features. Placed at Floor " + gridIndexes.x + " Zone " + gridIndexes.y);
 
                                 for (floorNumber = 0; floorNumber < selectedRoom.roomParts.GetLength(0); floorNumber++)
                                 {
                                     for (int zoneNumber = 0; zoneNumber < selectedRoom.roomParts.GetLength(1); zoneNumber++)
                                     {
-                                        Vector2 relativeIndexes = new Vector2(floorNumber - connectedPartIndexes.x, zoneNumber - connectedPartIndexes.y);
+                                        Coord relativeIndexes = new Coord(floorNumber - connectedPartIndexes.x, zoneNumber - connectedPartIndexes.y);
                                         if (selectedRoom.roomParts[floorNumber, zoneNumber] != null)
                                         {
-                                            towerGrid[(int)gridIndexes.x + (int)relativeIndexes.x, (int)gridIndexes.y + (int)relativeIndexes.y] = selectedRoom.roomParts[floorNumber, zoneNumber];
-                                            Debug.Log(selectedRoom.name + " part placed on " + (int)gridIndexes.x + (int)relativeIndexes.x + ", " + (int)gridIndexes.y + (int)relativeIndexes.y);
-                                            CreateTile((int)gridIndexes.x + (int)relativeIndexes.x, (int)gridIndexes.y + (int)relativeIndexes.y);
+                                            towerGrid[gridIndexes.x + relativeIndexes.x, gridIndexes.y + relativeIndexes.y] = selectedRoom.roomParts[floorNumber, zoneNumber];
+                                            Debug.Log(selectedRoom.name + " part placed on " + (gridIndexes.x + relativeIndexes.x) + ", " + (gridIndexes.y + relativeIndexes.y));
+                                            CreateTile(new Coord(gridIndexes.x + relativeIndexes.x, gridIndexes.y + relativeIndexes.y));
                                         }
                                         else
                                         {
-                                            towerGrid[(int)gridIndexes.x + (int)relativeIndexes.x, (int)gridIndexes.y + (int)relativeIndexes.y] = null;
-                                            Debug.Log(selectedRoom.name + " hole placed on " + (int)gridIndexes.x + (int)relativeIndexes.x + ", " + (int)gridIndexes.y + (int)relativeIndexes.y);
+                                            towerGrid[gridIndexes.x + relativeIndexes.x, gridIndexes.y + relativeIndexes.y] = null;
+                                            Debug.Log(selectedRoom.name + " hole placed on " + gridIndexes.x + relativeIndexes.x + ", " + gridIndexes.y + relativeIndexes.y);
                                         }
                                     }
                                 }
@@ -472,32 +479,32 @@ public class LevelBuilder : MonoBehaviour
                                     {
                                         for (int zoneNumber = 0; zoneNumber < selectedRoom.roomParts.GetLength(1); zoneNumber++)
                                         {
-                                            Vector2 relativeIndexes = new Vector2(floorNumber - connectedPartIndexes.x, zoneNumber - connectedPartIndexes.y);
+                                            Coord relativeIndexes = new Coord(floorNumber - connectedPartIndexes.x, zoneNumber - connectedPartIndexes.y);
                                             if (selectedRoom.roomParts[floorNumber, zoneNumber] != null)
                                             {
-                                                List<Vector2> checkedZones = new List<Vector2>();
+                                                List<Coord> checkedZones = new List<Coord>();
                                                 int direction = 0;
                                                 Debug.Log("Checking if zone " + gridIndexes.x + relativeIndexes.x + ", " + gridIndexes.y + relativeIndexes.y + " is blocking");
-                                                Vector2 zoneToCheck = Vector2.zero;
+                                                Coord zoneToCheck = new Coord(0, 0);
                                                 while (!roomIsBlocking && direction < 4)
                                                 {
                                                     direction++;
                                                     switch (direction)
                                                     {
                                                         case 1:
-                                                            zoneToCheck = new Vector2(gridIndexes.x + relativeIndexes.x + 1, gridIndexes.y + relativeIndexes.y);
+                                                            zoneToCheck = new Coord(gridIndexes.x + relativeIndexes.x + 1, gridIndexes.y + relativeIndexes.y);
                                                             break;
 
                                                         case 2:
-                                                            zoneToCheck = new Vector2(gridIndexes.x + relativeIndexes.x - 1, gridIndexes.y + relativeIndexes.y);
+                                                            zoneToCheck = new Coord(gridIndexes.x + relativeIndexes.x - 1, gridIndexes.y + relativeIndexes.y);
                                                             break;
 
                                                         case 3:
-                                                            zoneToCheck = new Vector2(gridIndexes.x + relativeIndexes.x, gridIndexes.y + relativeIndexes.y + 1);
+                                                            zoneToCheck = new Coord(gridIndexes.x + relativeIndexes.x, gridIndexes.y + relativeIndexes.y + 1);
                                                             break;
 
                                                         case 4:
-                                                            zoneToCheck = new Vector2(gridIndexes.x + relativeIndexes.x, gridIndexes.y + relativeIndexes.y - 1);
+                                                            zoneToCheck = new Coord(gridIndexes.x + relativeIndexes.x, gridIndexes.y + relativeIndexes.y - 1);
                                                             break;
 
                                                         default:
@@ -526,11 +533,11 @@ public class LevelBuilder : MonoBehaviour
                                         {
                                             for (int zoneNumber = 0; zoneNumber < selectedRoom.roomParts.GetLength(1); zoneNumber++)
                                             {
-                                                Vector2 relativeIndexes = new Vector2(floorNumber - connectedPartIndexes.x, zoneNumber - connectedPartIndexes.y);
+                                                Coord relativeIndexes = new Coord(floorNumber - connectedPartIndexes.x, zoneNumber - connectedPartIndexes.y);
                                                 if (selectedRoom.roomParts[floorNumber, zoneNumber] != null)
                                                 {
-                                                    towerGrid[(int)gridIndexes.x + (int)relativeIndexes.x, (int)gridIndexes.y + (int)relativeIndexes.y] = null;
-                                                    Debug.Log(selectedRoom.name + " part removed on " + (int)gridIndexes.x + (int)relativeIndexes.x + ", " + (int)gridIndexes.y + (int)relativeIndexes.y);
+                                                    towerGrid[gridIndexes.x + relativeIndexes.x, gridIndexes.y + relativeIndexes.y] = null;
+                                                    Debug.Log(selectedRoom.name + " part removed on " + gridIndexes.x + relativeIndexes.x + ", " + gridIndexes.y + relativeIndexes.y);
                                                 }
                                             }
                                         }
@@ -568,6 +575,8 @@ public class LevelBuilder : MonoBehaviour
                     }
                 }
             }
+            if (!instantCreation && timeTestingRoom > 0)
+                yield return new WaitForSeconds(timeTestingRoom);
         }
 
         roomPlacementSuccess = !noMoreRoomAvailable;
@@ -575,25 +584,26 @@ public class LevelBuilder : MonoBehaviour
         //return !noMoreRoomAvailable;
     }
 
+    [System.ObsoleteAttribute("This method is everlooping and overcomplicated as f*** so don't use it ! (but it makes this script even bigger so ^^)", false)]
     private IEnumerator FindNextOpening()
     {
         nextOpeningResearchFinished = false;
         bool openingAvailable = false;
-        Vector2 openingIndexes = Vector2.zero;
+        Coord openingIndexes = new Coord(0, 0);
         int openingDirection = -1;
         bool floorsRemaining = true;
 
         int randomFloor = 0;
         int randomZone = 0;
-        int randomEmptyZone;
+        int randomUncheckedZone;
         while (!openingAvailable && floorsRemaining)
         {
 
-            randomEmptyZone = Random.Range(0, uncheckedZones.Count);
-            randomFloor = uncheckedZones[randomEmptyZone].gridX;
-            randomZone = uncheckedZones[randomEmptyZone].gridY;
+            randomUncheckedZone = Random.Range(0, emptyZones.Count);
+            randomFloor = emptyZones[randomUncheckedZone].x;
+            randomZone = emptyZones[randomUncheckedZone].y;
 
-            Debug.Log("Checking zone " + randomFloor + ", " + randomZone + " for openings. possibilities : " + uncheckedZones.Count);
+            Debug.Log("Checking zone " + randomFloor + ", " + randomZone + " for openings. possibilities : " + emptyZones.Count);
 
             if (!checkedFloors[randomFloor])
             {
@@ -618,7 +628,7 @@ public class LevelBuilder : MonoBehaviour
                                             {
                                                 openingAvailable = true;
                                                 openingDirection = 1;
-                                                openingIndexes = new Vector2(randomFloor + 1, randomZone);
+                                                openingIndexes = new Coord(randomFloor + 1, randomZone);
                                                 Debug.Log("Free opening found on Zone " + randomZone + ", floor " + randomFloor + ". Direction : Up");
                                             }
                                         }
@@ -631,7 +641,7 @@ public class LevelBuilder : MonoBehaviour
                                             {
                                                 openingAvailable = true;
                                                 openingDirection = 0;
-                                                openingIndexes = new Vector2(randomFloor - 1, randomZone);
+                                                openingIndexes = new Coord(randomFloor - 1, randomZone);
                                                 Debug.Log("Free opening found on Zone " + randomZone + ", floor " + randomFloor + ". Direction : Down");
                                             }
                                         }
@@ -644,7 +654,7 @@ public class LevelBuilder : MonoBehaviour
                                             {
                                                 openingAvailable = true;
                                                 openingDirection = 3;
-                                                openingIndexes = new Vector2(randomFloor, randomZone + 1);
+                                                openingIndexes = new Coord(randomFloor, randomZone + 1);
                                                 Debug.Log("Free opening found on Zone " + randomZone + ", floor " + randomFloor + ". Direction : Right");
                                             }
                                         }
@@ -657,7 +667,7 @@ public class LevelBuilder : MonoBehaviour
                                             {
                                                 openingAvailable = true;
                                                 openingDirection = 2;
-                                                openingIndexes = new Vector2(randomFloor, randomZone - 1);
+                                                openingIndexes = new Coord(randomFloor, randomZone - 1);
                                                 Debug.Log("Free opening found on Zone " + randomZone + ", floor " + randomFloor + ". Direction : Left");
                                             }
                                         }
@@ -682,14 +692,14 @@ public class LevelBuilder : MonoBehaviour
                         if (!freeOpeningsOnZone)
                         {
                             zoneChecked[randomFloor, randomZone] = true;
-                            uncheckedZones.Remove(UnCheckedZone.GetUncheckZone(uncheckedZones, randomFloor, randomZone));
+                            emptyZones.Remove(Coord.GetZone(emptyZones, randomFloor, randomZone));
                             Debug.Log("Zone " + randomFloor + ", " + randomZone + " fully blocked : added to skipList");
                         }
                     }
                     else
                     {
                         zoneChecked[randomFloor, randomZone] = true;
-                        uncheckedZones.Remove(UnCheckedZone.GetUncheckZone(uncheckedZones, randomFloor, randomZone));
+                        emptyZones.Remove(Coord.GetZone(emptyZones, randomFloor, randomZone));
                         Debug.Log("No openings on Zone " + randomFloor + ", " + randomZone + " : added to skipList");
                     }
                 }
@@ -735,9 +745,9 @@ public class LevelBuilder : MonoBehaviour
 
         if(openingAvailable)
         {
-            nextRoomStart = openingIndexes;
+            nextRoomStart = new Coord(openingIndexes.x, openingIndexes.y);
             nextRoomOpeningDirection = openingDirection;
-            originRoom = new Vector2(randomFloor, randomZone);
+            originRoom = new Coord(randomFloor, randomZone);
         }
         else
         {
@@ -745,9 +755,131 @@ public class LevelBuilder : MonoBehaviour
             Debug.Log("No free opening Available. Mission failed :,(");
         }
 
-        openingRemaining = openingAvailable;
+        //openingRemaining = openingAvailable;
         nextOpeningResearchFinished = true;
         //return openingAvailable;
+    }
+
+    private IEnumerator FindNextRandomOpening()
+    {
+        Debug.Log("Searching new free random opening");
+        nextOpeningResearchFinished = false;
+
+        List<Coord> currentlyAccessibleZone = new List<Coord>(emptyZones);
+        int openingDirection = -1;
+        int nextOpening = -1;
+
+        bool zoneRemaining = true;
+        bool openingFound = false;
+        Coord randomZone = null;
+        Coord nearbyZone = null;
+        while(zoneRemaining && !openingFound)
+        {
+            randomZone = currentlyAccessibleZone[Random.Range(0, currentlyAccessibleZone.Count)];
+            //Debug.Log("Testing empty zone " + randomZone.x + ", " + randomZone.y + "amongst " + currentlyAccessibleZone.Count + "for nearby openings");
+            if(towerGrid[randomZone.x, randomZone.y] == null)
+            {
+                int checkDirection = 0;
+                while (checkDirection < 4 && !openingFound)
+                {
+                    Coord relativeZoneOffset = new Coord(0,0);
+                    switch (checkDirection)
+                    {
+                        case 0:
+                            relativeZoneOffset = new Coord(1, 0);
+                            openingDirection = 1;
+                            break;
+
+                        case 1:
+                            relativeZoneOffset = new Coord(-1, 0);
+                            openingDirection = 0;
+                            break;
+
+                        case 2:
+                            relativeZoneOffset = new Coord(0, 1);
+                            openingDirection = 3;
+                            break;
+
+                        case 3:
+                            relativeZoneOffset = new Coord(0, -1);
+                            openingDirection = 2;
+                            break;
+                    }
+
+
+                    nearbyZone = new Coord(randomZone.x + relativeZoneOffset.x, randomZone.y + relativeZoneOffset.y);
+
+                    if (nearbyZone.x < towerHeight && nearbyZone.x >= 0 && nearbyZone.y < towerWidth && nearbyZone.y >= 0)
+                    {
+                        Room.RoomPart part = towerGrid[nearbyZone.x, nearbyZone.y];
+
+                        if (part != null)
+                        {
+                            currentlyDrawnZoneGismos.Clear();
+                            ZoneGismo.Draw(nearbyZone, 0, timeSearchingOpening, this);
+                            ZoneGismo.Draw(randomZone, 0, timeSearchingOpening, this);
+                            if (!instantCreation && timeSearchingOpening > 0)
+                                yield return new WaitForSeconds(timeSearchingOpening);
+                            if(part.openings[openingDirection])
+                            {
+                                openingFound = true;
+                                nextOpening = checkDirection;
+                                Debug.Log("Opening found for empty zone " + randomZone.x + ", " + randomZone.y + " connected " + openingDirection);
+                                ZoneGismo.Draw(nearbyZone, 2, timeSearchingOpening, this);
+                            }
+                            if (!instantCreation && timeSearchingOpening > 0)
+                                yield return new WaitForSeconds(timeSearchingOpening);
+                        }
+                    }
+
+                    if(!openingFound)
+                    {
+                        ZoneGismo.Draw(nearbyZone, 1, timeSearchingOpening, this);
+                    }
+
+                    checkDirection++;
+                    if (!instantCreation && timeSearchingOpening > 0)
+                        yield return new WaitForSeconds(timeSearchingOpening);
+                }
+            }
+
+            if(!openingFound)
+            {
+                currentlyAccessibleZone.Remove(randomZone);
+                //Debug.Log("Zone " + randomZone.x + ", " + randomZone.y + " is not accessible for now, removed from accessible zones");
+            }
+
+            if(currentlyAccessibleZone.Count <= 0)
+            {
+                zoneRemaining = false;
+                Debug.Log("No accessible Zone remaining, end of tower creation");
+            }
+            else
+            {
+                currentlyDrawnZoneGismos.Clear();
+                foreach (Coord accessZone in currentlyAccessibleZone)
+                {
+                    ZoneGismo.Draw(accessZone, 2, 1f, this);
+                }
+            }
+            if (!instantCreation)
+                yield return new WaitForSeconds(timeTestingRoom);
+        }
+
+        if (openingFound)
+        {
+            nextRoomStart = randomZone;
+            nextRoomOpeningDirection = nextOpening;
+            originRoom = new Coord(nearbyZone.x, nearbyZone.y);
+        }
+        else
+        {
+            originRoom = startPositionIndexes;
+            Debug.Log("No free opening Available. Mission failed :,(");
+        }
+        openingRemaining = openingFound;
+
+        nextOpeningResearchFinished = true;
     }
 
     /// <summary>
@@ -772,7 +904,7 @@ public class LevelBuilder : MonoBehaviour
                         if ((floorToCheck + 1) < towerHeight)
                         {
                             if (towerGrid[floorToCheck + 1, zoneToCheck] == null
-                            && !freeOpeningsUnusable.Contains(new Vector2(floorToCheck + 1, zoneToCheck)))
+                            && !freeOpeningsUnusable.Contains(new Coord(floorToCheck + 1, zoneToCheck)))
                             {
                                 isFree = true;
                                 openingFound = 0;
@@ -785,7 +917,7 @@ public class LevelBuilder : MonoBehaviour
                         if ((floorToCheck - 1) >= 0)
                         {
                             if (towerGrid[floorToCheck - 1, zoneToCheck] == null
-                                && !freeOpeningsUnusable.Contains(new Vector2(floorToCheck - 1, zoneToCheck)))
+                                && !freeOpeningsUnusable.Contains(new Coord(floorToCheck - 1, zoneToCheck)))
                             {
                                 isFree = true;
                                 openingFound = 1;
@@ -798,7 +930,7 @@ public class LevelBuilder : MonoBehaviour
                         if ((zoneToCheck + 1) < towerWidth)
                         {
                             if (towerGrid[floorToCheck, zoneToCheck + 1] == null
-                                && !freeOpeningsUnusable.Contains(new Vector2(floorToCheck, zoneToCheck + 1)))
+                                && !freeOpeningsUnusable.Contains(new Coord(floorToCheck, zoneToCheck + 1)))
                             {
                                 isFree = true;
                                 openingFound = 2;
@@ -811,7 +943,7 @@ public class LevelBuilder : MonoBehaviour
                         if ((zoneToCheck - 1) >= 0)
                         {
                             if (towerGrid[floorToCheck, zoneToCheck - 1] == null
-                            && !freeOpeningsUnusable.Contains(new Vector2(floorToCheck, zoneToCheck - 1)))
+                            && !freeOpeningsUnusable.Contains(new Coord(floorToCheck, zoneToCheck - 1)))
                             {
                                 isFree = true;
                                 openingFound = 3;
@@ -839,7 +971,6 @@ public class LevelBuilder : MonoBehaviour
     {
         bool isAllFree = true;
         int lookedOpening = 0;
-        int openingFound = -1;
         while (isAllFree && lookedOpening < 4)
         {
             if (part.openings[lookedOpening])
@@ -888,7 +1019,7 @@ public class LevelBuilder : MonoBehaviour
         return isAllFree;
     }
 
-    private bool IsNextZoneBlocking(Vector2 zoneGridIndexes, int oppositOriginDirection, ref List<Vector2> checkedZones)
+    private bool IsNextZoneBlocking(Coord zoneGridIndexes, int oppositOriginDirection, ref List<Coord> checkedZones)
     {
         Debug.Log("Checking accessibility for zone " + zoneGridIndexes);
         checkedZones.Add(zoneGridIndexes);
@@ -898,31 +1029,31 @@ public class LevelBuilder : MonoBehaviour
         {
             directionToCheck++;
             int oppositDirection = 0;
-            Vector2 zoneToCheck = Vector2.zero;
+            Coord zoneToCheck = new Coord(0, 0);
             if (directionToCheck != oppositOriginDirection)
             {
                 switch (directionToCheck)
                 {
                     case 1:
-                        zoneToCheck = new Vector2(zoneGridIndexes.x + 1, zoneGridIndexes.y);
+                        zoneToCheck = new Coord(zoneGridIndexes.x + 1, zoneGridIndexes.y);
                         oppositDirection = 2;
                         Debug.Log("Checking floor " + zoneToCheck.x + "/ zone " + zoneToCheck.y + ". Direction : Up");
                         break;
 
                     case 2:
-                        zoneToCheck = new Vector2(zoneGridIndexes.x - 1, zoneGridIndexes.y);
+                        zoneToCheck = new Coord(zoneGridIndexes.x - 1, zoneGridIndexes.y);
                         oppositDirection = 1;
                         Debug.Log("Checking floor " + zoneToCheck.x + "/ zone " + zoneToCheck.y + ". Direction : Down");
                         break;
 
                     case 3:
-                        zoneToCheck = new Vector2(zoneGridIndexes.x, zoneGridIndexes.y + 1);
+                        zoneToCheck = new Coord(zoneGridIndexes.x, zoneGridIndexes.y + 1);
                         oppositDirection = 4;
                         Debug.Log("Checking floor " + zoneToCheck.x + "/ zone " + zoneToCheck.y + ". Direction : Right");
                         break;
 
                     case 4:
-                        zoneToCheck = new Vector2(zoneGridIndexes.x, zoneGridIndexes.y - 1);
+                        zoneToCheck = new Coord(zoneGridIndexes.x, zoneGridIndexes.y - 1);
                         oppositDirection = 3;
                         Debug.Log("Checking floor " + zoneToCheck.x + "/ zone " + zoneToCheck.y + ". Direction : Left");
                         break;
@@ -933,7 +1064,7 @@ public class LevelBuilder : MonoBehaviour
 
                 if (zoneToCheck.x < towerHeight && zoneToCheck.x >= 0 && zoneToCheck.y < towerWidth && zoneToCheck.y >= 0)
                 {
-                    if (towerGrid[(int)zoneToCheck.x, (int)zoneToCheck.y] == null)
+                    if (towerGrid[zoneToCheck.x, zoneToCheck.y] == null)
                     {
                         Debug.Log("Zone " + zoneToCheck + " is empty");
                         if (!checkedZones.Contains(zoneToCheck))
@@ -951,7 +1082,7 @@ public class LevelBuilder : MonoBehaviour
                         Debug.Log("Zone " + zoneToCheck + " is already filled, checking if there is corresponding opening");
                         for (int i = 0; i < 4; i++)
                         {
-                            if(towerGrid[(int)zoneToCheck.x, (int)zoneToCheck.y].openings[i] && i == oppositDirection - 1)
+                            if(towerGrid[zoneToCheck.x, zoneToCheck.y].openings[i] && i == oppositDirection - 1)
                             {
                                 isBlocking = false;
                                 Debug.Log("Zone " + zoneToCheck + " has a corresponding opening !!, making it accessible");
@@ -1005,17 +1136,21 @@ public class LevelBuilder : MonoBehaviour
         Debug.Log("Tower created.");
     }
 
-    private void CreateTile(int gridFloor, int gridZone)
+    private void CreateTile(Coord zoneToCreate)
     {
-        Vector2 originGridPos = new Vector2(bottomCenterTowerPos.x - towerWidth * tileLength / 2 + tileLength / 2, bottomCenterTowerPos.y + tileLength / 2);
-        if (towerGrid[gridFloor, gridZone] != null)
+        GameObject roomInstantiated = null;
+        if (towerGrid[zoneToCreate.x, zoneToCreate.y] != null)
         {
-            Instantiate(towerGrid[gridFloor, gridZone].partPrefab, new Vector2(originGridPos.x + gridZone * tileLength, originGridPos.y + gridFloor * tileLength), Quaternion.identity);
+            roomInstantiated = Instantiate(towerGrid[zoneToCreate.x, zoneToCreate.y].partPrefab, Coord.ZoneToPos(zoneToCreate, this), Quaternion.identity);
+            roomInstantiated.name = towerGrid[zoneToCreate.x, zoneToCreate.y].partPrefab.name + "  >  " + zoneToCreate.x + " / " + zoneToCreate.y;
         }
         else
         {
-            Instantiate(fillerPrefab, new Vector2(originGridPos.x + gridZone * tileLength, originGridPos.y + gridFloor * tileLength), Quaternion.identity);
+            roomInstantiated = Instantiate(fillerPrefab, Coord.ZoneToPos(zoneToCreate, this), Quaternion.identity);
+            roomInstantiated.name = fillerPrefab.name + "  >  " + zoneToCreate.x + " / " + zoneToCreate.y;
         }
+        emptyZones.Remove(Coord.GetZone(emptyZones, zoneToCreate.x, zoneToCreate.y));
+        Debug.Log("Creating tile at " + zoneToCreate.x + ", " + zoneToCreate.y + ". Removed from emptyZones.");
     }
 
     public void ReArrangeRooms()
@@ -1041,55 +1176,127 @@ public class LevelBuilder : MonoBehaviour
         }
     }
 
-    private class UnCheckedZone
-    {
-        public int gridX;
-        public int gridY;
 
-        public UnCheckedZone(int xGridPos, int yGridPos)
+    [System.Serializable]
+    public class Coord
+    {
+        public int x;
+        public int y;
+
+        public Coord(int xGridPos, int yGridPos)
         {
-            gridX = xGridPos;
-            gridY = yGridPos;
+            x = xGridPos;
+            y = yGridPos;
         }
 
-        public static List<UnCheckedZone> CreateUncheckGrid(int towerH, int towerW)
+        public static List<Coord> CreateFullZoneGrid(int towerH, int towerW)
         {
-            List<UnCheckedZone> uncheckZone = new List<UnCheckedZone>();
+            List<Coord> zones = new List<Coord>();
 
             for(int i = 0; i < towerH; i++)
             {
                 for(int t = 0; t < towerW; t++)
                 {
-                    uncheckZone.Add(new UnCheckedZone(i, t));
+                    zones.Add(new Coord(i, t));
                 }
             }
 
-            return uncheckZone;
+            return zones;
         }
 
-        public static UnCheckedZone GetUncheckZone(List<UnCheckedZone> zones, int floor, int zone)
+        public static Coord GetZone(List<Coord> zones, int floor, int zone)
         {
-
-            UnCheckedZone unCheckedZone = null;
+            Coord zoneFound = null;
             int i = 0;
-            while (i < zones.Count && unCheckedZone == null)
+            while (i < zones.Count && zoneFound == null)
             {
-                if (zones[i].gridX == floor && zones[i].gridY == zone)
+                if (zones[i].x == floor && zones[i].y == zone)
                 {
-                    zones.RemoveAt(i);
-                    unCheckedZone = zones[i];
-                    Debug.Log("Uncheck Zone found at " + i);
+                    zoneFound = zones[i];
+                    Debug.Log("GetZone() successfull : Zone found at " + i);
                     break;
                 }
                 i++;
             }
 
-            if(unCheckedZone != null)
+            if(zoneFound == null)
             {
-                Debug.Log("Unchecked zone " + floor + ", " + zone + "coudn't be removed from the list");
+                Debug.Log("The zone " + floor + ", " + zone + " coudn't be removed from the list " + zones.ToString());
             }
 
-            return unCheckedZone;
+            return zoneFound;
+        }
+
+        public static Vector2 ZoneToPos(Coord zone, LevelBuilder level)
+        {
+            Vector2 pos = Vector2.zero;
+
+            Vector2 originGridPos = new Vector2(level.bottomCenterTowerPos.x - level.towerWidth * level.tileLength / 2 + level.tileLength / 2, level.bottomCenterTowerPos.y + level.tileLength / 2);
+
+            pos = new Vector2(originGridPos.x + zone.y * level.tileLength, originGridPos.y + zone.x * level.tileLength);
+
+            return pos;
+        }
+
+        public void Set(int _x, int _y)
+        {
+            x = _x;
+            y = _y;
+        }
+    }
+
+    public class ZoneGismo
+    {
+        public Coord zone;
+        public Color color;
+        public float remainingTime;
+
+        public ZoneGismo(Coord _zone, int _color, float _time)
+        {
+            zone = _zone;
+            switch(_color)
+            {
+                case 0:
+                    color = new Color(0, 0, 1, 0.3f);
+                    break;
+
+                case 1:
+                    color = new Color(1, 0, 0, 0.3f);
+                    break;
+
+                case 2:
+                    color = new Color(0, 1, 0, 0.3f);
+                    break;
+            }
+            remainingTime = _time;
+        }
+
+        /// <summary>
+        /// Draw a gizmo for a zone at a specified color and during a specified time
+        /// </summary>
+        /// <param name="zone"></param>
+        /// <param name="color">0 for blue, 1 for red, 2 for green</param>
+        /// <returns></returns>
+        public static void Draw(Coord zone, int color, float appearingTime, LevelBuilder level)
+        {
+            level.currentlyDrawnZoneGismos.Add(new ZoneGismo(zone, color, appearingTime));
+        }
+    }
+
+    private void OnDrawGizmos()
+    {
+        for (int i = currentlyDrawnZoneGismos.Count - 1; i >= 0; i--)
+        {
+            if(currentlyDrawnZoneGismos[i].remainingTime > 0)
+            {
+                Gizmos.color = currentlyDrawnZoneGismos[i].color;
+                Gizmos.DrawCube(Coord.ZoneToPos(currentlyDrawnZoneGismos[i].zone, this), new Vector2(tileLength, tileLength));
+                currentlyDrawnZoneGismos[i].remainingTime -= Time.deltaTime;
+            }
+            else
+            {
+                currentlyDrawnZoneGismos.Remove(currentlyDrawnZoneGismos[i]);
+            }
         }
     }
 }

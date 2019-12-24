@@ -20,12 +20,9 @@ public class Spider_Bot : EnemyHandler
     [Header("Debug settings")]
     public GameObject particleDebugPrefab;
 
-
-    private float timeBeforeJumpShot;
     private float jumpShotCooldownRemaining;
     private Vector2 jumpDirection;
     private Vector2 spiderBotPosition;
-    private bool playerAtRange;
     private bool onSurface;
     private surfaceDirection currentSurfaceDirection;
     private float jumpShotDelayRemaining;
@@ -40,9 +37,7 @@ public class Spider_Bot : EnemyHandler
     {
         HandlerStart();
 
-        timeBeforeJumpShot = 0;
         jumpShotCooldownRemaining = 0;
-        playerAtRange = false;
         onSurface = true;
         isTouchingWall = false;
         currentSurfaceDirection = startSurfaceDirection;
@@ -109,15 +104,6 @@ public class Spider_Bot : EnemyHandler
         if(onSurface)
         {
             Propel(Vector2.zero, true, true);
-        }
-
-        if (PlayerInSight())
-        {
-            playerAtRange = true;
-        }
-        else
-        {
-            playerAtRange = false;
         }
     }
     private IEnumerator JumpShot(Vector2 jumpShotDirection)

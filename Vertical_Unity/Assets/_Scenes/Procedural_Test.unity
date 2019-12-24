@@ -596,36 +596,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 458902381}
   m_CullTransparentMesh: 0
---- !u!1 &828206616 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 9134310131610629844, guid: 90bd2f44b45271c4093db3988ad51804,
-    type: 3}
-  m_PrefabInstance: {fileID: 1436799078}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &828206619
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 828206616}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3155786f095b54842baab3e66e53b27b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  useMouseAim: 1
-  useMouseMovement: 0
-  rightJoystickHorizontal: 0
-  rightJoystickVertical: 0
-  leftJoystickHorizontal: 0
-  leftJoystickVertical: 0
-  rightTriggerAxis: 0
-  rightTriggerDown: 0
-  leftTriggerAxis: 0
-  leftTriggerDown: 0
-  rightBumper: 0
-  jump: 0
 --- !u!1 &833065593
 GameObject:
   m_ObjectHideFlags: 0
@@ -655,10 +625,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3124397cf40a2448a12f923378fa423, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  loopTime: 0
-  towerWidth: 5
-  towerHeight: 10
-  startPositionIndexes: {x: 0, y: 2}
+  instantCreation: 0
+  timeBetweenRoomCreation: 0.02
+  timeTestingRoom: 0
+  timeSearchingOpening: 0.01
+  towerWidth: 3
+  towerHeight: 35
+  startPositionIndexes:
+    x: 0
+    y: 1
   roomList:
   - name: Room1
     floors:
@@ -827,6 +802,18 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 249498913}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1161744140 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1444916539395562212, guid: 69ca3f1f046cf8d48abbcca71eef52eb,
+    type: 3}
+  m_PrefabInstance: {fileID: 1470435149}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78396926cbbfc4ac3b48fc5fc34a87d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1310915925 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2375313536976360599, guid: e3ae287a63fbda44ebcefb3ac93170da,
@@ -900,57 +887,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 9134310131610629846, guid: 90bd2f44b45271c4093db3988ad51804,
-        type: 3}
-      propertyPath: m_LocalScale.x
-      value: 48.25
-      objectReference: {fileID: 0}
     - target: {fileID: 9134310131610629847, guid: 90bd2f44b45271c4093db3988ad51804,
         type: 3}
-      propertyPath: enemyEffects.Array.size
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 9134310131610629847, guid: 90bd2f44b45271c4093db3988ad51804,
-        type: 3}
-      propertyPath: currentPlayerPlatform
+      propertyPath: astarPath
       value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 9134310131610629847, guid: 90bd2f44b45271c4093db3988ad51804,
-        type: 3}
-      propertyPath: enemyEffects.Array.data[0].effectName
-      value: Stun
-      objectReference: {fileID: 0}
-    - target: {fileID: 9134310131610629847, guid: 90bd2f44b45271c4093db3988ad51804,
-        type: 3}
-      propertyPath: enemyEffects.Array.data[1].effectName
-      value: NoControl
-      objectReference: {fileID: 0}
-    - target: {fileID: 9134310131610629847, guid: 90bd2f44b45271c4093db3988ad51804,
-        type: 3}
-      propertyPath: enemyEffects.Array.data[2].effectName
-      value: Hack
-      objectReference: {fileID: 0}
-    - target: {fileID: 9134310131610629847, guid: 90bd2f44b45271c4093db3988ad51804,
-        type: 3}
-      propertyPath: enemyEffects.Array.data[3].effectName
-      value: NoGravity
-      objectReference: {fileID: 0}
-    - target: {fileID: 9134310131610629847, guid: 90bd2f44b45271c4093db3988ad51804,
-        type: 3}
-      propertyPath: enemyEffects.Array.data[4].effectName
-      value: Slow
-      objectReference: {fileID: 0}
-    - target: {fileID: 9134310131610629847, guid: 90bd2f44b45271c4093db3988ad51804,
-        type: 3}
-      propertyPath: enemyEffects.Array.data[0].effectFX
-      value: 
-      objectReference: {fileID: 8925220298269711287, guid: e3f711b6d57a4ea4fb09467bc503eb55,
-        type: 3}
-    - target: {fileID: 9134310131610629847, guid: 90bd2f44b45271c4093db3988ad51804,
-        type: 3}
-      propertyPath: useMouseAim
-      value: 1
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1161744140}
     - target: {fileID: 9134310131610629847, guid: 90bd2f44b45271c4093db3988ad51804,
         type: 3}
       propertyPath: speedText
@@ -961,11 +902,6 @@ PrefabInstance:
       propertyPath: debugText
       value: 
       objectReference: {fileID: 77737639}
-    - target: {fileID: 9134310131610629847, guid: 90bd2f44b45271c4093db3988ad51804,
-        type: 3}
-      propertyPath: astarPath
-      value: 
-      objectReference: {fileID: 1889785928}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 90bd2f44b45271c4093db3988ad51804, type: 3}
 --- !u!1001 &1470435149
@@ -1128,18 +1064,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1889785928 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1444916539395562212, guid: 69ca3f1f046cf8d48abbcca71eef52eb,
-    type: 3}
-  m_PrefabInstance: {fileID: 1470435149}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 78396926cbbfc4ac3b48fc5fc34a87d1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &2046632184 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2460463645730207349, guid: 6afbf4a8d9f433049aa35bb9e9068e39,

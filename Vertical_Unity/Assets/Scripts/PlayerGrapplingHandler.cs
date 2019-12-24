@@ -211,7 +211,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
                     ringHighLighterO.SetActive(false);
                 }
 
-                if (GameData.gameController.input.rightTriggerDown && timeBeforeNextShoot <= 0 && !isHooked)
+                if (GameData.gameController.input.rightTriggerAxis > 0.1f && timeBeforeNextShoot <= 0 && !isHooked) //Input changed
                 {
                     timeBeforeNextShoot = shootCooldown;
                     ReleaseHook();

@@ -9,17 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 3c74ea6bac53ddd4db07de99c76d09a9, type: 3}
   m_Name: NewPowerFrappeSol
   m_EditorClassIdentifier: Assembly-CSharp::PowerFrappeSol
-  name: Frappe
-  description: 
-  icon: {fileID: 0}
-  cooldown: 1
-  frappevelocity: 18
-  timePosInstantiate: 0.2
-  prefabexplosion: {fileID: 1500574650866506158, guid: 05c923ba3dfe19646b7832a63a075dce,
-    type: 3}
-  explosionRange: 1.5
-  duration: 2
-  size: 1.5
