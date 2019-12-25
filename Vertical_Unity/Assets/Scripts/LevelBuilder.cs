@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 public class LevelBuilder : MonoBehaviour
 {
+    #region variables
     [Header("Generation Step debug settings")]
     public bool instantCreation;
     public float timeBetweenRoomCreation;
@@ -14,10 +15,14 @@ public class LevelBuilder : MonoBehaviour
     public int towerWidth;
     public int towerHeight;
     public Coord startPositionIndexes;
+    public int roomBuildBeforeYokaiRoom;
     public List<Room> roomList;
     public List<Room> deadEndList;
     public List<Room> rightEdgeList;
     public List<Room> leftEdgeList;
+    public List<Room> endRoomList;
+    public List<Room> yokaiRoomList;
+    public List<Room> startRoomList;
     public GameObject fillerPrefab;
     [Space]
     [Space]
@@ -35,8 +40,10 @@ public class LevelBuilder : MonoBehaviour
     public Vector2 bottomCenterTowerPos;
     public float tileLength;
     public int maxRoom;
+    public GameObject levelHolderPrefab;
 
     private Room.RoomPart[,] towerGrid;
+    private GameObject levelHolder;
     private bool[,] zoneChecked;
     private bool[] checkedFloors;
     private List<Coord> emptyZones;
@@ -48,6 +55,10 @@ public class LevelBuilder : MonoBehaviour
     private int nextRoomOpeningDirection;
     private Coord originRoom;
     private int roomBuiltNumber;
+    private bool endRoomBuild;
+    private bool endRoomChosen;
+    private bool yokaiRoomBuild;
+    private bool yokaiRoomChosen;
 
     private bool levelBuilt;
     private bool levelScanned;
@@ -61,6 +72,8 @@ public class LevelBuilder : MonoBehaviour
     private List<ZoneGizmo> currentlyDrawnZoneGismos = new List<ZoneGizmo>();
 
     public enum Direction { Up, Down, Right, Left };
+
+    #endregion
 
     private void Awake()
     {
@@ -85,64 +98,90 @@ public class LevelBuilder : MonoBehaviour
 
     public IEnumerator BuildLevel()
     {
-        //bool towerCorrectlyBuild = false;
-        roomBuiltNumber = 0;
-        towerGrid = new Room.RoomPart[towerHeight, towerWidth];
-        checkedFloors = new bool[towerHeight];
-        emptyZones = Coord.CreateFullZoneGrid(towerHeight, towerWidth);
-        zoneChecked = new bool[towerHeight, towerWidth];
-
-
         Debug.Log("Beginning Tower creation");
-        nextRoomStart = startPositionIndexes;
-        nextRoomOpeningDirection = 3;
-        openingRemaining = true;
 
+        int towerCreationAttempt = 0;
         do
         {
-            Debug.Log("Start building room number " + (roomBuiltNumber + 1));
-
-
-            StartCoroutine(PlaceNextRoom(nextRoomStart, nextRoomOpeningDirection));
-
-            while (!nextRoomFinished)
+            towerCreationAttempt++;
+            Debug.Log("Tower Creation attempt number " + towerCreationAttempt);
+            if(levelHolder != null)
             {
-                yield return new WaitForEndOfFrame();
+                Destroy(levelHolder);
             }
+            levelHolder = Instantiate(levelHolderPrefab, Vector2.zero, Quaternion.identity);
+            levelHolder.name = "LevelHolder";
 
-            if (!roomPlacementSuccess)
+            roomBuiltNumber = 0;
+            endRoomBuild = false;
+            yokaiRoomBuild = false;
+            towerGrid = new Room.RoomPart[towerHeight, towerWidth];
+            checkedFloors = new bool[towerHeight];
+            emptyZones = Coord.CreateFullZoneGrid(towerHeight, towerWidth);
+            zoneChecked = new bool[towerHeight, towerWidth];
+
+
+            nextRoomStart = startPositionIndexes;
+            nextRoomOpeningDirection = 3;
+            openingRemaining = true;
+
+            do
             {
-                freeOpeningsUnusable.Add(nextRoomStart);
-                zoneChecked[originRoom.x, originRoom.y] = true;
-                Debug.Log("The tile at " + nextRoomStart.x + ", " + nextRoomStart.y + " cannot be used as a connection. Added to unusable list, Filling it with roomFiller");
-                if (towerGrid[nextRoomStart.x, nextRoomStart.y] == null)
+                Debug.Log("Start building room number " + (roomBuiltNumber + 1));
+
+                if(roomBuiltNumber == 0)
                 {
-                    CreateTile(nextRoomStart);
+                    PlaceFirstRoom();
                 }
-            }
-            else
-            {
-                roomBuiltNumber++;
-            }
+                else
+                {
+                    StartCoroutine(PlaceNextRoom(nextRoomStart, nextRoomOpeningDirection));
+                }
 
-            if(accessibleZones.Count > 0)
-            {
-                StartCoroutine(FindNextRandomOpening());
-
-                while (!nextOpeningResearchFinished)
+                while (!nextRoomFinished)
                 {
                     yield return new WaitForEndOfFrame();
                 }
-            }
-            else
-            {
-                openingRemaining = false;
-            }
 
-            if(!instantCreation && timeBetweenRoomCreation > 0)
-                yield return new WaitForSeconds(timeBetweenRoomCreation);
-        }
-        while (openingRemaining && roomBuiltNumber <= maxRoom);
+                if (!roomPlacementSuccess)
+                {
+                    freeOpeningsUnusable.Add(nextRoomStart);
+                    zoneChecked[originRoom.x, originRoom.y] = true;
+                    Debug.Log("The tile at " + nextRoomStart.x + ", " + nextRoomStart.y + " cannot be used as a connection. Added to unusable list, Filling it with roomFiller");
+                    /*if (towerGrid[nextRoomStart.x, nextRoomStart.y] == null)
+                    {
+                        CreateTile(nextRoomStart);
+                    }*/
+                    accessibleZones.Remove(Coord.GetZone(accessibleZones, nextRoomStart.x, nextRoomStart.y));
+                }
+                else
+                {
+                    roomBuiltNumber++;
+                }
+
+                if (accessibleZones.Count > 0)
+                {
+                    StartCoroutine(FindNextRandomOpening());
+
+                    while (!nextOpeningResearchFinished)
+                    {
+                        yield return new WaitForEndOfFrame();
+                    }
+                }
+                else
+                {
+                    openingRemaining = false;
+                }
+
+                if (!instantCreation && timeBetweenRoomCreation > 0)
+                    yield return new WaitForSeconds(timeBetweenRoomCreation);
+            }
+            while (openingRemaining && roomBuiltNumber <= maxRoom);
+
+            FillEmptyZones();
+
+        } while (!endRoomBuild || !yokaiRoomBuild);
+
 
         if (!openingRemaining)
         {
@@ -156,34 +195,20 @@ public class LevelBuilder : MonoBehaviour
         //StartCoroutine(CreateTower());
     }
 
-    public IEnumerator PlaceNextRoom(Coord gridIndexes, int openingDirection)
+    public IEnumerator PlaceNextRoom(Coord nextZone, int openingDirection)
     {
         nextRoomFinished = false;
         bool[] roomsTested = new bool[roomList.Count];
         bool[] deadEndsTested = new bool[deadEndList.Count];
         bool[] rightEdgesTested = new bool[rightEdgeList.Count];
         bool[] leftEdgesTested = new bool[leftEdgeList.Count];
+        bool[] endRoomsTested = new bool[endRoomList.Count];
+        bool[] yokaiRoomsTested = new bool[yokaiRoomList.Count];
         bool isDeadEnd = false;
         Room selectedRoom = null;
         Room potentialRoom = null;
         bool noMoreRoomAvailable = false;
         Coord connectedPartIndexes = new Coord(0, 0);
-        for (int i = 0; i < roomsTested.Length; i++)
-        {
-            roomsTested[i] = false;
-        }
-        for (int i = 0; i < deadEndsTested.Length; i++)
-        {
-            deadEndsTested[i] = false;
-        }
-        for (int i = 0; i < rightEdgesTested.Length; i++)
-        {
-            rightEdgesTested[i] = false;
-        }
-        for (int i = 0; i < leftEdgesTested.Length; i++)
-        {
-            leftEdgesTested[i] = false;
-        }
 
         if (createIntentionalDeadEnd)
         {
@@ -200,6 +225,10 @@ public class LevelBuilder : MonoBehaviour
             bool deadEndLeft = false;
             bool rightEdgeLeft = false;
             bool leftEdgeLeft = false;
+            bool endRoomLeft = false;
+            bool yokaiRoomLeft = false;
+            endRoomChosen = false;
+            yokaiRoomChosen = false;
 
             if (!isDeadEnd)
             {
@@ -225,6 +254,22 @@ public class LevelBuilder : MonoBehaviour
                     if (!rightEdgeTested)
                     {
                         rightEdgeLeft = true;
+                    }
+                }
+
+                foreach (bool endRoomTested in endRoomsTested)
+                {
+                    if (!endRoomTested)
+                    {
+                        endRoomLeft = true;
+                    }
+                }
+
+                foreach (bool yokaiRoomTested in yokaiRoomsTested)
+                {
+                    if (!yokaiRoomTested)
+                    {
+                        yokaiRoomLeft = true;
                     }
                 }
             }
@@ -254,7 +299,27 @@ public class LevelBuilder : MonoBehaviour
             }
             else
             {
-                if (gridIndexes.y == 0 && leftEdgeLeft)
+                if(nextZone.x == towerHeight - 1 && endRoomLeft && !endRoomBuild)
+                {
+                    do
+                    {
+                        y = Random.Range(0, endRoomList.Count);
+                    }
+                    while (endRoomsTested[y]);
+                    potentialRoom = endRoomList[y];
+                    endRoomChosen = true;
+                }
+                else if (roomBuiltNumber > roomBuildBeforeYokaiRoom && yokaiRoomLeft && !yokaiRoomBuild)
+                {
+                    do
+                    {
+                        y = Random.Range(0, yokaiRoomList.Count);
+                    }
+                    while (yokaiRoomsTested[y]);
+                    potentialRoom = yokaiRoomList[y];
+                    yokaiRoomChosen = true;
+                }
+                else if (nextZone.y == 0 && leftEdgeLeft)
                 {
                     do
                     {
@@ -263,7 +328,7 @@ public class LevelBuilder : MonoBehaviour
                     while (leftEdgesTested[y]);
                     potentialRoom = leftEdgeList[y];
                 }
-                else if (gridIndexes.y == (towerWidth - 1) && rightEdgeLeft)
+                else if (nextZone.y == (towerWidth - 1) && rightEdgeLeft)
                 {
                     do
                     {
@@ -316,23 +381,6 @@ public class LevelBuilder : MonoBehaviour
                 if (!hasOpposedOpening)
                 {
                     Debug.Log("The room called : " + potentialRoom.name + " do not have any corresponding opening");
-                    if (!isDeadEnd)
-                    {
-                        if (gridIndexes.y == 0 && leftEdgeLeft)
-                        {
-                            leftEdgesTested[y] = true;
-                        }
-                        else if (gridIndexes.y == (towerWidth - 1) && rightEdgeLeft)
-                        {
-                            leftEdgesTested[y] = false;
-                        }
-
-                        roomsTested[y] = true;
-                    }
-                    else
-                    {
-                        deadEndsTested[y] = true;
-                    }
                 }
                 else
                 {
@@ -346,14 +394,14 @@ public class LevelBuilder : MonoBehaviour
                             if (potentialRoom.roomParts[floorNumber, zoneNumber] != null)
                             {
                                 Coord relativeIndexes = new Coord(floorNumber - connectedPartIndexes.x, zoneNumber - connectedPartIndexes.y);
-                                if (gridIndexes.x + relativeIndexes.x < 0 || gridIndexes.y + relativeIndexes.y < 0 || gridIndexes.x + relativeIndexes.x >= towerHeight || gridIndexes.y + relativeIndexes.y >= towerWidth || towerGrid[gridIndexes.x + relativeIndexes.x, gridIndexes.y + relativeIndexes.y] != null)
+                                if (nextZone.x + relativeIndexes.x < 0 || nextZone.y + relativeIndexes.y < 0 || nextZone.x + relativeIndexes.x >= towerHeight || nextZone.y + relativeIndexes.y >= towerWidth || towerGrid[nextZone.x + relativeIndexes.x, nextZone.y + relativeIndexes.y] != null)
                                 {
                                     enoughSpace = false;
-                                    Debug.Log("The tile at " + (gridIndexes.x + relativeIndexes.x) + ", " + (gridIndexes.y + relativeIndexes.y) + " is already filled");
+                                    Debug.Log("The tile at " + (nextZone.x + relativeIndexes.x) + ", " + (nextZone.y + relativeIndexes.y) + " is already filled");
                                 }
                                 else
                                 {
-                                    Debug.Log("The " + potentialRoom + "'s part (" + floorNumber + ", " + zoneNumber + ") can be placed on the tower at " + (gridIndexes.x + relativeIndexes.x) + ", " + (gridIndexes.y + relativeIndexes.y));
+                                    Debug.Log("The " + potentialRoom + "'s part (" + floorNumber + ", " + zoneNumber + ") can be placed on the tower at " + (nextZone.x + relativeIndexes.x) + ", " + (nextZone.y + relativeIndexes.y));
                                 }
                             }
                             zoneNumber++;
@@ -365,22 +413,14 @@ public class LevelBuilder : MonoBehaviour
                     if (!enoughSpace)
                     {
                         Debug.Log(potentialRoom.name + " do not fit in the tower");
-                        if(!isDeadEnd)
-                        {
-                            roomsTested[y] = true;
-                        }
-                        else
-                        {
-                            deadEndsTested[y] = true;
-                        }
                     }
                     else
                     {
-                        Debug.Log(potentialRoom.name + " can fit in the tower. Positioned at Floor " + gridIndexes.x + " Zone " + gridIndexes.y);
+                        Debug.Log(potentialRoom.name + " can fit in the tower. Positioned at Floor " + nextZone.x + " Zone " + nextZone.y);
 
                         if(mandatoryOpenings && !isDeadEnd)
                         {
-                            Debug.Log("Now checking mandatory openings for " + potentialRoom.name + " at " + gridIndexes.x + ", " + gridIndexes.y);
+                            Debug.Log("Now checking mandatory openings for " + potentialRoom.name + " at " + nextZone.x + ", " + nextZone.y);
                             floorNumber = 0;
                             while (!createMandatoryFreeOpening && floorNumber < potentialRoom.roomParts.GetLength(0))
                             {
@@ -392,7 +432,7 @@ public class LevelBuilder : MonoBehaviour
                                         && potentialRoom.roomParts[floorNumber, zoneNumber].openings.Length > 0)
                                     {
                                         Vector2 followingIndexes = Vector2.zero;
-                                        int openingDirectionFound = CheckFreeOpening(potentialRoom.roomParts[floorNumber, zoneNumber], gridIndexes.x + relativeIndexes.x, gridIndexes.y + relativeIndexes.y);
+                                        int openingDirectionFound = CheckFreeOpening(potentialRoom.roomParts[floorNumber, zoneNumber], nextZone.x + relativeIndexes.x, nextZone.y + relativeIndexes.y);
                                         if (openingDirectionFound != -1)
                                         {
                                             if ((openingDirectionFound == 0 && mandatoryPlacementDirections.Contains(Direction.Up))
@@ -419,7 +459,6 @@ public class LevelBuilder : MonoBehaviour
                         if (!createMandatoryFreeOpening)
                         {
                             Debug.Log("No free mandatory opening can be created with " + potentialRoom.name + ". Room not placed");
-                            roomsTested[y] = true;
                         }
                         else
                         {
@@ -439,7 +478,7 @@ public class LevelBuilder : MonoBehaviour
                                         if (potentialRoom.roomParts[floorNumber, zoneNumber] != null
                                             && potentialRoom.roomParts[floorNumber, zoneNumber].openings.Length > 0)
                                         {
-                                            allRoomOpeningsFree = CheckIfAllOpeningsAreFree(potentialRoom.roomParts[floorNumber, zoneNumber], gridIndexes.x + relativeIndexes.x, gridIndexes.y + relativeIndexes.y);
+                                            allRoomOpeningsFree = CheckIfAllOpeningsAreFree(potentialRoom.roomParts[floorNumber, zoneNumber], nextZone.x + relativeIndexes.x, nextZone.y + relativeIndexes.y);
                                         }
                                         zoneNumber++;
                                     }
@@ -452,7 +491,7 @@ public class LevelBuilder : MonoBehaviour
                                 accessibleZones.AddRange(freeOpeningZones);
 
                                 selectedRoom = potentialRoom;
-                                Debug.Log("Room found ! The room " + selectedRoom.name + " has all needed features. Placed at Floor " + gridIndexes.x + " Zone " + gridIndexes.y);
+                                Debug.Log("Room found ! The room " + selectedRoom.name + " has all needed features. Placed at Floor " + nextZone.x + " Zone " + nextZone.y);
 
                                 for (floorNumber = 0; floorNumber < selectedRoom.roomParts.GetLength(0); floorNumber++)
                                 {
@@ -461,14 +500,14 @@ public class LevelBuilder : MonoBehaviour
                                         Coord relativeIndexes = new Coord(floorNumber - connectedPartIndexes.x, zoneNumber - connectedPartIndexes.y);
                                         if (selectedRoom.roomParts[floorNumber, zoneNumber] != null)
                                         {
-                                            towerGrid[gridIndexes.x + relativeIndexes.x, gridIndexes.y + relativeIndexes.y] = selectedRoom.roomParts[floorNumber, zoneNumber];
-                                            Debug.Log(selectedRoom.name + " part placed on " + (gridIndexes.x + relativeIndexes.x) + ", " + (gridIndexes.y + relativeIndexes.y));
-                                            CreateTile(new Coord(gridIndexes.x + relativeIndexes.x, gridIndexes.y + relativeIndexes.y));
+                                            towerGrid[nextZone.x + relativeIndexes.x, nextZone.y + relativeIndexes.y] = selectedRoom.roomParts[floorNumber, zoneNumber];
+                                            Debug.Log(selectedRoom.name + " part placed on " + (nextZone.x + relativeIndexes.x) + ", " + (nextZone.y + relativeIndexes.y));
+                                            CreateTile(new Coord(nextZone.x + relativeIndexes.x, nextZone.y + relativeIndexes.y));
                                         }
                                         else
                                         {
-                                            towerGrid[gridIndexes.x + relativeIndexes.x, gridIndexes.y + relativeIndexes.y] = null;
-                                            Debug.Log(selectedRoom.name + " hole placed on " + gridIndexes.x + relativeIndexes.x + ", " + gridIndexes.y + relativeIndexes.y);
+                                            towerGrid[nextZone.x + relativeIndexes.x, nextZone.y + relativeIndexes.y] = null;
+                                            Debug.Log(selectedRoom.name + " hole placed on " + nextZone.x + relativeIndexes.x + ", " + nextZone.y + relativeIndexes.y);
                                         }
                                     }
                                 }
@@ -489,7 +528,7 @@ public class LevelBuilder : MonoBehaviour
                                             {
                                                 List<Coord> checkedZones = new List<Coord>();
                                                 int direction = 0;
-                                                Debug.Log("Checking if zone " + gridIndexes.x + relativeIndexes.x + ", " + gridIndexes.y + relativeIndexes.y + " is blocking");
+                                                Debug.Log("Checking if zone " + nextZone.x + relativeIndexes.x + ", " + nextZone.y + relativeIndexes.y + " is blocking");
                                                 Coord zoneToCheck = new Coord(0, 0);
                                                 while (!roomIsBlocking && direction < 4)
                                                 {
@@ -497,19 +536,19 @@ public class LevelBuilder : MonoBehaviour
                                                     switch (direction)
                                                     {
                                                         case 1:
-                                                            zoneToCheck = new Coord(gridIndexes.x + relativeIndexes.x + 1, gridIndexes.y + relativeIndexes.y);
+                                                            zoneToCheck = new Coord(nextZone.x + relativeIndexes.x + 1, nextZone.y + relativeIndexes.y);
                                                             break;
 
                                                         case 2:
-                                                            zoneToCheck = new Coord(gridIndexes.x + relativeIndexes.x - 1, gridIndexes.y + relativeIndexes.y);
+                                                            zoneToCheck = new Coord(nextZone.x + relativeIndexes.x - 1, nextZone.y + relativeIndexes.y);
                                                             break;
 
                                                         case 3:
-                                                            zoneToCheck = new Coord(gridIndexes.x + relativeIndexes.x, gridIndexes.y + relativeIndexes.y + 1);
+                                                            zoneToCheck = new Coord(nextZone.x + relativeIndexes.x, nextZone.y + relativeIndexes.y + 1);
                                                             break;
 
                                                         case 4:
-                                                            zoneToCheck = new Coord(gridIndexes.x + relativeIndexes.x, gridIndexes.y + relativeIndexes.y - 1);
+                                                            zoneToCheck = new Coord(nextZone.x + relativeIndexes.x, nextZone.y + relativeIndexes.y - 1);
                                                             break;
 
                                                         default:
@@ -541,8 +580,8 @@ public class LevelBuilder : MonoBehaviour
                                                 Coord relativeIndexes = new Coord(floorNumber - connectedPartIndexes.x, zoneNumber - connectedPartIndexes.y);
                                                 if (selectedRoom.roomParts[floorNumber, zoneNumber] != null)
                                                 {
-                                                    towerGrid[gridIndexes.x + relativeIndexes.x, gridIndexes.y + relativeIndexes.y] = null;
-                                                    Debug.Log(selectedRoom.name + " part removed on " + gridIndexes.x + relativeIndexes.x + ", " + gridIndexes.y + relativeIndexes.y);
+                                                    towerGrid[nextZone.x + relativeIndexes.x, nextZone.y + relativeIndexes.y] = null;
+                                                    Debug.Log(selectedRoom.name + " part removed on " + nextZone.x + relativeIndexes.x + ", " + nextZone.y + relativeIndexes.y);
                                                 }
                                             }
                                         }
@@ -562,22 +601,45 @@ public class LevelBuilder : MonoBehaviour
 
                 if (selectedRoom == null)
                 {
-                    if (!isDeadEnd)
+                    if(endRoomChosen)
                     {
-                        if (gridIndexes.y == 0 && leftEdgeLeft)
+                        endRoomsTested[y] = true;
+                    }
+                    else if(yokaiRoomChosen)
+                    {
+                        yokaiRoomsTested[y] = true;
+                    }
+                    else if (!isDeadEnd)
+                    {
+                        if (nextZone.y == 0 && leftEdgeLeft)
                         {
                             leftEdgesTested[y] = true;
                         }
-                        else if (gridIndexes.y == (towerWidth - 1) && rightEdgeLeft)
+                        else if (nextZone.y == (towerWidth - 1) && rightEdgeLeft)
                         {
                             leftEdgesTested[y] = false;
                         }
-
-                        roomsTested[y] = true;
+                        else
+                        {
+                            roomsTested[y] = true;
+                        }
                     }
                     else
                     {
                         deadEndsTested[y] = true;
+                    }
+                }
+                else
+                {
+                    if(endRoomChosen)
+                    {
+                        Debug.Log("End room successfully placed at " + nextZone);
+                        endRoomBuild = true;
+                    }
+                    else if(yokaiRoomChosen)
+                    {
+                        Debug.Log("Yokai room successfully placed at " + nextZone);
+                        yokaiRoomBuild = true;
                     }
                 }
             }
@@ -1090,6 +1152,39 @@ public class LevelBuilder : MonoBehaviour
                         break;
                 }
             }
+            else
+            {
+                switch(lookedOpening)
+                {
+                    case 0:
+                        if((floorToCheck + 1) < towerHeight && towerGrid[floorToCheck + 1, zoneToCheck] != null && towerGrid[floorToCheck + 1, zoneToCheck].openings[1])
+                        {
+                            isAllFree = false;
+                        }
+                        break;
+
+                    case 1:
+                        if ((floorToCheck - 1) >= 0 && towerGrid[floorToCheck - 1, zoneToCheck] != null && towerGrid[floorToCheck - 1, zoneToCheck].openings[0])
+                        {
+                            isAllFree = false;
+                        }
+                        break;
+
+                    case 2:
+                        if ((zoneToCheck + 1) < towerWidth && towerGrid[floorToCheck, zoneToCheck + 1] != null && towerGrid[floorToCheck, zoneToCheck + 1].openings[3])
+                        {
+                            isAllFree = false;
+                        }
+                        break;
+
+                    case 3:
+                        if ((zoneToCheck - 1) >= 0 && towerGrid[floorToCheck, zoneToCheck - 1] != null && towerGrid[floorToCheck, zoneToCheck - 1].openings[2])
+                        {
+                            isAllFree = false;
+                        }
+                        break;
+                }
+            }
             lookedOpening++;
         }
 
@@ -1218,17 +1313,42 @@ public class LevelBuilder : MonoBehaviour
         GameObject roomInstantiated = null;
         if (towerGrid[zoneToCreate.x, zoneToCreate.y] != null)
         {
-            roomInstantiated = Instantiate(towerGrid[zoneToCreate.x, zoneToCreate.y].partPrefab, Coord.ZoneToTowerPos(zoneToCreate, this), Quaternion.identity);
+            roomInstantiated = Instantiate(towerGrid[zoneToCreate.x, zoneToCreate.y].partPrefab, Coord.ZoneToTowerPos(zoneToCreate, this), Quaternion.identity, levelHolder.transform);
             roomInstantiated.name = towerGrid[zoneToCreate.x, zoneToCreate.y].partPrefab.name + "  >  " + zoneToCreate.x + " / " + zoneToCreate.y;
         }
         else
         {
-            roomInstantiated = Instantiate(fillerPrefab, Coord.ZoneToTowerPos(zoneToCreate, this), Quaternion.identity);
+            roomInstantiated = Instantiate(fillerPrefab, Coord.ZoneToTowerPos(zoneToCreate, this), Quaternion.identity, levelHolder.transform);
             roomInstantiated.name = fillerPrefab.name + "  >  " + zoneToCreate.x + " / " + zoneToCreate.y;
         }
         accessibleZones.Remove(Coord.GetZone(accessibleZones, zoneToCreate.x, zoneToCreate.y));
         emptyZones.Remove(Coord.GetZone(emptyZones, zoneToCreate.x, zoneToCreate.y));
         Debug.Log("Creating tile at " + zoneToCreate.x + ", " + zoneToCreate.y + ". Removed from accessibleZones. " + accessibleZones.Count + " accessibleZones remaining");
+    }
+
+    private void FillEmptyZones()
+    {
+        for (int floorNumber = 0; floorNumber < towerHeight; floorNumber++)
+        {
+            for (int zoneNumber = 0; zoneNumber < towerWidth; zoneNumber++)
+            {
+                if (towerGrid[floorNumber, zoneNumber] == null)
+                {
+                    CreateTile(new Coord(floorNumber, zoneNumber));
+                }
+            }
+        }
+    }
+
+    private void PlaceFirstRoom()
+    {
+        Room firstRoom = startRoomList[Random.Range(0, startRoomList.Count)];
+
+        towerGrid[startPositionIndexes.x, startPositionIndexes.y] = firstRoom.roomParts[0, 0];
+        CreateTile(startPositionIndexes);
+        nextRoomFinished = true;
+        roomPlacementSuccess = true;
+        accessibleZones = emptyZones;
     }
 
     public void ReArrangeRooms()
@@ -1251,6 +1371,21 @@ public class LevelBuilder : MonoBehaviour
         foreach (Room rightEdge in rightEdgeList)
         {
             rightEdge.Rearrange();
+        }
+
+        foreach(Room endRoom in endRoomList)
+        {
+            endRoom.Rearrange();
+        }
+
+        foreach (Room yokaiRoom in yokaiRoomList)
+        {
+            yokaiRoom.Rearrange();
+        }
+
+        foreach (Room startRoom in startRoomList)
+        {
+            startRoom.Rearrange();
         }
     }
 
@@ -1318,7 +1453,7 @@ public class LevelBuilder : MonoBehaviour
                 if (zones[i].x == floor && zones[i].y == zone)
                 {
                     zoneFound = zones[i];
-                    Debug.Log("GetZone() successfull : Zone found at " + i);
+                    //Debug.Log("GetZone() successfull : Zone found at " + i);
                     break;
                 }
                 i++;
@@ -1326,7 +1461,7 @@ public class LevelBuilder : MonoBehaviour
 
             if(zoneFound == null)
             {
-                Debug.Log("The zone " + floor + ", " + zone + " is not in the list ");
+                //Debug.Log("The zone " + floor + ", " + zone + " is not in the list ");
             }
 
             return zoneFound;
@@ -1347,6 +1482,11 @@ public class LevelBuilder : MonoBehaviour
         {
             x = _x;
             y = _y;
+        }
+
+        public override string ToString()
+        {
+            return x + ", " + y;
         }
     }
 

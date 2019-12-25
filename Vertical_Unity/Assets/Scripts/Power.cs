@@ -4,7 +4,7 @@ using UnityEngine;
 
 public abstract class Power : ScriptableObject
 {
-    public new string name;
+    public string powerName;
     [TextArea] public string description;
     public Sprite icon;
 

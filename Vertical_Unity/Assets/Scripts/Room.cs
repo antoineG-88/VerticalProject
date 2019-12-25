@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class Room
+[CreateAssetMenu(fileName = "New Room", menuName = "Room/New Room")]
+public class Room : ScriptableObject
 {
-    public string name;
+    public new string name;
     public List<Floor> floors;
     [HideInInspector]
     public RoomPart[,] roomParts;
