@@ -137,6 +137,16 @@ PrefabInstance:
       propertyPath: ringHighLighterO
       value: 
       objectReference: {fileID: 1310915925}
+    - target: {fileID: 2276650194064215076, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
+        type: 3}
+      propertyPath: buttonDownAttach
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2276650194064215076, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
+        type: 3}
+      propertyPath: shootCooldown
+      value: 0.2
+      objectReference: {fileID: 0}
     - target: {fileID: 4503195422415338473, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -199,13 +209,8 @@ PrefabInstance:
       objectReference: {fileID: 1026494737}
     - target: {fileID: 4744132222942516713, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
         type: 3}
-      propertyPath: currentPower
-      value: 
-      objectReference: {fileID: 11400000, guid: 777da2b281c0a1349987f64967483f7e,
-        type: 2}
-    - target: {fileID: 1050642299, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531, type: 3}
-      propertyPath: m_SortingOrder
-      value: 10
+      propertyPath: maxReAimingTime
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531, type: 3}
@@ -286,6 +291,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 77737637}
   m_CullTransparentMesh: 0
+--- !u!114 &96341614 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
+    type: 3}
+  m_PrefabInstance: {fileID: 924505684}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7618dbccc45ad0d4daf0925538d22223, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &176191913
 GameObject:
   m_ObjectHideFlags: 0
@@ -616,6 +633,7 @@ GameObject:
   m_Component:
   - component: {fileID: 833065595}
   - component: {fileID: 833065594}
+  - component: {fileID: 833065596}
   m_Layer: 0
   m_Name: Level
   m_TagString: Untagged
@@ -674,7 +692,7 @@ MonoBehaviour:
   createIntentionalDeadEnd: 0
   intentionalDeadEndChance: 0
   creatingTime: 0
-  bottomCenterTowerPos: {x: 0, y: -5}
+  bottomCenterTowerPos: {x: 0, y: -15}
   tileLength: 24
   maxRoom: 2000
   levelHolderPrefab: {fileID: 8950924055697529316, guid: 08edfc2d1768c8d4ea9091cd097551b2,
@@ -693,6 +711,20 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &833065596
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 833065593}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf36b8f1c2c9fce40a95ebd19d7c7a10, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cameraHandler: {fileID: 96341614}
+  currentZoneUpdateTime: 0.1
 --- !u!1001 &924505684
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -765,6 +797,36 @@ PrefabInstance:
       propertyPath: roomsPos.Array.data[0]
       value: 
       objectReference: {fileID: 2046632184}
+    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
+        type: 3}
+      propertyPath: sizeLerpSpeed
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
+        type: 3}
+      propertyPath: useWallAvoidance
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
+        type: 3}
+      propertyPath: edgePointOffset
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
+        type: 3}
+      propertyPath: baseLerpSpeed
+      value: 0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 7082380994731898696, guid: a8a52d73fb1b86c44b482db3aeebf115,
+        type: 3}
+      propertyPath: aimOffsetLength
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1976976933381308253, guid: a8a52d73fb1b86c44b482db3aeebf115,
+        type: 3}
+      propertyPath: orthographic size
+      value: 5.625
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a8a52d73fb1b86c44b482db3aeebf115, type: 3}
 --- !u!1 &1026494737 stripped
@@ -873,6 +935,12 @@ PrefabInstance:
       propertyPath: debugText
       value: 
       objectReference: {fileID: 77737639}
+    - target: {fileID: 9134310131610629847, guid: 90bd2f44b45271c4093db3988ad51804,
+        type: 3}
+      propertyPath: debubParticle
+      value: 
+      objectReference: {fileID: 743808000188852099, guid: 1cf7fde50c7c4334dbeb307cefb2d3dd,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 90bd2f44b45271c4093db3988ad51804, type: 3}
 --- !u!1001 &1470435149
@@ -890,7 +958,7 @@ PrefabInstance:
     - target: {fileID: 1444916539395562212, guid: 69ca3f1f046cf8d48abbcca71eef52eb,
         type: 3}
       propertyPath: data.dataString
-      value: UEsDBBQAAAgIAAAIIexGIzpMcQIAABcFAAALACQAZ3JhcGgwLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQFlVE1z2jAQ/SuMzoWxjYG4txYI6YEkE9rJxRchr7EGWfJIcoBk+O9dycZ2KRekffvx9u3KX4RLUwGzSm80z7YqA/J9RNyZfBv14BOc6UHJHf+Em887z2zhnKj3eaOWK7SHLsyoEqzm7Ic8COccoLGWPFe6XGcHWCpjDZpzKgwgpJV10RJNXyNyxr9x4kIueIoW7vSJpyQYXfHIQFrQA9fZJI7jRRCtx8G8DVpMAvxFs8WsjR2Hk2Qahg/JYo5uM5+olkzQsoLMddXnm3WVY+8msd/WI5i4fEwJwU1Ll9hL5eXYVQVocHpknGL3nmKE1wL4obDtpYt9yXMDtpVG08uKaxSxSUp+qkbZkppjQ+yDitqViWZzT6pJuv0PH4cezrUqn251w8DVsAVnxzd6YdTYgfRD86onHnp9TlQc6V7AewHyWW20qmWGoNW1C60NRKv+2rW2LIAde3tD9c5YV73gN72Dblaj69V3f14KXu698HFj2Anl5fbrARpH8wsJ++UxbQq0OhZ/DPymh+GWtcAj18Yi1HYpHb29qrVzJWuvmeumtkulJXhzS7oCSYW9vGIaez/CO2xQ9g55pO49tcVb7PZM7kK8ufcPgjvoVZ26YZlCnbZgipfaCi6hJ+2AZ9RpqaRsNmyoyS1sV+ucskHYoebZv6tF2D5Ppkkc5GweZ2wajfchTYI9LPCJPkAUxcTvHpfYJxWvDdFWHpya7JNL3LPbZ2a00bTy255petrwz1INCXKZqx3TAPKlSdExB41V8F1m64yjQjuwlks/cPKVEqHYEbK0q5n6Vtdnq2naZ0lJxT+UdZaULP2HJSVXcv0LUEsDBBQAAAgIAAAIIeyGnLaDbAAAAHcAAAAJACQAbWV0YS5qc29uCgAgAAAAAAABABgAAIA+1d6xnQEAgD7V3rGdAQCAPtXesZ0Bq1YqSy0qzszPU7JSMNEz0rPQUVBKL0osyCgGChiCOKWZKSB2tFJyUpqlsaWJQVqymUlKsrGRbpJhoqVBUqq5kbmBRaqRkYlSLFB9SWVBql9ibipET0BiSUZaZl5KZl66nntRZoo7yGil2FoAUEsBAi0AFAAACAgAAAgh7EYjOkxxAgAAFwUAAAsAJAAAAAAAAAAAAAAAAAAAAGdyYXBoMC5qc29uCgAgAAAAAAABABgAAIA+1d6xnQEAgD7V3rGdAQCAPtXesZ0BUEsBAi0AFAAACAgAAAgh7IactoNsAAAAdwAAAAkAJAAAAAAAAAAAAAAAvgIAAG1ldGEuanNvbgoAIAAAAAAAAQAYAACAPtXesZ0BAIA+1d6xnQEAgD7V3rGdAVBLBQYAAAAAAgACALgAAAB1AwAAAAA=
+      value: UEsDBBQAAAgIAAAIIezBVpFBXQIAAP8EAAALACQAZ3JhcGgwLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQFlVE1z2jAQ/SuMziVjGxJCby0hpId8TEgnF1+EtMYaZMkjyQGS4b93JcvYJSdLb9/uvv2Qv4hQtgbmtFkZwR81B/JzRPyZ/Bj1xgc40K1Wa/EJHeddcFd6Eg2cV+qERjz1blZX4Ixgv9RWenKCYKNEoU215FtYaOsswgWVFtBktPPeCqGvETngZzz3Lkc8ZTN/+sTTPBmd8MhAOTA9tSN2tJbVKCZpVQP3kntyGslpICksJdqTq2sfW0spbFRC3LEOla7rEgz4UrmgWFjInuG1BLEtXbycfZ+LwoKLigw93gmD/WmDkt+6bVpF7a6V9UFl49Nk1zdBVBv08Zt93GoujK4eurxp4nO4UrDdKz0yat2gq0P4rheehu7sqdzRjYT3EtSTXhndKI5GZxrv2ljI7vrrubRFCWzX463UC7Cpv88mvZrd3qaT+c1kOU5mcVC+oFNoxWEhRbUJU5i2wFrq0PuwBmBwTn9QfVgSG+Mi6iX9tfBGt8NtioZ7YaxDUyxZea0b3RhPJcvQQF9a4xbaKAhwrKAGRaU7vmAYdznPC9sg7YXlnvp3E5NHW/ccLlwC3POT5ML0ovfnydlS7x/Bls+Nk0JBL9obnrBPC61Uu27DnnRu68YUlA3cto3g/+8ZYZtiPplPk4LdTDmbZONNSufJBmb4FG8hy6YkLKJQWCeVL63Q2B6cmuqDK1y67ncyWhlah9Xnhu5X4rPSQ4FCFXrNDIB6bkOclYPBLPhI+ZIL7NAanBMqDJx85URqtgOen3PmodTlwRma91FyUosP7TySk0X4geTkRE7/AFBLAwQUAAAICAAACCHshpy2g2wAAAB3AAAACQAkAG1ldGEuanNvbgoAIAAAAAAAAQAYAACAPtXesZ0BAIA+1d6xnQEAgD7V3rGdAatWKkstKs7Mz1OyUjDRM9Kz0FFQSi9KLMgoBgoYgjilmSkgdrRSclKapbGliUFasplJSrKxkW6SYaKlQVKquZG5gUWqkZGJUixQfUllQapfYm4qRE9AYklGWmZeSmZeup57UWaKO8hopdhaAFBLAQItABQAAAgIAAAIIezBVpFBXQIAAP8EAAALACQAAAAAAAAAAAAAAAAAAABncmFwaDAuanNvbgoAIAAAAAAAAQAYAACAPtXesZ0BAIA+1d6xnQEAgD7V3rGdAVBLAQItABQAAAgIAAAIIeyGnLaDbAAAAHcAAAAJACQAAAAAAAAAAAAAAKoCAABtZXRhLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQFQSwUGAAAAAAIAAgC4AAAAYQMAAAAA
       objectReference: {fileID: 0}
     - target: {fileID: 1444916539395562212, guid: 69ca3f1f046cf8d48abbcca71eef52eb,
         type: 3}

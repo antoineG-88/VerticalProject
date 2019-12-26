@@ -9,6 +9,7 @@ public class GameController : MonoBehaviour
     public AstarPath astarPath;
     public Text speedText;
     public Text debugText;
+    public GameObject debubParticle;
     public List<Effect> enemyEffects;
     [HideInInspector] public InputManager input;
 

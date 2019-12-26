@@ -3282,7 +3282,7 @@ SpriteRenderer:
   m_Size: {x: 1.0625, y: 0.96875}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!95 &2460463645481420436
@@ -6196,7 +6196,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2460463645913162924
 Transform:
   m_ObjectHideFlags: 0
@@ -6237,6 +6237,8 @@ MonoBehaviour:
   noGravityBouncyMaterial: {fileID: 6200000, guid: e00235c0d57775e488d206f15b485065,
     type: 2}
   basicMaterial: {fileID: 6200000, guid: ca4dce0f1fa4f0a4e956e8e72f1f7a41, type: 2}
+  repulsionForce: 0
+  repulsionRange: 0
   viewRange: 8
   viewAngle: 180
   viewAngleWidth: 20
@@ -6313,6 +6315,9 @@ MonoBehaviour:
     type: 3}
   projectilePrefab: {fileID: 733819507943030622, guid: d718da2d5dc7bf64a86dc8b40ec37cb2,
     type: 3}
+  isAtRange: 0
+  timebeforeRangeAttack: 0
+  rangeAttackCooldownRemaining: 0
 --- !u!114 &2460463645913162923
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6704,7 +6709,7 @@ SpriteRenderer:
   m_Size: {x: 1.0625, y: 0.96875}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!95 &2460463646026344466
@@ -6781,7 +6786,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2460463646174267398
 Transform:
   m_ObjectHideFlags: 0
@@ -6822,6 +6827,8 @@ MonoBehaviour:
   noGravityBouncyMaterial: {fileID: 6200000, guid: e00235c0d57775e488d206f15b485065,
     type: 2}
   basicMaterial: {fileID: 6200000, guid: ca4dce0f1fa4f0a4e956e8e72f1f7a41, type: 2}
+  repulsionForce: 0
+  repulsionRange: 0
   viewRange: 8
   viewAngle: 180
   viewAngleWidth: 20
@@ -6898,6 +6905,9 @@ MonoBehaviour:
     type: 3}
   projectilePrefab: {fileID: 733819507943030622, guid: d718da2d5dc7bf64a86dc8b40ec37cb2,
     type: 3}
+  isAtRange: 0
+  timebeforeRangeAttack: 0
+  rangeAttackCooldownRemaining: 0
 --- !u!114 &2460463646174267421
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7134,7 +7144,7 @@ SpriteRenderer:
   m_Size: {x: 1.0625, y: 0.96875}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!95 &2460463646374481240
@@ -7768,7 +7778,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2460463646464947527
 Transform:
   m_ObjectHideFlags: 0
@@ -7809,6 +7819,8 @@ MonoBehaviour:
   noGravityBouncyMaterial: {fileID: 6200000, guid: e00235c0d57775e488d206f15b485065,
     type: 2}
   basicMaterial: {fileID: 6200000, guid: ca4dce0f1fa4f0a4e956e8e72f1f7a41, type: 2}
+  repulsionForce: 0
+  repulsionRange: 0
   viewRange: 8
   viewAngle: 180
   viewAngleWidth: 20
@@ -7885,6 +7897,9 @@ MonoBehaviour:
     type: 3}
   projectilePrefab: {fileID: 733819507943030622, guid: d718da2d5dc7bf64a86dc8b40ec37cb2,
     type: 3}
+  isAtRange: 0
+  timebeforeRangeAttack: 0
+  rangeAttackCooldownRemaining: 0
 --- !u!114 &2460463646464947522
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8668,7 +8683,7 @@ SpriteRenderer:
   m_Size: {x: 1.0625, y: 0.96875}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!95 &8483729738586216434
@@ -8711,7 +8726,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8483729738599231766
 Transform:
   m_ObjectHideFlags: 0
@@ -8752,6 +8767,8 @@ MonoBehaviour:
   noGravityBouncyMaterial: {fileID: 6200000, guid: e00235c0d57775e488d206f15b485065,
     type: 2}
   basicMaterial: {fileID: 6200000, guid: ca4dce0f1fa4f0a4e956e8e72f1f7a41, type: 2}
+  repulsionForce: 0
+  repulsionRange: 0
   viewRange: 8
   viewAngle: 180
   viewAngleWidth: 20
@@ -8828,6 +8845,9 @@ MonoBehaviour:
     type: 3}
   projectilePrefab: {fileID: 733819507943030622, guid: d718da2d5dc7bf64a86dc8b40ec37cb2,
     type: 3}
+  isAtRange: 0
+  timebeforeRangeAttack: 0
+  rangeAttackCooldownRemaining: 0
 --- !u!114 &8483729738599231764
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8999,7 +9019,7 @@ SpriteRenderer:
   m_Size: {x: 1.0625, y: 0.96875}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!95 &8483729738808935091
@@ -9042,7 +9062,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8483729738829489239
 Transform:
   m_ObjectHideFlags: 0
@@ -9083,6 +9103,8 @@ MonoBehaviour:
   noGravityBouncyMaterial: {fileID: 6200000, guid: e00235c0d57775e488d206f15b485065,
     type: 2}
   basicMaterial: {fileID: 6200000, guid: ca4dce0f1fa4f0a4e956e8e72f1f7a41, type: 2}
+  repulsionForce: 0
+  repulsionRange: 0
   viewRange: 8
   viewAngle: 180
   viewAngleWidth: 20
@@ -9159,6 +9181,9 @@ MonoBehaviour:
     type: 3}
   projectilePrefab: {fileID: 733819507943030622, guid: d718da2d5dc7bf64a86dc8b40ec37cb2,
     type: 3}
+  isAtRange: 0
+  timebeforeRangeAttack: 0
+  rangeAttackCooldownRemaining: 0
 --- !u!114 &8483729738829489237
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9330,7 +9355,7 @@ SpriteRenderer:
   m_Size: {x: 1.0625, y: 0.96875}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!95 &8483729740020767852
@@ -9373,7 +9398,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8483729740033456776
 Transform:
   m_ObjectHideFlags: 0
@@ -9414,6 +9439,8 @@ MonoBehaviour:
   noGravityBouncyMaterial: {fileID: 6200000, guid: e00235c0d57775e488d206f15b485065,
     type: 2}
   basicMaterial: {fileID: 6200000, guid: ca4dce0f1fa4f0a4e956e8e72f1f7a41, type: 2}
+  repulsionForce: 0
+  repulsionRange: 0
   viewRange: 8
   viewAngle: 180
   viewAngleWidth: 20
@@ -9490,6 +9517,9 @@ MonoBehaviour:
     type: 3}
   projectilePrefab: {fileID: 733819507943030622, guid: d718da2d5dc7bf64a86dc8b40ec37cb2,
     type: 3}
+  isAtRange: 0
+  timebeforeRangeAttack: 0
+  rangeAttackCooldownRemaining: 0
 --- !u!114 &8483729740033456778
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -22,7 +22,7 @@ public class PlayerAttackManager : MonoBehaviour
     [HideInInspector] public bool kickButtonPressed;
     private float remainingTimeBeforeKick;
     private bool isRepropulsing;
-    private bool isReAiming;
+    [HideInInspector] public bool isReAiming;
     [HideInInspector] public float powerCooldownRemaining; // à récupérer pour l'interface
 
     private void Start()
@@ -180,13 +180,13 @@ public class PlayerAttackManager : MonoBehaviour
     private IEnumerator ReAim()
     {
         isReAiming = true;
-        GameData.playerGrapplingHandler.timeBeforeNextShoot = 0;
         Time.timeScale = slowMoTimeSpeed;
-        Time.fixedDeltaTime = 0.02f * Time.timeScale;
+        Time.fixedDeltaTime = 0.02f * slowMoTimeSpeed;
         float timeRemaining = Time.realtimeSinceStartup + maxReAimingTime;
 
         while (isReAiming && timeRemaining > Time.realtimeSinceStartup)
         {
+            GameData.playerGrapplingHandler.timeBeforeNextShoot = 0;
             yield return new WaitForEndOfFrame();
 
             if (GameData.playerGrapplingHandler.currentHook != null)
@@ -197,7 +197,7 @@ public class PlayerAttackManager : MonoBehaviour
 
         isReAiming = false;
         Time.timeScale = 1.0f;
-        Time.fixedDeltaTime = 0.02f * Time.timeScale;
+        Time.fixedDeltaTime = 0.02f;
     }
 
     /// <summary>

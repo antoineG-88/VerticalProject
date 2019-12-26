@@ -89,4 +89,9 @@ public class InputManager : MonoBehaviour
             ltaFlag = true;
         }
     }
+
+    public bool TractionButtonPressed()
+    {
+        return rightTriggerAxis == 1 ? true : false;
+    }
 }

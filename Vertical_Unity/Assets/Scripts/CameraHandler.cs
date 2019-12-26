@@ -12,12 +12,14 @@ public class CameraHandler : MonoBehaviour
     public float aimOffsetLength;
     public float momentumOffsetAmplitude;
     public float maxMomentumOffset;
-    [Header("Debug settings")]
+    [Header("General settings")]
+    public float orthographicSize = 5.625f;
+    public float sizeLerpSpeed;
+    [Header("Tower settings")]
     public float roomWidth;
     [Header("Debug settings")]
     public bool displayDebugs;
     public List<GameObject> edges;
-    public List<Transform> roomsPos;
 
     private Camera mainCamera;
     private Vector2 cameraTarget;
@@ -30,9 +32,17 @@ public class CameraHandler : MonoBehaviour
     {
         mainCamera = Camera.main;
         followPlayer = true;
-        foreach (Transform roomPos in roomsPos)
+    }
+
+    private void Update()
+    {
+        if(mainCamera.orthographicSize - orthographicSize > 0.1f)
         {
-            rooms.Add(roomPos.position);
+            mainCamera.orthographicSize -= (mainCamera.orthographicSize - orthographicSize) * sizeLerpSpeed * Time.deltaTime;
+        }
+        else
+        {
+            mainCamera.orthographicSize = orthographicSize;
         }
     }
 
@@ -157,5 +167,14 @@ public class CameraHandler : MonoBehaviour
             offset = offset.normalized * maxMomentumOffset;
         }
         return offset;
+    }
+
+    public void UpdateRoomPos(List<Vector2> newRoomPos)
+    {
+        rooms.Clear();
+        foreach (Vector2 roomPos in newRoomPos)
+        {
+            rooms.Add(roomPos);
+        }
     }
 }

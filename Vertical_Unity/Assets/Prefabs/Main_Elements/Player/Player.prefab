@@ -755,8 +755,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ace0fff1111e0d94694c028e1af4ace0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentPower: {fileID: 11400000, guid: 42b3e901275612d439f1dc10ac2fb341, type: 2}
-  currentKick: {fileID: 11400000, guid: b689cc1bf754caf4a82b13749e16d858, type: 2}
+  currentPower: {fileID: 11400000, guid: 777da2b281c0a1349987f64967483f7e, type: 2}
+  currentKick: {fileID: 11400000, guid: 36017c2b0cb9d7c4e94557c025c06d43, type: 2}
   collideSize: {x: 1, y: 1}
   kickPreview: {fileID: 0}
   reAimMode: 1
@@ -766,6 +766,7 @@ MonoBehaviour:
   slowMoTimeSpeed: 0.033
   isKicking: 0
   kickButtonPressed: 0
+  powerCooldownRemaining: 0
 --- !u!114 &1164104435070563982
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -869,7 +870,7 @@ LineRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 10
   m_Positions:
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 1}

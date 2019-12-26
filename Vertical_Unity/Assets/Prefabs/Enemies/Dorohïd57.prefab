@@ -30,7 +30,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5285105932516836639}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.37, y: 0.2, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 5285105933031819328}
@@ -84,6 +84,7 @@ MonoBehaviour:
   hurtColor: {r: 0.3584906, g: 0.06933072, b: 0.106964834, a: 1}
   invulnerableTime: 0.2
   gravityForce: 30
+  deathAnimationTime: 0
   noGravityLinearDrag: 0.8
   noGravityAngularDrag: 1
   noGravityRiseUpForce: 1
@@ -91,6 +92,8 @@ MonoBehaviour:
   noGravityBouncyMaterial: {fileID: 6200000, guid: e00235c0d57775e488d206f15b485065,
     type: 2}
   basicMaterial: {fileID: 6200000, guid: 11e62417d5f030e4aa0c6b8f6f06e4d1, type: 2}
+  repulsionForce: 0
+  repulsionRange: 0
   viewRange: 5
   viewAngle: 0
   viewAngleWidth: 60
@@ -98,6 +101,7 @@ MonoBehaviour:
   agroRange: 15
   useAStar: 0
   nextWaypointDistance: 1
+  waypointAhead: 0
   pathUpdatingFrequency: 0.1
   connectionJumpTime: 0.5
   pathfindingJumpWeight: 0.5
@@ -105,6 +109,7 @@ MonoBehaviour:
   avoidEffectRadius: 0.5
   avoidForce: 5
   minimalAvoidForce: 1
+  maximalAvoidForce: 0
   avoidDistanceInfluence: 0.2
   feetPos: {fileID: 5285105933167829694}
   groundCheckWidth: 0.9
@@ -123,6 +128,8 @@ MonoBehaviour:
   provoked: 0
   facingRight: 0
   isOnGround: 0
+  avoidEnemies: 0
+  isDead: 0
   slowEffectScale: 0
   currentEffects: []
   currentEffectFx: []
@@ -136,7 +143,7 @@ MonoBehaviour:
   currentPlatform: {fileID: 0}
   targetConnection: {fileID: 0}
   targetConnectedConnection: {fileID: 0}
-  timeBeforeNextGroundPathUpdate: 0
+  timeBeforeNextPathUpdate: 0
   pJumpCDRemaining: 0
   jumpForce: 15
   maxSpeed: 3
@@ -144,7 +151,7 @@ MonoBehaviour:
   acceleration: 100
   airControl: 5
   jumpTriggerAngle: 30
-  damage: 10
+  damage: 0
   attackKnockBackForce: 12
   attackKnockBackUp: 10
   attackStunTime: 0.3

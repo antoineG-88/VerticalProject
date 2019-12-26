@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerGrapplingHandler : MonoBehaviour
 {
     [Header("Grappling settings")]
+    public bool buttonDownAttach;
     public bool instantaneousAttach;
     public float shootForce;
     public float ropeLength;
@@ -211,7 +212,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
                     ringHighLighterO.SetActive(false);
                 }
 
-                if (GameData.gameController.input.rightTriggerAxis > 0.1f && timeBeforeNextShoot <= 0 && !isHooked) //Input changed
+                if (buttonDownAttach ? GameData.gameController.input.rightTriggerDown : GameData.gameController.input.TractionButtonPressed() && timeBeforeNextShoot <= 0 && !isHooked) //Input changed
                 {
                     timeBeforeNextShoot = shootCooldown;
                     ReleaseHook();
@@ -267,7 +268,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
             tractionDirection = (currentHook.transform.position - transform.position);
             tractionDirection.Normalize();
 
-            if (canUseTraction && GameData.gameController.input.rightTriggerAxis == 1 && !GameData.playerMovement.isDashing)
+            if (canUseTraction && GameData.gameController.input.TractionButtonPressed() && !GameData.playerMovement.isDashing)
             {
                 GameData.playerMovement.isAffectedbyGravity = false;
                 GameData.playerMovement.inControl = false;
@@ -388,10 +389,14 @@ public class PlayerGrapplingHandler : MonoBehaviour
 
     public void AttachHook(GameObject attachPos)
     {
-        if(!isGhostHook)
+        if(!isGhostHook && attachPos.CompareTag("Enemy") ? !attachPos.GetComponent<EnemyHandler>().isDead : true)
         {
             isHooked = true;
             attachedObject = attachPos;
+            if(attachedObject.CompareTag("Enemy"))
+            {
+                attachedObject.GetComponent<EnemyHandler>().provoked = true;
+            }
 
             if(!useGhostHook)
             {

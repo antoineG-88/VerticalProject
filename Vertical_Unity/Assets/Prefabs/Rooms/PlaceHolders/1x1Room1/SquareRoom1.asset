@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0370ba6983387a48b2e32f8cd29cc0f, type: 3}
   m_Name: SquareRoom1
   m_EditorClassIdentifier: 
-  name: SqaureRoom1
+  name: SquareRoom1
   floors:
   - roomPartsByFloor:
     - partPrefab: {fileID: 5558400363656817885, guid: 8569af3fa1ad9d94dbcb7fba1086d3fd,
         type: 3}
       openings: 00010101
-      roomIndex: 0
+      room: {fileID: 11400000}
+  allRooms: []

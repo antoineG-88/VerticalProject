@@ -84,6 +84,7 @@ public abstract class EnemyHandler : MonoBehaviour
     [HideInInspector] public float timeBeforeNextPathUpdate;
     private List<PlatformHandler> testedPlatform = new List<PlatformHandler>();
     [HideInInspector] public float pJumpCDRemaining;
+    [HideInInspector] public RoomHandler room;
 
     private Color baseColor;
 
@@ -117,17 +118,6 @@ public abstract class EnemyHandler : MonoBehaviour
         UpdatePath();
 
         EffectUpdate();
-
-        if(Input.GetKeyDown(KeyCode.A))
-        {
-            SetEffect(Effect.NoGravity, 1, true);
-        }
-
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            slowEffectScale = 0.5f;
-            SetEffect(Effect.Slow, 1, true);
-        }
     }
 
     public void HandlerFixedUpdate()
@@ -456,6 +446,7 @@ public abstract class EnemyHandler : MonoBehaviour
     public IEnumerator DeathAnimation()
     {
         isDead = true;
+        room.RemoveEnemy(this);
         SetEffect(Effect.NoControl, 50.0f, false);
         // death Animation
         yield return new WaitForSeconds(deathAnimationTime);

@@ -8,8 +8,8 @@ public class Room : ScriptableObject
 {
     public new string name;
     public List<Floor> floors;
-    [HideInInspector]
-    public RoomPart[,] roomParts;
+    [HideInInspector] public RoomPart[,] roomParts;
+    [HideInInspector] public List<Room> allRooms;
 
     public void Rearrange()
     {
@@ -23,7 +23,7 @@ public class Room : ScriptableObject
                 if(part.partPrefab != null)
                 {
                     roomParts[floorIndex, partIndex] = part;
-                    //part.room = this;
+                    part.room = this;
                 }
                 else
                 {
@@ -49,7 +49,6 @@ public class Room : ScriptableObject
     {
         public GameObject partPrefab;
         public bool[] openings = new bool[4];
-        [HideInInspector] public int roomIndex;
-        //[HideInInspector] public Room room;
+        [HideInInspector] public Room room;
     }
 }

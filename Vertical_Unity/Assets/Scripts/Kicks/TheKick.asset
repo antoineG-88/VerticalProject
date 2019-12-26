@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 630b5ebd188c36e42a8e600f8af50340, type: 3}
+  m_Name: TheKick
+  m_EditorClassIdentifier: 
+  name: TheKick
+  description: Basic Kick
+  icon: {fileID: 0}
+  kickVisualEffect: {fileID: 812548602693025470, guid: c695bf6f0a725d64a95d87755f810830,
+    type: 3}
+  isAOE: 1
+  propelingForce: 0
+  perfectTimingMaximumDistance: 2
+  hitCollidingSize: {x: 2, y: 1.3}
+  timeBeforeKick: 0
+  ptKnockbackRange: 3
+  ptKnockbackForce: 3
+  ptStunTime: 0.5
+  AOEStunFx: {fileID: 1500574650866506158, guid: 05c923ba3dfe19646b7832a63a075dce,
+    type: 3}
+  enemyHitKnockBackForce: 10
+  addedEnemyKnockBack: {x: 0, y: 0}

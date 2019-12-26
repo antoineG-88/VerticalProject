@@ -232,6 +232,7 @@ public class WatchBot : EnemyHandler
         else if (Vector2.Distance(transform.position, GameData.playerMovement.transform.position) > agroRange)
         {
             provoked = false;
+            Debug.Log(gameObject.name + " unprovoked because too far");
         }
     }
 
