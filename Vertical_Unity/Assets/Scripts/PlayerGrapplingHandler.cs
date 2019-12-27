@@ -278,6 +278,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
             {
                 GameData.playerMovement.isAffectedbyGravity = false;
                 GameData.playerMovement.inControl = false;
+                GameData.playerAttackManager.isReAiming = false;
 
                 if (!isTracting)
                 {
