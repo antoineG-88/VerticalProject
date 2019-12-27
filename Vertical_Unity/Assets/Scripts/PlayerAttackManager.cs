@@ -36,7 +36,10 @@ public class PlayerAttackManager : MonoBehaviour
 
     private void Update()
     {
-        Input();
+        if(!GameData.gameController.pause)
+        {
+            Input();
+        }
     }
 
     private void Input()
@@ -180,6 +183,7 @@ public class PlayerAttackManager : MonoBehaviour
     private IEnumerator ReAim()
     {
         isReAiming = true;
+        GameData.playerMovement.dashCooldownRemaining = 0;
         Time.timeScale = slowMoTimeSpeed;
         Time.fixedDeltaTime = 0.02f * slowMoTimeSpeed;
         float timeRemaining = Time.realtimeSinceStartup + maxReAimingTime;
@@ -189,10 +193,10 @@ public class PlayerAttackManager : MonoBehaviour
             GameData.playerGrapplingHandler.timeBeforeNextShoot = 0;
             yield return new WaitForEndOfFrame();
 
-            if (GameData.playerGrapplingHandler.currentHook != null)
+            /*if (GameData.playerGrapplingHandler.isHooked)
             {
                 isReAiming = false;
-            }
+            }*/
         }
 
         isReAiming = false;

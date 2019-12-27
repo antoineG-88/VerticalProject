@@ -56,18 +56,24 @@ public class WatchBot : EnemyHandler
 
     private void Update()
     {
-        HandlerUpdate();
+        if (!GameData.gameController.pause)
+        {
+            HandlerUpdate();
 
-        ProvocationUpdate();
+            ProvocationUpdate();
 
-        Behavior();
+            Behavior();
+        }
     }
 
     private void FixedUpdate()
     {
-        HandlerFixedUpdate();
+        if (!GameData.gameController.pause)
+        {
+            HandlerFixedUpdate();
 
-        UpdateMovement();
+            UpdateMovement();
+        }
     }
 
     public override void UpdateMovement()
@@ -232,7 +238,6 @@ public class WatchBot : EnemyHandler
         else if (Vector2.Distance(transform.position, GameData.playerMovement.transform.position) > agroRange)
         {
             provoked = false;
-            Debug.Log(gameObject.name + " unprovoked because too far");
         }
     }
 

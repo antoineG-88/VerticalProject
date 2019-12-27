@@ -31,16 +31,30 @@ public class PlayerManager : MonoBehaviour
 
     private void Update()
     {
-        if (invulnerableTimeRemaining > 0)
+        if (!GameData.gameController.pause)
         {
-            invulnerableTimeRemaining -= Time.deltaTime;
-        }
-        else
-        {
-            isVulnerable = true;
-        }
+            if (invulnerableTimeRemaining > 0)
+            {
+                invulnerableTimeRemaining -= Time.deltaTime;
+            }
+            else
+            {
+                isVulnerable = true;
+            }
 
-        isVulnerable = vulnerable ? isVulnerable : false;
+            if(Input.GetKeyDown(KeyCode.M))
+            {
+                PlayerData.playerHealth = currentHealth;
+                Debug.Log("CurrentHealth : " + currentHealth + " saved in PlayerData");
+            }
+
+            if (Input.GetKeyDown(KeyCode.F))
+            {
+                Debug.Log("PlayerData health : " + PlayerData.playerHealth);
+            }
+
+            isVulnerable = vulnerable ? isVulnerable : false;
+        }
     }
 
     public bool TakeDamage(int damage, Vector2 knockBack, float stunTime)

@@ -46,15 +46,21 @@ public class Spider_Bot : EnemyHandler
 
     void Update()
     {
-        HandlerUpdate();
-        UpdateMovement();
+        if(!GameData.gameController.pause)
+        {
+            HandlerUpdate();
+            UpdateMovement();
+        }
     }
 
     private void FixedUpdate()
     {
-        HandlerFixedUpdate();
+        if (!GameData.gameController.pause)
+        {
+            HandlerFixedUpdate();
 
-        isTouchingWall = false;
+            isTouchingWall = false;
+        }
     }
 
     public override bool TestCounter()

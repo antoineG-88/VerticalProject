@@ -51,18 +51,24 @@ public class OS_Bot : EnemyHandler
 
     private void Update()
     {
-        HandlerUpdate();
+        if (!GameData.gameController.pause)
+        {
+            HandlerUpdate();
 
-        ProvocationUpdate();
+            ProvocationUpdate();
 
-        Behavior();
+            Behavior();
+        }
     }
 
     private void FixedUpdate()
     {
-        HandlerFixedUpdate();
+        if (!GameData.gameController.pause)
+        {
+            HandlerFixedUpdate();
 
-        UpdateMovement();
+            UpdateMovement();
+        }
     }
 
     public override void UpdateMovement()

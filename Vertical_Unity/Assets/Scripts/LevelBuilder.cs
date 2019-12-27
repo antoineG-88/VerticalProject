@@ -540,6 +540,11 @@ public class LevelBuilder : MonoBehaviour
                                                         enemy.room = newRoomHandler;
                                                     }
                                                 }
+                                                else if (child.name == "FinalRing")
+                                                {
+                                                    GameData.levelHandler.finalRing = child.gameObject;
+                                                    Debug.Log("Final ring found on zone " + (nextZone + relativeIndexes));
+                                                }
                                             }
                                         }
                                         else

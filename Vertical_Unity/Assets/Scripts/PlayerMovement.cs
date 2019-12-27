@@ -39,7 +39,7 @@ public class PlayerMovement : MonoBehaviour
     private bool jumpFlag;
     private float timeBeforeControl;
     [HideInInspector] public bool isDashing;
-    private float dashCooldownRemaining;
+    [HideInInspector] public float dashCooldownRemaining;
     private Collider2D passThroughPlatform;
     private float passThroughTime;
 
@@ -57,16 +57,22 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        UpdateInput();
+        if (!GameData.gameController.pause)
+        {
+            UpdateInput();
+        }
     }
 
     private void FixedUpdate()
     {
-        UpdateMovement();
-
-        if(timeBeforeControl > 0)
+        if (!GameData.gameController.pause)
         {
-            timeBeforeControl -= Time.fixedDeltaTime;
+            UpdateMovement();
+
+            if(timeBeforeControl > 0)
+            {
+                timeBeforeControl -= Time.fixedDeltaTime;
+            }
         }
     }
 
@@ -91,7 +97,7 @@ public class PlayerMovement : MonoBehaviour
             dashCooldownRemaining -= Time.deltaTime;
         }
 
-        if(GameData.gameController.input.leftJoystickVertical < 0)
+        if(GameData.gameController.input.leftJoystickVertical < 0 || GameData.playerGrapplingHandler.isTracting)
         {
             RaycastHit2D hit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + 2.0f), Vector2.down, 5.0f, LayerMask.GetMask("Platform"));
             if(hit && passThroughPlatform == null && IsOnGround())
@@ -228,6 +234,7 @@ public class PlayerMovement : MonoBehaviour
         dashCooldownRemaining = dashTime + 1;
         isDashing = true;
         isAffectedbyGravity = false;
+        GameData.playerAttackManager.isReAiming = false;
         Vector2 dashDirection = new Vector2(GameData.gameController.input.leftJoystickHorizontal, GameData.gameController.input.leftJoystickVertical).normalized;
         if(dashDirection == Vector2.zero)
         {
