@@ -4,27 +4,44 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public bool allowMouseControl;
     [Header("Base movement settings")]
     public float maxTargetSpeed;
     public float runningAcceleration;
     public float groundSlowing;
     public float airAcceleration;
     public float airSlowing;
+    public float airDragForce;
     public float jumpForce;
+    public float baseGravityForce;
     [Range(0, 100)] public float jumpXVelocityGain;
+    [Header("Dash settings")]
+    public float dashTime;
+    public float dashMaxSpeed;
+    public float dashStartSpeed;
+    public float dashAcceleration;
+    public float dashStopDistance;
+    public bool dashBreakRope;
+    public float dashCooldown;
+    public bool invulnerableDash;
+    [Range(0, 100)] public float dashVelocityKept;
     [Header("Technical settings")]
     public Transform feetPos;
     public float groundCheckThickness = 0.1f;
     public float groundCheckWidth = 1.0f;
-    public LayerMask walkableMask;
 
+    [HideInInspector] public PlatformHandler currentPlayerPlatform;
     [HideInInspector] public bool inControl;
-    private Vector2 targetVelocity;
-    private Rigidbody2D rb;
+    [HideInInspector] public bool isAffectedbyGravity;
+    [HideInInspector] public float gravityForce;
+    [HideInInspector] public Vector2 targetVelocity;
+    [HideInInspector] public Rigidbody2D rb;
     private float addedXVelocity;
     private bool jumpFlag;
     private float timeBeforeControl;
+    [HideInInspector] public bool isDashing;
+    private float dashCooldownRemaining;
+    private Collider2D passThroughPlatform;
+    private float passThroughTime;
 
     void Start()
     {
@@ -32,7 +49,10 @@ public class PlayerMovement : MonoBehaviour
         targetVelocity = Vector2.zero;
         jumpFlag = false;
         inControl = true;
+        isAffectedbyGravity = true;
+        isDashing = false;
         timeBeforeControl = 0;
+        gravityForce = baseGravityForce;
     }
 
     private void Update()
@@ -52,29 +72,55 @@ public class PlayerMovement : MonoBehaviour
 
     private void UpdateInput()
     {
-        if(Input.GetAxis("LJoystickH") != 0)
+        if(GameData.gameController.input.leftJoystickHorizontal != 0)
         {
-            targetVelocity.x = Input.GetAxis("LJoystickH") * maxTargetSpeed;
+            targetVelocity.x = GameData.gameController.input.leftJoystickHorizontal * maxTargetSpeed;
         }
         else if(targetVelocity.x != 0)
         {
             targetVelocity.x = 0;
         }
 
-        if (Input.GetButton("AButton") && IsOnGround())
+        if (GameData.gameController.input.jump && !isDashing && dashCooldownRemaining <= 0)
         {
-            jumpFlag = true;
+            StartCoroutine(Dash());
+        }
+
+        if(dashCooldownRemaining > 0)
+        {
+            dashCooldownRemaining -= Time.deltaTime;
+        }
+
+        if(GameData.gameController.input.leftJoystickVertical < 0)
+        {
+            RaycastHit2D hit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + 2.0f), Vector2.down, 5.0f, LayerMask.GetMask("Platform"));
+            if(hit && passThroughPlatform == null && IsOnGround())
+            {
+                passThroughTime = 0.5f;
+                passThroughPlatform = hit.collider;
+                Physics2D.IgnoreCollision(passThroughPlatform, GetComponent<Collider2D>());
+            }
+        }
+        else if (passThroughPlatform != null && passThroughTime <= 0)
+        {
+            Physics2D.IgnoreCollision(passThroughPlatform, GetComponent<Collider2D>(), false);
+            passThroughPlatform = null;
+        }
+
+        if(passThroughTime > 0)
+        {
+            passThroughTime -= Time.deltaTime;
         }
     }
 
     private void UpdateMovement()
     {
-        if(inControl && timeBeforeControl <= 0)
+        if(inControl && timeBeforeControl <= 0 && !isDashing)
         {
             if (targetVelocity.x != rb.velocity.x)
             {
                 float xDirection = Mathf.Sign(targetVelocity.x - rb.velocity.x);
-                if (rb.velocity.x > 0 && rb.velocity.x < targetVelocity.x || rb.velocity.x < 0 && rb.velocity.x > targetVelocity.x)
+                if (targetVelocity.x > 0 && rb.velocity.x < targetVelocity.x || targetVelocity.x < 0 && rb.velocity.x > targetVelocity.x)
                 {
                     if (IsOnGround())
                     {
@@ -113,12 +159,22 @@ public class PlayerMovement : MonoBehaviour
                 jumpFlag = false;
             }
         }
+
+        if(isAffectedbyGravity)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y - gravityForce * Time.fixedDeltaTime);
+        }
+
+        if(!IsOnGround() && !GameData.playerGrapplingHandler.isTracting && !isDashing)
+        {
+            rb.velocity -= rb.velocity.normalized * airDragForce * Time.fixedDeltaTime;
+        }
     }
 
     public bool IsOnGround()
     {
         bool isGrounded = false;
-        if (Physics2D.OverlapBox(feetPos.position, new Vector2(groundCheckWidth, groundCheckThickness), 0.0f, walkableMask) != null)
+        if (Physics2D.OverlapBox(feetPos.position, new Vector2(groundCheckWidth, groundCheckThickness), 0.0f, LayerMask.GetMask("Ground", "Platform")) != null)
         {
             isGrounded = true;
         }
@@ -161,5 +217,58 @@ public class PlayerMovement : MonoBehaviour
         {
             timeBeforeControl = noControlTime;
         }
+    }
+
+    private IEnumerator Dash()
+    {
+        if(dashBreakRope)
+        {
+            GameData.playerGrapplingHandler.ReleaseHook();
+        }
+        dashCooldownRemaining = dashTime + 1;
+        isDashing = true;
+        isAffectedbyGravity = false;
+        Vector2 dashDirection = new Vector2(GameData.gameController.input.leftJoystickHorizontal, GameData.gameController.input.leftJoystickVertical).normalized;
+        if(dashDirection == Vector2.zero)
+        {
+            dashDirection = Vector2.up;
+        }
+
+        float currentSpeed = dashStartSpeed;
+        float timer = dashTime;
+        Vector2 origin = transform.position;
+
+        while (!GameData.playerManager.isStunned && timer > 0 && !Physics2D.Raycast(transform.position, dashDirection, dashStopDistance, LayerMask.GetMask("Ground")))
+        {
+            timer -= Time.fixedDeltaTime;
+            if(invulnerableDash)
+            {
+                GameData.playerManager.isDodging = true;
+            }
+
+            rb.velocity = dashDirection * currentSpeed;
+            currentSpeed += dashAcceleration * Time.fixedDeltaTime;
+
+            if (rb.velocity.magnitude > dashMaxSpeed)
+            {
+                rb.velocity = dashDirection * dashMaxSpeed;
+            }
+
+            if(timer > 0)
+            {
+                yield return new WaitForFixedUpdate();
+            }
+        }
+
+        /*if(timer <= 0 && !Physics2D.Raycast(origin, dashDirection, dashDistance, LayerMask.GetMask("Ground")))
+        {
+            transform.position = origin + dashDirection * dashDistance;
+        }*/
+
+        GameData.playerManager.isDodging = false;
+        isAffectedbyGravity = true;
+        Propel(dashDirection * currentSpeed * dashVelocityKept / 100, true, true);
+        isDashing = false;
+        dashCooldownRemaining = dashCooldown;
     }
 }

@@ -8,33 +8,44 @@ using UnityEngine;
 /// </summary>
 public class KickSample: Kick
 {
-    public float damagePerHit;
-    public float criticalDamage;
-    public float stunTime;
+    [Header("Perfect Timing settings")]
+    public float ptStunTime;
+    public float ptStunRange;
+    public GameObject AOEStunFx;
 
-    public float ennemyKnockBackForce;
-    public float playerKnockBackForce;
-    public Vector2 addedEnnemyKnockBack;
-    public Vector2 addedPlayerKnockBack;
-
-    private int repetition = 0;
-    private float damageToDeal;
-    public override void Use(EnnemyHandler ennemy)
+    public float enemyKnockBackForce;
+    public Vector2 addedEnemyKnockBack;
+    public override IEnumerator Use(GameObject player, Quaternion kickRotation)
     {
-        damageToDeal = damagePerHit;
-        if (repetition <= 2)
+        GameObject kickEffect = Instantiate(kickVisualEffect, player.transform.position, player.transform.rotation);
+        kickEffect.transform.localRotation = Quaternion.Euler(0.0f, 0.0f, Vector2.SignedAngle(Vector2.right, GameData.playerGrapplingHandler.tractionDirection));
+
+        if(timeBeforeKick > 0)
         {
-            repetition++;
+            yield return new WaitForSeconds(timeBeforeKick);
         }
-        if(repetition > 2 && GameData.playerGrapplingHandler.attachedObject == null)
-        {
-            repetition = 0;
-            damageToDeal = criticalDamage;
-        }
-        Vector2 kickDirection = new Vector2(ennemy.transform.position.x - GameData.playerMovement.transform.position.x, ennemy.transform.position.y - GameData.playerMovement.transform.position.y).normalized;
+
+        GameData.playerAttackManager.Hit();
+    }
+
+    public override void DealDamageToEnemy(EnemyHandler enemy)
+    {
+        Vector2 kickDirection = new Vector2(enemy.transform.position.x - GameData.playerMovement.transform.position.x, enemy.transform.position.y - GameData.playerMovement.transform.position.y).normalized;
         GameData.playerMovement.DisableControl(0.3f, false);
-        GameData.playerMovement.Propel(-kickDirection * playerKnockBackForce + addedPlayerKnockBack, true, true);
-        ennemy.TakeDamage(damageToDeal, kickDirection * ennemyKnockBackForce + addedEnnemyKnockBack, stunTime);
+        enemy.TakeDamage(1, kickDirection * enemyKnockBackForce + addedEnemyKnockBack);
         GameData.playerGrapplingHandler.ReleaseHook();
+    }
+
+    public override void ApplyPerfectTimingEffect(EnemyHandler enemy)
+    {
+        Instantiate(AOEStunFx, enemy.transform.position, Quaternion.identity);
+        List<Collider2D> colliders = new List<Collider2D>();
+        ContactFilter2D contactFilter = new ContactFilter2D();
+        contactFilter.SetLayerMask(LayerMask.GetMask("Enemy"));
+        Physics2D.OverlapCircle(enemy.transform.position, ptStunRange, contactFilter, colliders);
+        foreach(Collider2D collider in colliders)
+        {
+            collider.GetComponent<EnemyHandler>().SetEffect(Effect.Stun, ptStunTime, true);
+        }
     }
 }
