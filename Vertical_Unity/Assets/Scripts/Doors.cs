@@ -4,19 +4,40 @@ using UnityEngine;
 
 public class Doors : MonoBehaviour
 {
-    public GameObject doorUp;
-    public GameObject doorDown;
+    public Animator doorUp;
+    public Animator doorDown;
+    public BoxCollider2D triggerBox;
+    public Collider2D doorCollisionCollider;
+    public bool isLocked;
 
-    private Animator upAnimator;
-    private Animator downAnimator;
+    private bool isOpened;
 
-    void Start()
+    private void Start()
     {
-        
+        isOpened = false;
     }
 
-    void Update()
+    private void FixedUpdate()
     {
-        
+        doorUp.SetBool("opened", isOpened);
+        doorDown.SetBool("opened", isOpened);
+    }
+
+    private void OnTriggerEnter2D(Collider2D collider)
+    {
+        if (collider.CompareTag("Player") && !isLocked)
+        {
+            isOpened = true;
+            doorCollisionCollider.enabled = false;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collider)
+    {
+        if (collider.CompareTag("Player") && !isLocked)
+        {
+            isOpened = false;
+            doorCollisionCollider.enabled = true;
+        }
     }
 }

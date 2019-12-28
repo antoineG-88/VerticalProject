@@ -24,7 +24,14 @@ public class GameController : MonoBehaviour
         input = GetComponent<InputManager>();
         GameObject player = GameObject.FindWithTag("Player");
         GameObject level = GameObject.Find("Level");
-        GameData.Initialize(player.GetComponent<PlayerManager>(), player.GetComponent<PlayerMovement>(), player.GetComponent<PlayerGrapplingHandler>(), player.GetComponent<PlayerAttackManager>(), this, level.GetComponent<LevelBuilder>(), level.GetComponent<LevelHandler>());
+        if (level != null)
+        {
+            GameData.Initialize(player.GetComponent<PlayerManager>(), player.GetComponent<PlayerMovement>(), player.GetComponent<PlayerGrapplingHandler>(), player.GetComponent<PlayerAttackManager>(), this, level.GetComponent<LevelBuilder>(), level.GetComponent<LevelHandler>());
+        }
+        else
+        {
+            GameData.Initialize(player.GetComponent<PlayerManager>(), player.GetComponent<PlayerMovement>(), player.GetComponent<PlayerGrapplingHandler>(), player.GetComponent<PlayerAttackManager>(), this);
+        }
 
         for (int i = 0; i < enemyEffects.Count; i++)
         {

@@ -536,14 +536,37 @@ public class LevelBuilder : MonoBehaviour
                                                     for(int t = 0; t < child.childCount; t++)
                                                     {
                                                         EnemyHandler enemy = child.GetChild(t).GetComponent<EnemyHandler>();
-                                                        newRoomHandler.currentEnemies.Add(enemy);
-                                                        enemy.room = newRoomHandler;
+                                                        if (enemy != null)
+                                                        {
+                                                            newRoomHandler.currentEnemies.Add(enemy);
+                                                            enemy.room = newRoomHandler;
+                                                        }
+                                                        else
+                                                        {
+                                                            Debug.LogError("No EnemyHandler script found on " + child.GetChild(t).name);
+                                                        }
                                                     }
                                                 }
                                                 else if (child.name == "FinalRing")
                                                 {
-                                                    GameData.levelHandler.finalRing = child.gameObject;
+                                                    GetComponent<LevelHandler>().finalRing = child.gameObject;
+                                                    //GameData.levelHandler.finalRing = child.gameObject;
                                                     Debug.Log("Final ring found on zone " + (nextZone + relativeIndexes));
+                                                }
+                                                else if(child.name == "Doors")
+                                                {
+                                                    for (int t = 0; t < child.childCount; t++)
+                                                    {
+                                                        Doors door = child.GetChild(t).GetComponent<Doors>();
+                                                        if(door != null)
+                                                        {
+                                                            newRoomHandler.doors.Add(door);
+                                                        }
+                                                        else
+                                                        {
+                                                            Debug.LogError("No Doors script found on " + child.GetChild(t).name);
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }

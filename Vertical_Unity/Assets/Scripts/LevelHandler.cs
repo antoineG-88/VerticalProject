@@ -102,7 +102,7 @@ public class LevelHandler : MonoBehaviour
 
     private void UpdatePlayerProgression()
     {
-        if (Vector2.Distance(GameData.playerMovement.transform.position, finalRing.transform.position) < minDistanceToFinalRing && GameData.playerGrapplingHandler.attachedObject == finalRing)
+        if (finalRing != null && Vector2.Distance(GameData.playerMovement.transform.position, finalRing.transform.position) < minDistanceToFinalRing && GameData.playerGrapplingHandler.attachedObject == finalRing)
         {
             TransitionToNextLevel();
         }
