@@ -6,6 +6,7 @@ public class PlayerManager : MonoBehaviour
 {
     [Header("Initial Player Info")]
     public int maxhealth;
+    public int baseEnergy;
     public float invulnerableTime;
     [Header("General debug settings")]
     public Color stunColor;
@@ -15,6 +16,7 @@ public class PlayerManager : MonoBehaviour
     [HideInInspector] public bool isDodging;
     [HideInInspector] public bool isStunned;
     private int currentHealth;  // à récupérer pour l'interface
+    private int currentEnergy;
     private Rigidbody2D rb;
     private Color baseColor;
     private float invulnerableTimeRemaining;
@@ -27,22 +29,16 @@ public class PlayerManager : MonoBehaviour
         isDodging = false;
         isStunned = false;
         invulnerableTimeRemaining = 0;
+        currentEnergy = baseEnergy;
     }
 
     private void Update()
     {
         if (!GameData.gameController.pause)
         {
-            if (invulnerableTimeRemaining > 0)
-            {
-                invulnerableTimeRemaining -= Time.deltaTime;
-            }
-            else
-            {
-                isVulnerable = true;
-            }
+            UpdatePlayerStatus();
 
-            if(Input.GetKeyDown(KeyCode.M))
+            if (Input.GetKeyDown(KeyCode.M))
             {
                 PlayerData.playerHealth = currentHealth;
                 Debug.Log("CurrentHealth : " + currentHealth + " saved in PlayerData");
@@ -52,8 +48,6 @@ public class PlayerManager : MonoBehaviour
             {
                 Debug.Log("PlayerData health : " + PlayerData.playerHealth);
             }
-
-            isVulnerable = vulnerable ? isVulnerable : false;
         }
     }
 
@@ -71,11 +65,7 @@ public class PlayerManager : MonoBehaviour
             isVulnerable = false;
             if (currentHealth <= 0)
             {
-                GetComponentInChildren<SpriteRenderer>().enabled = false;
-                GetComponent<Collider2D>().enabled = false;
-                rb.simulated = false;
-                GameData.playerMovement.inControl = false;
-                GameData.playerGrapplingHandler.canShoot = false;
+                StartCoroutine(Die());
             }
         }
 
@@ -93,5 +83,30 @@ public class PlayerManager : MonoBehaviour
         isStunned = false;
         GameData.playerMovement.inControl = true;
         GameData.playerGrapplingHandler.canShoot = true;
+    }
+
+    private void UpdatePlayerStatus()
+    {
+        if (invulnerableTimeRemaining > 0)
+        {
+            invulnerableTimeRemaining -= Time.deltaTime;
+        }
+        else
+        {
+            isVulnerable = true;
+        }
+
+        isVulnerable = vulnerable ? isVulnerable : false;
+    }
+
+    private IEnumerator Die()
+    {
+        GetComponentInChildren<SpriteRenderer>().enabled = false;
+        GetComponent<Collider2D>().enabled = false;
+        rb.simulated = false;
+        GameData.playerMovement.inControl = false;
+        GameData.playerGrapplingHandler.canShoot = false;
+
+        yield return new WaitForSeconds(0);
     }
 }
