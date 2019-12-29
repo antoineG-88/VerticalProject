@@ -446,7 +446,10 @@ public abstract class EnemyHandler : MonoBehaviour
     public IEnumerator DeathAnimation()
     {
         isDead = true;
-        room.RemoveEnemy(this);
+        if (room != null)
+        {
+            room.RemoveEnemy(this);
+        }
         SetEffect(Effect.NoControl, 50.0f, false);
         // death Animation
         yield return new WaitForSeconds(deathAnimationTime);
