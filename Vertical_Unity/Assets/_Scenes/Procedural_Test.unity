@@ -216,7 +216,7 @@ PrefabInstance:
         type: 3}
       propertyPath: currentPower
       value: 
-      objectReference: {fileID: 11400000, guid: 8e841c51f9332cf41bb7a58b41b86949,
+      objectReference: {fileID: 11400000, guid: cfce68c59b5c3804da89348e56bb43a1,
         type: 2}
     - target: {fileID: 1164104435070563982, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
         type: 3}
@@ -2776,7 +2776,7 @@ PrefabInstance:
     - target: {fileID: 6067586404583493700, guid: 2044c8ad1f8c46645b594a2e4cb2b141,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6067586404583493702, guid: 2044c8ad1f8c46645b594a2e4cb2b141,
         type: 3}
@@ -2851,7 +2851,7 @@ PrefabInstance:
     - target: {fileID: 6067586404583493703, guid: 2044c8ad1f8c46645b594a2e4cb2b141,
         type: 3}
       propertyPath: towerHeight
-      value: 8
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 6067586404583493703, guid: 2044c8ad1f8c46645b594a2e4cb2b141,
         type: 3}
@@ -2861,7 +2861,17 @@ PrefabInstance:
     - target: {fileID: 6067586404583493703, guid: 2044c8ad1f8c46645b594a2e4cb2b141,
         type: 3}
       propertyPath: roomBuildBeforeYokaiRoom
-      value: 10
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6067586404583493703, guid: 2044c8ad1f8c46645b594a2e4cb2b141,
+        type: 3}
+      propertyPath: hideDebugTowerGenerationLog
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6067586404583493703, guid: 2044c8ad1f8c46645b594a2e4cb2b141,
+        type: 3}
+      propertyPath: instantCreation
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2044c8ad1f8c46645b594a2e4cb2b141, type: 3}

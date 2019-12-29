@@ -83,19 +83,29 @@ public class YokaiPrisonHandler : MonoBehaviour
         yield return new WaitForSeconds(timeBeforePrisonOpening);
         yokaiPrison.SetBool("Opened", true);
         yield return new WaitForSeconds(timeBeforePowerSpawn);
-        firstPower = availablePowers[Random.Range(0, availablePowers.Count)];
+        firstPower = GetRandomAvailablePower();
         availablePowers.Remove(firstPower);
-        secondPower = availablePowers[Random.Range(0, availablePowers.Count)];
-        firstPowerO = Instantiate(pickablePowerPrefab, (Vector2)firstPowerSpawnPoint.position + powerIconOffset, Quaternion.identity, firstPowerSpawnPoint);
-        firstPowerO.GetComponent<SpriteRenderer>().sprite = firstPower.icon;
-        firstPowerWindow.SetBool("Closed", false);
+        secondPower = GetRandomAvailablePower();
+        if(firstPower != null)
+        {
+            firstPowerO = Instantiate(pickablePowerPrefab, (Vector2)firstPowerSpawnPoint.position + powerIconOffset, Quaternion.identity, firstPowerSpawnPoint);
+            firstPowerO.GetComponent<SpriteRenderer>().sprite = firstPower.icon;
+            firstPowerWindow.SetBool("Closed", false);
+        }
         yield return new WaitForSeconds(timeBetweenPowerSpawn);
-        secondPowerO = Instantiate(pickablePowerPrefab, (Vector2)secondPowerSpawnPoint.position + powerIconOffset, Quaternion.identity, secondPowerSpawnPoint);
-        secondPowerO.GetComponent<SpriteRenderer>().sprite = secondPower.icon;
-        secondPowerWindow.SetBool("Closed", false);
+        if(secondPower != null)
+        {
+            secondPowerO = Instantiate(pickablePowerPrefab, (Vector2)secondPowerSpawnPoint.position + powerIconOffset, Quaternion.identity, secondPowerSpawnPoint);
+            secondPowerO.GetComponent<SpriteRenderer>().sprite = secondPower.icon;
+            secondPowerWindow.SetBool("Closed", false);
+        }
         isSelling = true;
 
         GameData.gameController.takePlayerInput = true;
+        if(secondPower != null && firstPower == null)
+        {
+            BuyPower(GameData.playerAttackManager.currentPower);
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collider)
@@ -124,5 +134,15 @@ public class YokaiPrisonHandler : MonoBehaviour
         Destroy(firstPowerO);
         Destroy(secondPowerO);
         capturedYokai.SetBool("Disappear", true);
+    }
+
+    private Power GetRandomAvailablePower()
+    {
+        Power availablePower = null;
+        if(availablePowers.Count > 0)
+        {
+            availablePower = availablePowers[Random.Range(0, availablePowers.Count)];
+        }
+        return availablePower;
     }
 }

@@ -32,16 +32,19 @@ public class LevelHandler : MonoBehaviour
 
     private void Update()
     {
-        UpdatePlayerProgression();
+        if(GameData.levelBuilder.towerCreated)
+        {
+            UpdatePlayerProgression();
 
-        if(timeBeforeNextZoneUpdate > 0)
-        {
-            timeBeforeNextZoneUpdate -= Time.deltaTime;
-        }
-        else
-        {
-            timeBeforeNextZoneUpdate = currentZoneUpdateTime;
-            UpdateZone();
+            if (timeBeforeNextZoneUpdate > 0)
+            {
+                timeBeforeNextZoneUpdate -= Time.deltaTime;
+            }
+            else
+            {
+                timeBeforeNextZoneUpdate = currentZoneUpdateTime;
+                UpdateZone();
+            }
         }
     }
 
