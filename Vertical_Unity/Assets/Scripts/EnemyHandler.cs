@@ -446,7 +446,11 @@ public abstract class EnemyHandler : MonoBehaviour
     public IEnumerator DeathAnimation()
     {
         isDead = true;
+<<<<<<< HEAD
         if(room != null)
+=======
+        if (room != null)
+>>>>>>> LevelDesign2
         {
             room.RemoveEnemy(this);
         }
