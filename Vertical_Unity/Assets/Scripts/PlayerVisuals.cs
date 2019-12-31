@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerVisuals : MonoBehaviour
 {
     [HideInInspector] public bool facingRight;
+    [HideInInspector] public int isKicking;
 
     private Animator animator;
     private bool transformFacingRight;
@@ -17,6 +18,14 @@ public class PlayerVisuals : MonoBehaviour
     void Update()
     {
         UpdateVisuals();
+    }
+
+    private void FixedUpdate()
+    {
+        if (isKicking > 0)
+        {
+            isKicking--;
+        }
     }
 
     private void UpdateVisuals()
@@ -55,5 +64,9 @@ public class PlayerVisuals : MonoBehaviour
         animator.SetBool("IsDashing", GameData.playerMovement.isDashing);
 
         animator.SetBool("IsInTheAir", !GameData.playerMovement.IsOnGround());
+
+        animator.SetBool("IsKicking", isKicking > 0 ? true : false);
+
+        animator.SetBool("IsFacingRight", facingRight);
     }
 }

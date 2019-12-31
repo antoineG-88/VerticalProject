@@ -528,6 +528,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   facingRight: 0
+  isKicking: 0
 --- !u!1 &4503195422415338485
 GameObject:
   m_ObjectHideFlags: 0
@@ -681,6 +682,7 @@ MonoBehaviour:
   collideSize: {x: 1, y: 1}
   kickPreview: {fileID: 0}
   reAimMode: 1
+  kickEffectOffset: 0.5
   repropulsionPreview: {fileID: 269809583}
   maxRepropulsionReleaseTime: 2
   maxReAimingTime: 1
@@ -701,14 +703,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ed5cea198e10c34590799e9fff49c66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxhealth: 50
+  maxhealthPoint: 0
   baseEnergy: 0
   invulnerableTime: 0.5
+  firstLevel: 0
+  powerCharge: {fileID: 0}
+  currentPowerIcon: {fileID: 0}
+  coolingPowerColor: {r: 0, g: 0, b: 0, a: 0}
+  firstHealthPointPos: {fileID: 0}
+  distanceBetweenHp: 0
+  hpIconPrefab: {fileID: 0}
+  fullHp: {fileID: 0}
+  halfHp: {fileID: 0}
+  emptyHpColor: {r: 0, g: 0, b: 0, a: 0}
+  currentEnergyText: {fileID: 0}
   stunColor: {r: 0.7264151, g: 0.099368125, b: 0.099368125, a: 1}
   vulnerable: 0
   isVulnerable: 1
   isDodging: 0
   isStunned: 0
+  currentHealth: 0
+  currentEnergy: 0
 --- !u!50 &4503195422415338475
 Rigidbody2D:
   serializedVersion: 4
@@ -743,7 +758,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.11922479, y: -0.051969767}
+  m_Offset: {x: 0, y: -0.051969767}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}

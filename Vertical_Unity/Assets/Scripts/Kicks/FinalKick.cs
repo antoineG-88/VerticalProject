@@ -16,9 +16,11 @@ public class FinalKick : Kick
 
     public float enemyHitKnockBackForce;
     public Vector2 addedEnemyKnockBack;
+
     public override IEnumerator Use(GameObject player, Quaternion kickRotation)
     {
-        GameObject kickEffect = Instantiate(kickVisualEffect, player.transform.position, player.transform.rotation);
+        Vector2 effectPos = (Vector2)player.transform.position + (GameData.playerGrapplingHandler.tractionDirection * GameData.playerAttackManager.kickEffectOffset);
+        GameObject kickEffect = Instantiate(kickVisualEffect, effectPos, player.transform.rotation, player.transform);
         kickEffect.transform.localRotation = Quaternion.Euler(0.0f, 0.0f, Vector2.SignedAngle(Vector2.right, GameData.playerGrapplingHandler.tractionDirection));
 
         if (timeBeforeKick > 0)

@@ -13,6 +13,7 @@ public class PlayerAttackManager : MonoBehaviour
     public GameObject kickPreview;
     [Space]
     public bool reAimMode;
+    public float kickEffectOffset;
     public GameObject repropulsionPreview;
     public float maxRepropulsionReleaseTime;
     public float maxReAimingTime;
@@ -50,6 +51,7 @@ public class PlayerAttackManager : MonoBehaviour
             if(GameData.playerGrapplingHandler.isTracting && !isKicking)
             {
                 isKicking = true;
+                GetComponentInChildren<PlayerVisuals>().isKicking = 5;
                 StartCoroutine(currentKick.Use(gameObject, Quaternion.Euler(0.0f, 0.0f, Vector2.SignedAngle(Vector2.right, GameData.playerGrapplingHandler.tractionDirection))));
             }
         }
@@ -73,6 +75,7 @@ public class PlayerAttackManager : MonoBehaviour
     public bool Hit()
     {
         bool successfullKick = false;
+        bool hitSomething = false;
         List<Collider2D> hitColliders = new List<Collider2D>();
         GameObject attachedObject = GameData.playerGrapplingHandler.attachedObject;
         GameData.playerGrapplingHandler.ReleaseHook();
@@ -118,6 +121,7 @@ public class PlayerAttackManager : MonoBehaviour
             }
             else
             {
+                hitSomething = true;
                 foreach (Collider2D collider in hitColliders)
                 {
                     if (collider.CompareTag("Enemy"))
@@ -128,6 +132,15 @@ public class PlayerAttackManager : MonoBehaviour
             }
         }
         isKicking = false;
+
+        if(!hitSomething)
+        {
+            GameData.playerMovement.Propel(GetComponent<Rigidbody2D>().velocity * GameData.playerGrapplingHandler.velocityKeptReleasingHook / 100, true, true);
+        }
+        else
+        {
+            StartCoroutine(ReAim());
+        }
 
         return successfullKick;
     }
