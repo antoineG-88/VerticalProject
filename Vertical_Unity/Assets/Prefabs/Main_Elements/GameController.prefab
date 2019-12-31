@@ -44,9 +44,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2909c849ac90bd43a03145dc4d60b03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  astarPath: {fileID: 0}
-  speedText: {fileID: 0}
-  debugText: {fileID: 0}
+  nextSceneIndex: 0
+  mainMenuSceneIndex: 0
   enemyEffects:
   - effectName: Stun
     effectFX: {fileID: 8925220298269711287, guid: e3f711b6d57a4ea4fb09467bc503eb55,
@@ -67,7 +66,16 @@ MonoBehaviour:
   - effectName: Magnetism
     effectFX: {fileID: 0}
     index: 0
+  - effectName: Immobilize
+    effectFX: {fileID: 0}
+    index: 0
+  allPowers: []
+  speedText: {fileID: 0}
+  debugText: {fileID: 0}
+  debubParticle: {fileID: 0}
   input: {fileID: 0}
+  pause: 0
+  takePlayerInput: 0
 --- !u!114 &828206619
 MonoBehaviour:
   m_ObjectHideFlags: 0

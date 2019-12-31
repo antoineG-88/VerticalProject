@@ -190,7 +190,7 @@ public class OverBot : EnemyHandler
         float timer = rushTime;
         rushDirection.Normalize();
         SetEffect(Effect.NoControl, rushTime, false);
-        while (timer > 0)
+        while (timer > 0 && !Is(Effect.Stun))
         {
             rb.velocity = rushDirection * rushVelocity;
             timer -= Time.fixedDeltaTime;
@@ -203,9 +203,9 @@ public class OverBot : EnemyHandler
 
         float subAngle = attackWidthAngle / (projectileNumber - 1);
         float firstAngle = - attackWidthAngle / 2;
-        for(int x = 0; x<10; x++)
+        for(int x = 0; x < 10 && !Is(Effect.Stun); x++)
         {
-            for (int i = 0; i < projectileNumber; i++)
+            for (int i = 0; i < projectileNumber && !Is(Effect.Stun); i++)
 
             {
                 float relativeAngle = firstAngle + subAngle * i;
@@ -224,9 +224,6 @@ public class OverBot : EnemyHandler
             }
             yield return new WaitForSeconds(0.1f);
         }
-            
-        
-
     }
 
 

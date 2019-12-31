@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class YokaiPrisonHandler : MonoBehaviour
 {
@@ -12,6 +13,8 @@ public class YokaiPrisonHandler : MonoBehaviour
     public Transform secondPowerSpawnPoint;
     public Animator secondPowerWindow;
     public GameObject pickablePowerPrefab;
+    public GameObject energyPriceText;
+    public GameObject yokaiCanvas;
     [Header("Timing settings")]
     public float timeBeforePowerSpawn;
     public float timeBeforePrisonOpening;
@@ -20,6 +23,7 @@ public class YokaiPrisonHandler : MonoBehaviour
     public float minDistanceSelectPower;
     public float selectSize;
     public Vector2 powerIconOffset;
+    public Vector2 powerPriceOffset;
 
     private bool prisonOpened;
     private GameObject firstPowerO;
@@ -27,6 +31,8 @@ public class YokaiPrisonHandler : MonoBehaviour
     private GameObject secondPowerO;
     private Power secondPower;
     private List<Power> availablePowers;
+    private GameObject firstPrice;
+    private GameObject secondPrice;
 
     private bool isSelling;
 
@@ -46,30 +52,37 @@ public class YokaiPrisonHandler : MonoBehaviour
             if(Vector2.Distance(firstPowerSpawnPoint.position, GameData.playerMovement.transform.position) < minDistanceSelectPower)
             {
                 firstPowerWindow.SetBool("Selected", true);
+                firstPrice.SetActive(true);
                 if(Input.GetButtonDown("Interact"))
                 {
-                    Instantiate(GameData.gameController.debubParticle, firstPowerSpawnPoint);
                     BuyPower(firstPower);
                 }
             }
             else
             {
                 firstPowerWindow.SetBool("Selected", false);
+                firstPrice.SetActive(false);
             }
 
             if (Vector2.Distance(secondPowerSpawnPoint.position, GameData.playerMovement.transform.position) < minDistanceSelectPower)
             {
                 secondPowerWindow.SetBool("Selected", true);
+                secondPrice.SetActive(true);
                 if (Input.GetButtonDown("Interact"))
                 {
-                    Instantiate(GameData.gameController.debubParticle, secondPowerSpawnPoint);
                     BuyPower(secondPower);
                 }
             }
             else
             {
                 secondPowerWindow.SetBool("Selected", false);
+                secondPrice.SetActive(false);
             }
+
+            if(firstPrice != null)
+                SetPricePos((Vector2)firstPowerSpawnPoint.position + powerPriceOffset, firstPrice);
+            if (secondPrice != null)
+                SetPricePos((Vector2)secondPowerSpawnPoint.position + powerPriceOffset,secondPrice);
         }
     }
 
@@ -91,6 +104,9 @@ public class YokaiPrisonHandler : MonoBehaviour
             firstPowerO = Instantiate(pickablePowerPrefab, (Vector2)firstPowerSpawnPoint.position + powerIconOffset, Quaternion.identity, firstPowerSpawnPoint);
             firstPowerO.GetComponent<SpriteRenderer>().sprite = firstPower.icon;
             firstPowerWindow.SetBool("Closed", false);
+            firstPrice = Instantiate(energyPriceText, firstPowerO.transform.position, Quaternion.identity, yokaiCanvas.transform);
+            firstPrice.GetComponent<Text>().text = firstPower.name + System.Environment.NewLine + firstPower.price.ToString();
+
         }
         yield return new WaitForSeconds(timeBetweenPowerSpawn);
         if(secondPower != null)
@@ -98,6 +114,8 @@ public class YokaiPrisonHandler : MonoBehaviour
             secondPowerO = Instantiate(pickablePowerPrefab, (Vector2)secondPowerSpawnPoint.position + powerIconOffset, Quaternion.identity, secondPowerSpawnPoint);
             secondPowerO.GetComponent<SpriteRenderer>().sprite = secondPower.icon;
             secondPowerWindow.SetBool("Closed", false);
+            secondPrice = Instantiate(energyPriceText, firstPowerO.transform.position, Quaternion.identity, yokaiCanvas.transform);
+            secondPrice.GetComponent<Text>().text = secondPower.name + System.Environment.NewLine + secondPower.price.ToString();
         }
         isSelling = true;
 
@@ -127,13 +145,23 @@ public class YokaiPrisonHandler : MonoBehaviour
 
     private void BuyPower(Power newPower)
     {
-        GameData.playerAttackManager.ReplaceCurrentPower(newPower);
-        isSelling = false;
-        firstPowerWindow.SetBool("Closed", true);
-        secondPowerWindow.SetBool("Closed", true);
-        Destroy(firstPowerO);
-        Destroy(secondPowerO);
-        capturedYokai.SetBool("Disappear", true);
+        if(GameData.playerManager.currentEnergy >= newPower.price)
+        {
+            GameData.playerAttackManager.ReplaceCurrentPower(newPower);
+            GameData.playerManager.PayEnergy(newPower.price);
+            isSelling = false;
+            firstPowerWindow.SetBool("Closed", true);
+            secondPowerWindow.SetBool("Closed", true);
+            Destroy(firstPowerO);
+            Destroy(secondPowerO);
+            Destroy(firstPrice);
+            Destroy(secondPrice);
+            capturedYokai.SetBool("Disappear", true);
+        }
+        else
+        {
+            Debug.Log("Not enough Energy");
+        }
     }
 
     private Power GetRandomAvailablePower()
@@ -144,5 +172,12 @@ public class YokaiPrisonHandler : MonoBehaviour
             availablePower = availablePowers[Random.Range(0, availablePowers.Count)];
         }
         return availablePower;
+    }
+
+    private void SetPricePos(Vector2 priceWorldPos, GameObject priceText)
+    {
+        Vector2 screenPos = Camera.main.WorldToViewportPoint(priceWorldPos);
+        Vector2 worldScreenPos = new Vector2((screenPos.x - 0.5f) * yokaiCanvas.GetComponent<RectTransform>().sizeDelta.x, (screenPos.y - 0.5f) * yokaiCanvas.GetComponent<RectTransform>().sizeDelta.y);
+        priceText.GetComponent<RectTransform>().anchoredPosition = worldScreenPos;
     }
 }

@@ -155,6 +155,8 @@ MonoBehaviour:
   invulnerableTime: 0.2
   gravityForce: 0
   deathAnimationTime: 0.2
+  energyBaseDrop: 6
+  energyDropMaxVariation: 2
   noGravityLinearDrag: 0.1
   noGravityAngularDrag: 1
   noGravityRiseUpForce: 1
@@ -162,8 +164,8 @@ MonoBehaviour:
   noGravityBouncyMaterial: {fileID: 6200000, guid: e00235c0d57775e488d206f15b485065,
     type: 2}
   basicMaterial: {fileID: 6200000, guid: ca4dce0f1fa4f0a4e956e8e72f1f7a41, type: 2}
-  repulsionForce: 0
-  repulsionRange: 0
+  repulsionForce: 1
+  repulsionRange: 3
   viewRange: 8
   viewAngle: 180
   viewAngleWidth: 20
@@ -188,6 +190,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   collisionCollider: {fileID: 6312095705553650348}
+  energyOrbPrefab: {fileID: 5282602994738846854, guid: b7918315d08e4944c9f9e586a72875a5,
+    type: 3}
   pauseAI: 0
   debugParticlePrefab: {fileID: 743808000188852099, guid: 1cf7fde50c7c4334dbeb307cefb2d3dd,
     type: 3}
@@ -226,7 +230,7 @@ MonoBehaviour:
   projectileNumber: 4
   attackWidthAngle: 40
   projectileSpeed: 8
-  projectileDamage: 5
+  projectileDamage: 1
   rangeAttackCooldown: 2
   rangeAttackDelay: 0.5
   projectileSpawnDistance: 0.5
@@ -234,7 +238,7 @@ MonoBehaviour:
   projectileLifeTime: 0.8
   spikeAttackRange: 2
   spikeAttackDelay: 0.3
-  spikeAttackDamage: 0
+  spikeAttackDamage: 1
   spikeAttackKnockbackForce: 10
   particleDebugPrefab: {fileID: 743808000188852099, guid: 1cf7fde50c7c4334dbeb307cefb2d3dd,
     type: 3}

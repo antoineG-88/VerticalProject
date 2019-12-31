@@ -7,6 +7,7 @@ public abstract class Power : ScriptableObject
     public string powerName;
     [TextArea] public string description;
     public Sprite icon;
+    public int price;
 
     public float cooldown;
 

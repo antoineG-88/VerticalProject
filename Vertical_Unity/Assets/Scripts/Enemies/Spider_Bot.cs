@@ -79,7 +79,6 @@ public class Spider_Bot : EnemyHandler
                 if(jumpShotDelayRemaining <= 0)
                 {
                     float jumpCenterAngle = GetAngleFromSurfaceDirection(currentSurfaceDirection);
-                    Debug.Log(jumpCenterAngle);
                     float jumpAngle = Random.Range(jumpCenterAngle - (jumpShotAngleRange / 2), jumpCenterAngle + (jumpShotAngleRange / 2));
                     Vector2 jumpDirection = new Vector2(Mathf.Cos(jumpAngle * Mathf.Deg2Rad), Mathf.Sin(jumpAngle * Mathf.Deg2Rad));
                     jumpDirection.Normalize();

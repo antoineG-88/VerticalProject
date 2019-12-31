@@ -12,6 +12,8 @@ public abstract class EnemyHandler : MonoBehaviour
     public float invulnerableTime;
     public float gravityForce;
     public float deathAnimationTime;
+    public int energyBaseDrop;
+    public int energyDropMaxVariation;
     [Header("NoGravity Effect settings")]
     public float noGravityLinearDrag;
     public float noGravityAngularDrag;
@@ -49,6 +51,7 @@ public abstract class EnemyHandler : MonoBehaviour
     public float groundCheckThickness;
     public LayerMask groundMask;
     public Collider2D collisionCollider;
+    public GameObject energyOrbPrefab;
     [Space]
     [Header("Debug settings")]
     public bool pauseAI;
@@ -129,6 +132,8 @@ public abstract class EnemyHandler : MonoBehaviour
         AvoidOtherEnemies();
 
         isOnGround = IsOnGround();
+
+        UpdateImmobilize();
     }
 
     #region Movement
@@ -446,17 +451,18 @@ public abstract class EnemyHandler : MonoBehaviour
     public IEnumerator DeathAnimation()
     {
         isDead = true;
-<<<<<<< HEAD
         if(room != null)
-=======
-        if (room != null)
->>>>>>> LevelDesign2
         {
             room.RemoveEnemy(this);
         }
         SetEffect(Effect.NoControl, 50.0f, false);
         // death Animation
         yield return new WaitForSeconds(deathAnimationTime);
+        int energyDrop = energyBaseDrop + Random.Range(-energyDropMaxVariation, energyDropMaxVariation + 1);
+        for (int i = 0; i < energyDrop; i++)
+        {
+            Instantiate(energyOrbPrefab, transform.position, Quaternion.identity);
+        }
         Destroy(gameObject);
     }
 
@@ -556,6 +562,14 @@ public abstract class EnemyHandler : MonoBehaviour
         if (isAffectedByGravity && gravityForce != 0)
         {
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y - gravityForce * Time.fixedDeltaTime);
+        }
+    }
+
+    private void UpdateImmobilize()
+    {
+        if(Is(Effect.Immobilize))
+        {
+            rb.velocity = Vector2.zero;
         }
     }
 

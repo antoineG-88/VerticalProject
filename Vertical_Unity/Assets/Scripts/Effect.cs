@@ -98,4 +98,19 @@ public class Effect
             return null;
         }
     }
+
+    public static Effect Immobilize
+    {
+        get
+        {
+            foreach (Effect effect in GameData.gameController.enemyEffects)
+            {
+                if (effect.effectName == "Immobilize")
+                {
+                    return effect;
+                }
+            }
+            return null;
+        }
+    }
 }

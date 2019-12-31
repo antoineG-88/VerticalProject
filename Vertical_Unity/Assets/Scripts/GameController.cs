@@ -53,6 +53,15 @@ public class GameController : MonoBehaviour
 
     public void LoadNextLevel()
     {
+        SavePlayerData();
         SceneManager.LoadScene(nextSceneIndex);
+    }
+
+    public void SavePlayerData()
+    {
+        PlayerData.playerHealth = GameData.playerManager.currentHealth;
+        PlayerData.playerEnergy = GameData.playerManager.currentEnergy;
+        PlayerData.playerKick = GameData.playerAttackManager.currentKick;
+        PlayerData.playerPower = GameData.playerAttackManager.currentPower;
     }
 }

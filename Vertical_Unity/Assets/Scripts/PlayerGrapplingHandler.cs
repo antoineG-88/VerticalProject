@@ -108,7 +108,6 @@ public class PlayerGrapplingHandler : MonoBehaviour
 
     void ShootManager()
     {
-
         if (timeBeforeNextShoot > 0)
         {
             timeBeforeNextShoot -= Time.deltaTime;
