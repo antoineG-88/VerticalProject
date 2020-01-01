@@ -260,7 +260,7 @@ MonoBehaviour:
   repulsionRange: 3
   viewRange: 8
   viewAngle: 180
-  viewAngleWidth: 20
+  viewAngleWidth: 50
   raycastNumber: 10
   agroRange: 15
   useAStar: 1
@@ -320,7 +320,7 @@ MonoBehaviour:
   patrolRadius: 15
   stopDistance: 2
   fleeDistance: 3
-  rangeAttackTriggerRange: 5
+  rangeAttackTriggerRange: 8
   projectileNumber: 4
   attackWidthAngle: 40
   projectileSpeed: 8
@@ -329,7 +329,7 @@ MonoBehaviour:
   rangeAttackDelay: 0.5
   projectileSpawnDistance: 0.5
   projectileKnockbackForce: 3
-  projectileLifeTime: 0.8
+  projectileLifeTime: 20
   spikeAttackRange: 2
   spikeAttackDelay: 0.3
   spikeAttackDamage: 1
