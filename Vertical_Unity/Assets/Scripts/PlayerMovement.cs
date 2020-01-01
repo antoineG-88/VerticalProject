@@ -24,6 +24,7 @@ public class PlayerMovement : MonoBehaviour
     public float dashCooldown;
     public bool invulnerableDash;
     [Range(0, 100)] public float dashVelocityKept;
+    public GameObject dashShadowPrefab;
     [Header("Technical settings")]
     public Transform feetPos;
     public float groundCheckThickness = 0.1f;
@@ -234,6 +235,7 @@ public class PlayerMovement : MonoBehaviour
         dashCooldownRemaining = dashTime + 1;
         isDashing = true;
         isAffectedbyGravity = false;
+        PlayerVisuals playerVisuals = GetComponentInChildren<PlayerVisuals>();
         GameData.playerAttackManager.isReAiming = false;
         Vector2 dashDirection = new Vector2(GameData.gameController.input.leftJoystickHorizontal, GameData.gameController.input.leftJoystickVertical).normalized;
         if(dashDirection == Vector2.zero)
@@ -244,7 +246,6 @@ public class PlayerMovement : MonoBehaviour
         float currentSpeed = dashStartSpeed;
         float timer = dashTime;
         Vector2 origin = transform.position;
-
         while (!GameData.playerManager.isStunned && timer > 0 && !Physics2D.Raycast(transform.position, dashDirection, dashStopDistance, LayerMask.GetMask("Ground")))
         {
             timer -= Time.fixedDeltaTime;
@@ -261,16 +262,14 @@ public class PlayerMovement : MonoBehaviour
                 rb.velocity = dashDirection * dashMaxSpeed;
             }
 
-            if(timer > 0)
+            GameObject shadow =  Instantiate(dashShadowPrefab, transform.position, Quaternion.identity);
+            shadow.transform.localScale = new Vector3(playerVisuals.facingRight ? 1 : -1, 1, 1);
+
+            if (timer > 0)
             {
                 yield return new WaitForFixedUpdate();
             }
         }
-
-        /*if(timer <= 0 && !Physics2D.Raycast(origin, dashDirection, dashDistance, LayerMask.GetMask("Ground")))
-        {
-            transform.position = origin + dashDirection * dashDistance;
-        }*/
 
         GameData.playerManager.isDodging = false;
         isAffectedbyGravity = true;

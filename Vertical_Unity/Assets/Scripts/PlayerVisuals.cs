@@ -6,6 +6,8 @@ public class PlayerVisuals : MonoBehaviour
 {
     [HideInInspector] public bool facingRight;
     [HideInInspector] public int isKicking;
+    [HideInInspector] public int isCastingPower;
+    [HideInInspector] public bool isSlaming;
 
     private Animator animator;
     private bool transformFacingRight;
@@ -13,6 +15,7 @@ public class PlayerVisuals : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         transformFacingRight = true;
+        isSlaming = false;
     }
 
     void Update()
@@ -25,6 +28,11 @@ public class PlayerVisuals : MonoBehaviour
         if (isKicking > 0)
         {
             isKicking--;
+        }
+
+        if (isCastingPower > 0)
+        {
+            isCastingPower--;
         }
     }
 
@@ -67,6 +75,10 @@ public class PlayerVisuals : MonoBehaviour
 
         animator.SetBool("IsKicking", isKicking > 0 ? true : false);
 
+        animator.SetBool("IsCastingPower", isCastingPower > 0 ? true : false);
+
         animator.SetBool("IsFacingRight", facingRight);
+
+        animator.SetBool("IsSlaming", isSlaming);
     }
 }

@@ -17,6 +17,7 @@ public class OverBot : EnemyHandler
     public float rangeAttackTriggerRange;
     public float rushVelocity;
     public int projectileNumber;
+    public int projectileSend = 4;
     public float attackWidthAngle;
     public float projectileSpeed;
     public int projectileDamage;
@@ -25,6 +26,9 @@ public class OverBot : EnemyHandler
     public float projectileSpawnDistance;
     public float projectileKnockbackForce;
     public float projectileLifeTime;
+    public int counterRushAttackDamage;
+    public float counterRushAttackKnockback;
+    public float bulletAttackSpeed = 0.3f;
     [Header("Debug settings")]
     public GameObject particleDebugPrefab;
     public GameObject projectilePrefab;
@@ -37,6 +41,7 @@ public class OverBot : EnemyHandler
     [HideInInspector] public float timebeforeRushAttack;
     [HideInInspector] public float rushAttackCooldownRemaining;
     private Vector2 aimDirection;
+    private bool isRushing;
 
 
     private void Start()
@@ -186,6 +191,7 @@ public class OverBot : EnemyHandler
     {
         rushAttackCooldownRemaining = rangeAttackCooldown;
         isInvulnerable = true;
+        isRushing = true;
         Vector2 rushDirection = GameData.playerMovement.transform.position - transform.position;
         float timer = rushTime;
         rushDirection.Normalize();
@@ -198,12 +204,13 @@ public class OverBot : EnemyHandler
         }
         SetEffect(Effect.NoControl, 0, false);
         isInvulnerable = false;
+        isRushing = false;
         // Fin du rush 
 
 
         float subAngle = attackWidthAngle / (projectileNumber - 1);
         float firstAngle = - attackWidthAngle / 2;
-        for(int x = 0; x < 10 && !Is(Effect.Stun); x++)
+        for(int x = 0; x < projectileSend && !Is(Effect.Stun); x++)
         {
             for (int i = 0; i < projectileNumber && !Is(Effect.Stun); i++)
 
@@ -222,7 +229,7 @@ public class OverBot : EnemyHandler
                 newProjectileHandler.damage = projectileDamage;
                 newProjectileHandler.lifeTime = projectileLifeTime;
             }
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(bulletAttackSpeed);
         }
     }
 
@@ -230,7 +237,12 @@ public class OverBot : EnemyHandler
 
     public override bool TestCounter()
     {
-        return false;
+        if(isRushing)
+        {
+            GameData.playerManager.TakeDamage(counterRushAttackDamage, aimDirection * counterRushAttackKnockback, 0.2f);
+        }
+
+        return isRushing;
     }
 
     private void ProvocationUpdate()

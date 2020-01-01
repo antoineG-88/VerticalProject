@@ -529,6 +529,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   facingRight: 0
   isKicking: 0
+  isCastingPower: 0
+  isSlaming: 0
 --- !u!1 &4503195422415338485
 GameObject:
   m_ObjectHideFlags: 0
@@ -602,6 +604,9 @@ MonoBehaviour:
   dashCooldown: 1
   invulnerableDash: 0
   dashVelocityKept: 15
+  dashShadowPrefab: {fileID: 3788763055611250903, guid: f724113b506e72348b79ee55e7ce1db7,
+    type: 3}
+  timeBetweenShadows: 0.02
   feetPos: {fileID: 4503195423458372692}
   groundCheckThickness: 0.05
   groundCheckWidth: 0.8

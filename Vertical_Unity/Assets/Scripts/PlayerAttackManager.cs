@@ -63,6 +63,7 @@ public class PlayerAttackManager : MonoBehaviour
         if(GameData.gameController.input.leftTriggerAxis > 0 && powerCooldownRemaining <= 0)
         {
             powerCooldownRemaining = currentPower.cooldown;
+            GetComponentInChildren<PlayerVisuals>().isCastingPower = 10;
             StartCoroutine(currentPower.Use());
         }
 

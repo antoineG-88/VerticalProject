@@ -183,6 +183,8 @@ MonoBehaviour:
   collisionCollider: {fileID: 4670905135045009079}
   energyOrbPrefab: {fileID: 5282602994738846854, guid: b7918315d08e4944c9f9e586a72875a5,
     type: 3}
+  deathExplosionPrefab: {fileID: 4121049825518759165, guid: 27ff6e54c4d154d48be10e3f87b4e012,
+    type: 3}
   pauseAI: 0
   debugParticlePrefab: {fileID: 743808000188852099, guid: 1cf7fde50c7c4334dbeb307cefb2d3dd,
     type: 3}
@@ -217,18 +219,22 @@ MonoBehaviour:
   patrolRadius: 15
   stopDistance: 2
   fleeDistance: 3
-  rushTime: 1
+  rushTime: 0.5
   rangeAttackTriggerRange: 5
-  rushVelocity: 8
+  rushVelocity: 10
   projectileNumber: 3
+  projectileSend: 4
   attackWidthAngle: 180
-  projectileSpeed: 13
+  projectileSpeed: 8
   projectileDamage: 1
   rangeAttackCooldown: 3
   rangeAttackDelay: 0.2
   projectileSpawnDistance: 0.5
   projectileKnockbackForce: 3
-  projectileLifeTime: 10
+  projectileLifeTime: 20
+  counterRushAttackDamage: 2
+  counterRushAttackKnockback: 5
+  bulletAttackSpeed: 0.3
   particleDebugPrefab: {fileID: 743808000188852099, guid: 1cf7fde50c7c4334dbeb307cefb2d3dd,
     type: 3}
   projectilePrefab: {fileID: 733819507943030622, guid: d718da2d5dc7bf64a86dc8b40ec37cb2,

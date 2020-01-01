@@ -52,6 +52,7 @@ public abstract class EnemyHandler : MonoBehaviour
     public LayerMask groundMask;
     public Collider2D collisionCollider;
     public GameObject energyOrbPrefab;
+    public GameObject deathExplosionPrefab;
     [Space]
     [Header("Debug settings")]
     public bool pauseAI;
@@ -456,8 +457,8 @@ public abstract class EnemyHandler : MonoBehaviour
             room.RemoveEnemy(this);
         }
         SetEffect(Effect.NoControl, 50.0f, false);
-        // death Animation
         yield return new WaitForSeconds(deathAnimationTime);
+        Instantiate(deathExplosionPrefab, transform.position, Quaternion.identity);
         int energyDrop = energyBaseDrop + Random.Range(-energyDropMaxVariation, energyDropMaxVariation + 1);
         for (int i = 0; i < energyDrop; i++)
         {

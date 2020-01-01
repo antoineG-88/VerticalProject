@@ -20,8 +20,13 @@ MonoBehaviour:
   cooldown: 3
   frappevelocity: 30
   timePosInstantiate: 0.05
-  prefabexplosion: {fileID: 1500574650866506158, guid: 05c923ba3dfe19646b7832a63a075dce,
+  prefabexplosion: {fileID: 7326937197211514682, guid: 3263d02eb5092d043b30858a9857fed5,
     type: 3}
+  impactPrefab: {fileID: 278224624660791933, guid: 136074e6df8e09842b345d109cefa578,
+    type: 3}
+  bulletPrefab: {fileID: 3881332320475458819, guid: ceed0a422c8e4ea49902b44a4ebf45bb,
+    type: 3}
+  impactFxOffset: {x: 0, y: 0.25}
   explosionRange: 1.5
   duration: 6
-  size: 1.5
+  size: 1
