@@ -197,7 +197,7 @@ public class OverBot : EnemyHandler
 
         float subAngle = attackWidthAngle / (projectileNumber - 1);
         float firstAngle = - attackWidthAngle / 2;
-        for(int x = 0; x<10; x++)
+        for(int x = 0; x<4; x++)
         {
             for (int i = 0; i < projectileNumber; i++)
 
@@ -216,7 +216,7 @@ public class OverBot : EnemyHandler
                 newProjectileHandler.damage = projectileDamage;
                 newProjectileHandler.lifeTime = projectileLifeTime;
             }
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(0.3f);
         }
             
         
