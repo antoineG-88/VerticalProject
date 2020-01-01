@@ -5,6 +5,9 @@ using UnityEngine;
 public class PlayerVisuals : MonoBehaviour
 {
     [HideInInspector] public bool facingRight;
+    [HideInInspector] public int isKicking;
+    [HideInInspector] public int isCastingPower;
+    [HideInInspector] public bool isSlaming;
 
     private Animator animator;
     private bool transformFacingRight;
@@ -12,6 +15,7 @@ public class PlayerVisuals : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         transformFacingRight = true;
+        isSlaming = false;
     }
 
     void Update()
@@ -19,20 +23,30 @@ public class PlayerVisuals : MonoBehaviour
         UpdateVisuals();
     }
 
+    private void FixedUpdate()
+    {
+        if (isKicking > 0)
+        {
+            isKicking--;
+        }
+
+        if (isCastingPower > 0)
+        {
+            isCastingPower--;
+        }
+    }
+
     private void UpdateVisuals()
     {
         facingRight = GameData.playerGrapplingHandler.isTracting ? (GameData.playerGrapplingHandler.tractionDirection.x > 0 ? true : false) : (GameData.playerMovement.targetVelocity.x != 0 ? (GameData.playerMovement.targetVelocity.x > 0 ? true : false) : facingRight);
-
-
+        
         if (facingRight != transformFacingRight)
         {
             transformFacingRight = facingRight;
             FlipTransform(facingRight);
         }
 
-        animator.SetBool("Running", Mathf.Abs(GameData.playerMovement.targetVelocity.x) != 0 ? true : false);
-
-        animator.SetBool("IsTracting", GameData.playerGrapplingHandler.isTracting);
+        UpdateAnimator();
     }
 
     private void FlipTransform(bool facing)
@@ -45,5 +59,26 @@ public class PlayerVisuals : MonoBehaviour
         {
             transform.localScale = new Vector2(-1, transform.localScale.y);
         }
+    }
+
+    private void UpdateAnimator()
+    {
+        animator.SetBool("IsRunning", Mathf.Abs(GameData.playerMovement.targetVelocity.x) != 0 ? true : false);
+
+        animator.SetFloat("VerticalSpeed", GameData.playerMovement.rb.velocity.y);
+
+        animator.SetBool("IsTracting", GameData.playerGrapplingHandler.isTracting);
+
+        animator.SetBool("IsDashing", GameData.playerMovement.isDashing);
+
+        animator.SetBool("IsInTheAir", !GameData.playerMovement.IsOnGround());
+
+        animator.SetBool("IsKicking", isKicking > 0 ? true : false);
+
+        animator.SetBool("IsCastingPower", isCastingPower > 0 ? true : false);
+
+        animator.SetBool("IsFacingRight", facingRight);
+
+        animator.SetBool("IsSlaming", isSlaming);
     }
 }

@@ -23,10 +23,10 @@ public class PlayerGrapplingHandler : MonoBehaviour
     public float tractionAirDensity;
     public float maxTractionSpeed;
     public bool keepAllMomentum;
-    [Range(1,3)] public float momentumAmplification;
+    [Range(1, 3)] public float momentumAmplification;
     public float startTractionPropulsion;
     [Space]
-    [Range(0,100)] public float velocityKeptReleasingHook;
+    [Range(0, 100)] public float velocityKeptReleasingHook;
     [Space]
     [Header("AutoAim settings")]
     public bool useAutoAim;
@@ -42,7 +42,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
     [Header("Debug settings")]
     public Color ghostHookColor;
     public bool displayAutoAimRaycast;
-    
+
     private Rigidbody2D rb;
     [HideInInspector] public Vector2 aimDirection;
     private LineRenderer ropeRenderer;
@@ -87,22 +87,27 @@ public class PlayerGrapplingHandler : MonoBehaviour
 
     private void Update()
     {
-        ShootManager();
+        if (!GameData.gameController.pause)
+        {
+            ShootManager();
 
-        GameData.gameController.speedText.text = "Speed : " + (rb.velocity.magnitude > 0.01f ? rb.velocity.magnitude : 0);
-        GameData.gameController.debugText.text = "canShoot : " + canShoot;
+            GameData.gameController.speedText.text = "Speed : " + (rb.velocity.magnitude > 0.01f ? rb.velocity.magnitude : 0);
+            GameData.gameController.debugText.text = "canShoot : " + canShoot;
+        }
     }
 
     private void FixedUpdate()
     {
-        TractionManager();
+        if (!GameData.gameController.pause)
+        {
+            TractionManager();
 
-        HookManager();
+            HookManager();
+        }
     }
 
     void ShootManager()
     {
-
         if (timeBeforeNextShoot > 0)
         {
             timeBeforeNextShoot -= Time.deltaTime;
@@ -272,6 +277,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
             {
                 GameData.playerMovement.isAffectedbyGravity = false;
                 GameData.playerMovement.inControl = false;
+                GameData.playerAttackManager.isReAiming = false;
 
                 if (!isTracting)
                 {

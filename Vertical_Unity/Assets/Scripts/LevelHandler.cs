@@ -5,6 +5,8 @@ using Pathfinding;
 
 public class LevelHandler : MonoBehaviour
 {
+    public float minDistanceToFinalRing;
+
     public CameraHandler cameraHandler;
     public float currentZoneUpdateTime;
 
@@ -15,6 +17,8 @@ public class LevelHandler : MonoBehaviour
     private RoomHandler currentRoom;
     private RoomHandler previousRoom;
     private GridGraph gridGraph;
+
+    [HideInInspector] public GameObject finalRing;
 
     void Start()
     {
@@ -28,14 +32,19 @@ public class LevelHandler : MonoBehaviour
 
     private void Update()
     {
-        if(timeBeforeNextZoneUpdate > 0)
+        if(GameData.levelBuilder.towerCreated)
         {
-            timeBeforeNextZoneUpdate -= Time.deltaTime;
-        }
-        else
-        {
-            timeBeforeNextZoneUpdate = currentZoneUpdateTime;
-            UpdateZone();
+            UpdatePlayerProgression();
+
+            if (timeBeforeNextZoneUpdate > 0)
+            {
+                timeBeforeNextZoneUpdate -= Time.deltaTime;
+            }
+            else
+            {
+                timeBeforeNextZoneUpdate = currentZoneUpdateTime;
+                UpdateZone();
+            }
         }
     }
 
@@ -92,5 +101,18 @@ public class LevelHandler : MonoBehaviour
         gridGraph.SetDimensions((int)((currentRoom.originRoom.roomParts.GetLength(1) / gridGraph.nodeSize) * levelBuilder.tileLength), (int)((currentRoom.originRoom.roomParts.GetLength(0) / gridGraph.nodeSize) * levelBuilder.tileLength), gridGraph.nodeSize);
         gridGraph.center = currentRoom.center;
         gridGraph.Scan();
+    }
+
+    private void UpdatePlayerProgression()
+    {
+        if (finalRing != null && Vector2.Distance(GameData.playerMovement.transform.position, finalRing.transform.position) < minDistanceToFinalRing && GameData.playerGrapplingHandler.attachedObject == finalRing)
+        {
+            TransitionToNextLevel();
+        }
+    }
+
+    private void TransitionToNextLevel()
+    {
+        GameData.gameController.LoadNextLevel();
     }
 }

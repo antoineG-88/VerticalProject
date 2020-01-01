@@ -20,6 +20,7 @@ public class OS_Bot : EnemyHandler
     public int laserDamage;
     public float laserBeamTime;
     public float laserStunTime;
+    public float knockBackForce;
     [Header("Debug settings")]
     public GameObject particleDebugPrefab;
     public GameObject projectilePrefab;
@@ -51,18 +52,24 @@ public class OS_Bot : EnemyHandler
 
     private void Update()
     {
-        HandlerUpdate();
+        if (!GameData.gameController.pause)
+        {
+            HandlerUpdate();
 
-        ProvocationUpdate();
+            ProvocationUpdate();
 
-        Behavior();
+            Behavior();
+        }
     }
 
     private void FixedUpdate()
     {
-        HandlerFixedUpdate();
+        if (!GameData.gameController.pause)
+        {
+            HandlerFixedUpdate();
 
-        UpdateMovement();
+            UpdateMovement();
+        }
     }
 
     public override void UpdateMovement()
@@ -214,7 +221,7 @@ public class OS_Bot : EnemyHandler
                 RaycastHit2D playerHit = Physics2D.Raycast(transform.position, direction, 100.0f, LayerMask.GetMask("Player"));
                 if(playerHit)
                 {
-                    GameData.playerManager.TakeDamage(laserDamage, Vector2.zero, laserStunTime);
+                    GameData.playerManager.TakeDamage(laserDamage, direction * knockBackForce, laserStunTime);
                 }
 
                 laserTimer -= Time.fixedDeltaTime;

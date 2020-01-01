@@ -38,26 +38,26 @@ public class InputManager : MonoBehaviour
                 rightJoystickVertical = rightJoystickDirection.y;
             }
 
-            leftJoystickHorizontal = Input.GetAxisRaw("Horizontal");
-            leftJoystickVertical = Input.GetAxisRaw("Vertical");
+            leftJoystickHorizontal = GameData.gameController.takePlayerInput ? Input.GetAxisRaw("Horizontal") : 0;
+            leftJoystickVertical = GameData.gameController.takePlayerInput ? Input.GetAxisRaw("Vertical") : 0;
 
-            rightTriggerAxis = Input.GetButton("Tract") ? 1 : 0;
-            leftTriggerAxis = Input.GetButton("Power") ? 1 : 0;
-            rightBumper = Input.GetButton("Kick");
+            rightTriggerAxis = Input.GetButton("Tract") && GameData.gameController.takePlayerInput ? 1 : 0;
+            leftTriggerAxis = Input.GetButton("Power") && GameData.gameController.takePlayerInput ? 1 : 0;
+            rightBumper = GameData.gameController.takePlayerInput ? Input.GetButton("Kick") : false;
         }
         else
         {
-            rightJoystickHorizontal = Input.GetAxis("RJoystickH");
-            rightJoystickVertical = -Input.GetAxis("RJoystickV");
-            leftJoystickHorizontal = Input.GetAxis("LJoystickH");
-            leftJoystickVertical = Input.GetAxis("LJoystickV");
+            rightJoystickHorizontal = GameData.gameController.takePlayerInput ? Input.GetAxis("RJoystickH") : 0;
+            rightJoystickVertical = GameData.gameController.takePlayerInput ? -Input.GetAxis("RJoystickV") : 0;
+            leftJoystickHorizontal = GameData.gameController.takePlayerInput ? Input.GetAxis("LJoystickH") : 0;
+            leftJoystickVertical = GameData.gameController.takePlayerInput ? Input.GetAxis("LJoystickV") : 0;
 
-            rightTriggerAxis = Input.GetAxis("RTAxis");
-            leftTriggerAxis = Input.GetAxis("LTAxis");
-            rightBumper = Input.GetButton("RBButton");
+            rightTriggerAxis = GameData.gameController.takePlayerInput ? Input.GetAxis("RTAxis") : 0;
+            leftTriggerAxis = GameData.gameController.takePlayerInput ? Input.GetAxis("LTAxis") : 0;
+            rightBumper = GameData.gameController.takePlayerInput ? Input.GetButton("RBButton") : false;
         }
 
-        jump = Input.GetButton("AButton") || Input.GetButton("Dash") ? true : false;
+        jump = GameData.gameController.takePlayerInput ? Input.GetButton("AButton") || Input.GetButton("Dash") ? true : false : false;
 
         if (rtaFlag && !rightTriggerDown && rightTriggerAxis > 0.1f)
         {

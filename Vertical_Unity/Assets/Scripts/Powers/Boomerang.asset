@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aabef678b61e9ba43a5cc81d6776a074, type: 3}
+  m_Name: Boomerang
+  m_EditorClassIdentifier: 
+  powerName: Boomerang
+  description: Send a ball in a chosen direction, it stops against a wall or an enemy,
+    call it back by pressing the button again, all enemy touched on on the callback
+    are slowed
+  icon: {fileID: 21300000, guid: bee73110cb1fa7e439ccec09fe1b1926, type: 3}
+  price: 189
+  cooldown: 2
+  projectilPrefab: {fileID: 4647715930441807247, guid: d1f9463eeb7cfc548bb4f3b67578038d,
+    type: 3}
+  lauchingSpeed: 15
+  myProjectilCollider: {fileID: 8035661762602648794, guid: d1f9463eeb7cfc548bb4f3b67578038d,
+    type: 3}
+  myProjectilCollider2: {fileID: 1466490675585215925, guid: d1f9463eeb7cfc548bb4f3b67578038d,
+    type: 3}
+  returnSpeed: 20
+  timeDisapear: 5
+  minDistance: 1
+  slowTime: 8
+  slowAmplitude: 0.141

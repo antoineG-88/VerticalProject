@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf1a1927389ed914fa1adf33d9472835, type: 3}
+  m_Name: CursedSteps
+  m_EditorClassIdentifier: 
+  powerName: CursedPath
+  description: Curse all enemy going through the path you create by immobilising them
+  icon: {fileID: 21300000, guid: 289ddfa1d93c6d6438c5e15c839cb7f8, type: 3}
+  price: 530
+  cooldown: 10
+  range: 3
+  stunTime: 5
+  PrefabTrainee: {fileID: 5859029870152517939, guid: 8c90263b3557dc748843e3b45e995c19,
+    type: 3}
+  waitingTime: 0.2
+  powerTime: 5
+  size: 2
