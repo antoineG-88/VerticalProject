@@ -20,7 +20,7 @@ RenderSettings:
   m_FogDensity: 0.01
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
-  m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
+  m_AmbientSkyColor: {r: 0.6226415, g: 0.6226415, b: 0.6226415, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1
@@ -137,16 +137,6 @@ PrefabInstance:
       propertyPath: ringHighLighterO
       value: 
       objectReference: {fileID: 1310915925}
-    - target: {fileID: 2276650194064215076, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
-        type: 3}
-      propertyPath: buttonDownAttach
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2276650194064215076, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
-        type: 3}
-      propertyPath: shootCooldown
-      value: 0.2
-      objectReference: {fileID: 0}
     - target: {fileID: 4503195422415338473, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -207,22 +197,6 @@ PrefabInstance:
       propertyPath: kickPreview
       value: 
       objectReference: {fileID: 1026494737}
-    - target: {fileID: 4744132222942516713, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
-        type: 3}
-      propertyPath: maxReAimingTime
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4744132222942516713, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
-        type: 3}
-      propertyPath: currentPower
-      value: 
-      objectReference: {fileID: 11400000, guid: ff0f8183731902d49886d61ef4b47f10,
-        type: 2}
-    - target: {fileID: 1164104435070563982, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
-        type: 3}
-      propertyPath: vulnerable
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1164104435070563982, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
         type: 3}
       propertyPath: powerCharge
@@ -230,39 +204,9 @@ PrefabInstance:
       objectReference: {fileID: 1642253658}
     - target: {fileID: 1164104435070563982, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
         type: 3}
-      propertyPath: maxhealthPoint
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 1164104435070563982, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
-        type: 3}
-      propertyPath: firstLevel
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1164104435070563982, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
-        type: 3}
       propertyPath: currentPowerIcon
       value: 
       objectReference: {fileID: 1641761494}
-    - target: {fileID: 1164104435070563982, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
-        type: 3}
-      propertyPath: coolingPowerColor.r
-      value: 0.5471698
-      objectReference: {fileID: 0}
-    - target: {fileID: 1164104435070563982, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
-        type: 3}
-      propertyPath: coolingPowerColor.g
-      value: 0.5471698
-      objectReference: {fileID: 0}
-    - target: {fileID: 1164104435070563982, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
-        type: 3}
-      propertyPath: coolingPowerColor.b
-      value: 0.5471698
-      objectReference: {fileID: 0}
-    - target: {fileID: 1164104435070563982, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
-        type: 3}
-      propertyPath: coolingPowerColor.a
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1164104435070563982, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
         type: 3}
       propertyPath: firstHealthPointPos
@@ -270,66 +214,9 @@ PrefabInstance:
       objectReference: {fileID: 1433286484}
     - target: {fileID: 1164104435070563982, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
         type: 3}
-      propertyPath: distanceBetweenHp
-      value: 50
-      objectReference: {fileID: 0}
-    - target: {fileID: 1164104435070563982, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
-        type: 3}
-      propertyPath: hpIconPrefab
-      value: 
-      objectReference: {fileID: 5695387698052524689, guid: dfcc262379f8cf343a7ceadf229deb6b,
-        type: 3}
-    - target: {fileID: 1164104435070563982, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
-        type: 3}
-      propertyPath: fullHp
-      value: 
-      objectReference: {fileID: 21300000, guid: 7758f11c2c721e0409acb3e122a259a1,
-        type: 3}
-    - target: {fileID: 1164104435070563982, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
-        type: 3}
-      propertyPath: halfHp
-      value: 
-      objectReference: {fileID: 21300000, guid: 9b149e84d12d104418623dd66099afc7,
-        type: 3}
-    - target: {fileID: 1164104435070563982, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
-        type: 3}
-      propertyPath: emptyHpColor.r
-      value: 0.48235294
-      objectReference: {fileID: 0}
-    - target: {fileID: 1164104435070563982, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
-        type: 3}
-      propertyPath: emptyHpColor.g
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1164104435070563982, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
-        type: 3}
-      propertyPath: emptyHpColor.b
-      value: 0.07651675
-      objectReference: {fileID: 0}
-    - target: {fileID: 1164104435070563982, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
-        type: 3}
-      propertyPath: emptyHpColor.a
-      value: 0.49019608
-      objectReference: {fileID: 0}
-    - target: {fileID: 1164104435070563982, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
-        type: 3}
       propertyPath: currentEnergyText
       value: 
       objectReference: {fileID: 902851588}
-    - target: {fileID: 1164104435070563982, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
-        type: 3}
-      propertyPath: hudCanvas
-      value: 
-      objectReference: {fileID: 1414769249}
-    - target: {fileID: 1164104435070563982, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
-        type: 3}
-      propertyPath: baseEnergy
-      value: 512
-      objectReference: {fileID: 0}
-    - target: {fileID: 1618943582, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531, type: 3}
 --- !u!1 &77737637
@@ -1872,12 +1759,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1336378394}
   m_CullTransparentMesh: 0
---- !u!224 &1414769249 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 644408534443757253, guid: 5342f27d186e9ef4bb19eb07516071b4,
-    type: 3}
-  m_PrefabInstance: {fileID: 644408533165778084}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1415615625
 GameObject:
   m_ObjectHideFlags: 0
@@ -3045,6 +2926,51 @@ PrefabInstance:
     - target: {fileID: 3545972149553302814, guid: 1cb4a04103620744aabadadecaf99a74,
         type: 3}
       propertyPath: m_ColliderPaths.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6733460778302913638, guid: 1cb4a04103620744aabadadecaf99a74,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6733460778302913638, guid: 1cb4a04103620744aabadadecaf99a74,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6733460778302913638, guid: 1cb4a04103620744aabadadecaf99a74,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4167515071015938776, guid: 1cb4a04103620744aabadadecaf99a74,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 0.08018869
+      objectReference: {fileID: 0}
+    - target: {fileID: 4167515071015938776, guid: 1cb4a04103620744aabadadecaf99a74,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 0.9011702
+      objectReference: {fileID: 0}
+    - target: {fileID: 4167515071015938776, guid: 1cb4a04103620744aabadadecaf99a74,
+        type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4167515071015938776, guid: 1cb4a04103620744aabadadecaf99a74,
+        type: 3}
+      propertyPath: m_Intensity
+      value: 7.85
+      objectReference: {fileID: 0}
+    - target: {fileID: 4167515071015938776, guid: 1cb4a04103620744aabadadecaf99a74,
+        type: 3}
+      propertyPath: m_Range
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4167515071015938776, guid: 1cb4a04103620744aabadadecaf99a74,
+        type: 3}
+      propertyPath: m_DrawHalo
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

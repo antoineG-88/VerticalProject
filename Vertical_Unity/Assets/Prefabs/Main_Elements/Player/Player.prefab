@@ -334,6 +334,97 @@ Transform:
   m_Father: {fileID: 1014211695}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &198422494582712246
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8944864289153792122}
+  - component: {fileID: 5968039117540792078}
+  m_Layer: 0
+  m_Name: Point Light
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8944864289153792122
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 198422494582712246}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.03, y: -0.21, z: -2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4503195422415338473}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!108 &5968039117540792078
+Light:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 198422494582712246}
+  m_Enabled: 1
+  serializedVersion: 9
+  m_Type: 2
+  m_Color: {r: 0.6745283, g: 1, b: 0.9962779, a: 1}
+  m_Intensity: 3
+  m_Range: 8
+  m_SpotAngle: 57.9
+  m_InnerSpotAngle: 21.80208
+  m_CookieSize: 10
+  m_Shadows:
+    m_Type: 0
+    m_Resolution: -1
+    m_CustomResolution: -1
+    m_Strength: 1
+    m_Bias: 0.05
+    m_NormalBias: 0.4
+    m_NearPlane: 0.2
+    m_CullingMatrixOverride:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: 1
+      e12: 0
+      e13: 0
+      e20: 0
+      e21: 0
+      e22: 1
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+    m_UseCullingMatrixOverride: 0
+  m_Cookie: {fileID: 0}
+  m_DrawHalo: 0
+  m_Flare: {fileID: 0}
+  m_RenderMode: 0
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RenderingLayerMask: 1
+  m_Lightmapping: 4
+  m_LightShadowCasterMode: 0
+  m_AreaSize: {x: 1, y: 1}
+  m_BounceIntensity: 1
+  m_ColorTemperature: 6570
+  m_UseColorTemperature: 0
+  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_UseBoundingSphereOverride: 0
+  m_ShadowRadius: 0
+  m_ShadowAngle: 0
 --- !u!1 &2817073031077173302
 GameObject:
   m_ObjectHideFlags: 0
@@ -571,6 +662,7 @@ Transform:
   - {fileID: 1014211695}
   - {fileID: 269809584}
   - {fileID: 1618943583}
+  - {fileID: 8944864289153792122}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -606,7 +698,6 @@ MonoBehaviour:
   dashVelocityKept: 15
   dashShadowPrefab: {fileID: 3788763055611250903, guid: f724113b506e72348b79ee55e7ce1db7,
     type: 3}
-  timeBetweenShadows: 0.02
   feetPos: {fileID: 4503195423458372692}
   groundCheckThickness: 0.05
   groundCheckWidth: 0.8
@@ -630,7 +721,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f07ad249d271bb44ab81849d07cda09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buttonDownAttach: 0
+  buttonDownAttach: 1
   instantaneousAttach: 1
   shootForce: 35
   ropeLength: 7
@@ -682,7 +773,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ace0fff1111e0d94694c028e1af4ace0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentPower: {fileID: 0}
+  currentPower: {fileID: 11400000, guid: ff0f8183731902d49886d61ef4b47f10, type: 2}
   currentKick: {fileID: 11400000, guid: 36017c2b0cb9d7c4e94557c025c06d43, type: 2}
   collideSize: {x: 1, y: 1}
   kickPreview: {fileID: 0}
@@ -690,7 +781,7 @@ MonoBehaviour:
   kickEffectOffset: 0.5
   repropulsionPreview: {fileID: 269809583}
   maxRepropulsionReleaseTime: 2
-  maxReAimingTime: 1
+  maxReAimingTime: 5
   slowMoTimeSpeed: 0.033
   isKicking: 0
   kickButtonPressed: 0
@@ -708,22 +799,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ed5cea198e10c34590799e9fff49c66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxhealthPoint: 0
-  baseEnergy: 0
+  maxhealthPoint: 8
+  baseEnergy: 512
   invulnerableTime: 0.5
-  firstLevel: 0
+  firstLevel: 1
   powerCharge: {fileID: 0}
   currentPowerIcon: {fileID: 0}
-  coolingPowerColor: {r: 0, g: 0, b: 0, a: 0}
+  coolingPowerColor: {r: 0.5471698, g: 0.5471698, b: 0.5471698, a: 1}
   firstHealthPointPos: {fileID: 0}
-  distanceBetweenHp: 0
-  hpIconPrefab: {fileID: 0}
-  fullHp: {fileID: 0}
-  halfHp: {fileID: 0}
-  emptyHpColor: {r: 0, g: 0, b: 0, a: 0}
+  distanceBetweenHp: 50
+  hpIconPrefab: {fileID: 5695387698052524689, guid: dfcc262379f8cf343a7ceadf229deb6b,
+    type: 3}
+  fullHp: {fileID: 21300000, guid: 7758f11c2c721e0409acb3e122a259a1, type: 3}
+  halfHp: {fileID: 21300000, guid: 9b149e84d12d104418623dd66099afc7, type: 3}
+  emptyHpColor: {r: 0.48235294, g: 0, b: 0.07651675, a: 0.49019608}
   currentEnergyText: {fileID: 0}
   stunColor: {r: 0.7264151, g: 0.099368125, b: 0.099368125, a: 1}
-  vulnerable: 0
+  vulnerable: 1
   isVulnerable: 1
   isDodging: 0
   isStunned: 0
