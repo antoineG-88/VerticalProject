@@ -14,50 +14,82 @@ public class PowerTrainee : Power
     public float waitingTime;
     public float powerTime;
     private float timeBetweenInst;
-    private List<GameObject> effectposition = new List<GameObject>();
+    public float timeBeforeCloudEffect;
+    public float cloudLifeSpan;
+    private List<GameObject> effectposition;
+    private List<float> cloudsLifeSpend;
     public float size;
+    public float smallSize;
 
     public override IEnumerator Use()
     {
-
+        if(effectposition == null)
+        {
+            effectposition = new List<GameObject>();
+            cloudsLifeSpend = new List<float>();
+        }
         float powerTimer = 0;
         timeBetweenInst = 0;
         while (powerTimer <= powerTime)
         {
-            GameObject Trainee = new GameObject(); ;
             if (timeBetweenInst <= 0)
             {
-                Trainee = Instantiate(PrefabTrainee, GameData.playerMovement.transform.position, Quaternion.identity);
-                Trainee.transform.localScale = new Vector2(size, size);
+                GameObject Trainee = Instantiate(PrefabTrainee, GameData.playerMovement.transform.position, Quaternion.identity);
+                Trainee.transform.localScale = new Vector2(smallSize, smallSize);
+                cloudsLifeSpend.Add(0);
                 effectposition.Add(Trainee);
                 timeBetweenInst = waitingTime;
             }
-            ContactFilter2D filter = new ContactFilter2D();
-            filter.SetLayerMask(LayerMask.GetMask("Enemy"));
-            List<Collider2D> EnemyColliders = new List<Collider2D>();
 
-            foreach (GameObject trainee in effectposition)
+            if(powerTimer == 0 && effectposition.Count > 0)
             {
-
-
-                Physics2D.OverlapCircle(Trainee.transform.position, range, filter, EnemyColliders);
-                if (EnemyColliders.Count > 0)
-                {
-                    foreach (Collider2D collider in EnemyColliders)
-                    {
-                        collider.GetComponent<EnemyHandler>().SetEffect(Effect.Stun, stunTime, true);
-                        collider.GetComponent<EnemyHandler>().SetEffect(Effect.Immobilize, stunTime, true);
-                    }
-                }
+                GameData.playerAttackManager.StartCloudsUpdate();
             }
+
             powerTimer += Time.fixedDeltaTime;
             timeBetweenInst -= Time.fixedDeltaTime;
             yield return new WaitForFixedUpdate();
         }
-        foreach (GameObject Trainee in effectposition)
+    }
+
+    public IEnumerator UpdateClouds()
+    {
+        ContactFilter2D filter = new ContactFilter2D();
+        filter.SetLayerMask(LayerMask.GetMask("Enemy"));
+
+        while (effectposition.Count > 0)
         {
-            Destroy(Trainee);
+            List<Collider2D> EnemyColliders = new List<Collider2D>();
+            int limit = effectposition.Count;
+            for (int i = 0; i < limit; i++)
+            {
+                cloudsLifeSpend[i] += Time.fixedDeltaTime;
+                if (cloudsLifeSpend[i] <= cloudLifeSpan && cloudsLifeSpend[i] > timeBeforeCloudEffect)
+                {
+                    effectposition[i].transform.localScale = new Vector2(size, size);
+                    Physics2D.OverlapCircle(effectposition[i].transform.position, range, filter, EnemyColliders);
+                    if (EnemyColliders.Count > 0)
+                    {
+                        foreach (Collider2D collider in EnemyColliders)
+                        {
+                            collider.GetComponent<EnemyHandler>().SetEffect(Effect.Stun, stunTime, false);
+                            collider.GetComponent<EnemyHandler>().SetEffect(Effect.Immobilize, stunTime, false);
+                        }
+                    }
+                }
+                else if(cloudsLifeSpend[i] > cloudLifeSpan)
+                {
+                    Destroy(effectposition[i]);
+                    effectposition.RemoveAt(i);
+                    cloudsLifeSpend.RemoveAt(i);
+                    limit--;
+                }
+            }
+
+            yield return new WaitForFixedUpdate();
         }
+
         effectposition.Clear();
+        cloudsLifeSpend.Clear();
     }
 }

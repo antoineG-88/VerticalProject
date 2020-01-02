@@ -14,6 +14,7 @@ public class PlayerAttackManager : MonoBehaviour
     [Space]
     public bool reAimMode;
     public float kickEffectOffset;
+    public bool ringReAim;
     public GameObject repropulsionPreview;
     public float maxRepropulsionReleaseTime;
     public float maxReAimingTime;
@@ -51,7 +52,7 @@ public class PlayerAttackManager : MonoBehaviour
             if(GameData.playerGrapplingHandler.isTracting && !isKicking)
             {
                 isKicking = true;
-                GetComponentInChildren<PlayerVisuals>().isKicking = 5;
+                GetComponentInChildren<PlayerVisuals>().isKicking = 10;
                 StartCoroutine(currentKick.Use(gameObject, Quaternion.Euler(0.0f, 0.0f, Vector2.SignedAngle(Vector2.right, GameData.playerGrapplingHandler.tractionDirection))));
             }
         }
@@ -64,6 +65,7 @@ public class PlayerAttackManager : MonoBehaviour
         {
             powerCooldownRemaining = currentPower.cooldown;
             GetComponentInChildren<PlayerVisuals>().isCastingPower = 10;
+            isReAiming = false;
             StartCoroutine(currentPower.Use());
         }
 
@@ -140,7 +142,8 @@ public class PlayerAttackManager : MonoBehaviour
         }
         else
         {
-            StartCoroutine(ReAim());
+            if(ringReAim)
+                StartCoroutine(ReAim());
         }
 
         return successfullKick;
@@ -206,11 +209,6 @@ public class PlayerAttackManager : MonoBehaviour
         {
             GameData.playerGrapplingHandler.timeBeforeNextShoot = 0;
             yield return new WaitForEndOfFrame();
-
-            /*if (GameData.playerGrapplingHandler.isHooked)
-            {
-                isReAiming = false;
-            }*/
         }
 
         isReAiming = false;
@@ -235,5 +233,11 @@ public class PlayerAttackManager : MonoBehaviour
         Power previousPower = currentPower;
         currentPower = newPower;
         return previousPower;
+    }
+
+    public void StartCloudsUpdate()
+    {
+        PowerTrainee powerTrainee = (PowerTrainee)currentPower;
+        StartCoroutine(powerTrainee.UpdateClouds());
     }
 }

@@ -16,11 +16,14 @@ MonoBehaviour:
   description: Curse all enemy going through the path you create by immobilising them
   icon: {fileID: 21300000, guid: 289ddfa1d93c6d6438c5e15c839cb7f8, type: 3}
   price: 530
-  cooldown: 10
+  cooldown: 6
   range: 3
   stunTime: 5
   PrefabTrainee: {fileID: 5859029870152517939, guid: 8c90263b3557dc748843e3b45e995c19,
     type: 3}
   waitingTime: 0.2
   powerTime: 5
+  timeBeforeCloudEffect: 2
+  cloudLifeSpan: 7
   size: 2
+  smallSize: 0.5

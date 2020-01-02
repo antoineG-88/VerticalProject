@@ -23,19 +23,6 @@ public class PlayerVisuals : MonoBehaviour
         UpdateVisuals();
     }
 
-    private void FixedUpdate()
-    {
-        if (isKicking > 0)
-        {
-            isKicking--;
-        }
-
-        if (isCastingPower > 0)
-        {
-            isCastingPower--;
-        }
-    }
-
     private void UpdateVisuals()
     {
         facingRight = GameData.playerGrapplingHandler.isTracting ? (GameData.playerGrapplingHandler.tractionDirection.x > 0 ? true : false) : (GameData.playerMovement.targetVelocity.x != 0 ? (GameData.playerMovement.targetVelocity.x > 0 ? true : false) : facingRight);
@@ -74,8 +61,16 @@ public class PlayerVisuals : MonoBehaviour
         animator.SetBool("IsInTheAir", !GameData.playerMovement.IsOnGround());
 
         animator.SetBool("IsKicking", isKicking > 0 ? true : false);
+        if (isKicking > 0)
+        {
+            isKicking--;
+        }
 
         animator.SetBool("IsCastingPower", isCastingPower > 0 ? true : false);
+        if (isCastingPower > 0)
+        {
+            isCastingPower--;
+        }
 
         animator.SetBool("IsFacingRight", facingRight);
 
