@@ -116,7 +116,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
             timeBeforeNextShoot -= Time.deltaTime;
         }
 
-        if (canShoot)
+        if (canShoot && GameData.gameController.takePlayerInput)
         {
             if (!isAiming && (Mathf.Abs(GameData.gameController.input.rightJoystickHorizontal) > 0.1f || Mathf.Abs(GameData.gameController.input.rightJoystickVertical) > 0.1f))
             {

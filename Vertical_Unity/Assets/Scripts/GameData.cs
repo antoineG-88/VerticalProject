@@ -8,6 +8,7 @@ public static class GameData
     public static PlayerMovement playerMovement;
     public static PlayerGrapplingHandler playerGrapplingHandler;
     public static PlayerAttackManager playerAttackManager;
+    public static PlayerVisuals playerVisuals;
     public static GameController gameController;
     public static LevelBuilder levelBuilder;
     public static LevelHandler levelHandler;
@@ -23,6 +24,7 @@ public static class GameData
         levelBuilder = _levelBuilder;
         levelHandler = _levelHandler;
         cameraHandler = _cameraHandler;
+        playerVisuals = _playerManager.GetComponentInChildren<PlayerVisuals>();
     }
 
     public static void Initialize(PlayerManager _playerManager, PlayerMovement _playerMovement, PlayerGrapplingHandler _playerGrapplingHandler, PlayerAttackManager _playerAttackManager, GameController _gameController, CameraHandler _cameraHandler)
@@ -33,5 +35,6 @@ public static class GameData
         playerAttackManager = _playerAttackManager;
         gameController = _gameController;
         cameraHandler = _cameraHandler;
+        playerVisuals = _playerManager.GetComponentInChildren<PlayerVisuals>();
     }
 }

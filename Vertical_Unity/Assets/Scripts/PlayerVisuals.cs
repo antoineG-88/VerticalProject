@@ -7,6 +7,8 @@ public class PlayerVisuals : MonoBehaviour
     [HideInInspector] public bool facingRight;
     [HideInInspector] public int isKicking;
     [HideInInspector] public int isCastingPower;
+    [HideInInspector] public int isHurt;
+
     [HideInInspector] public bool isSlaming;
 
     private Animator animator;
@@ -76,5 +78,13 @@ public class PlayerVisuals : MonoBehaviour
         animator.SetBool("IsFacingRight", facingRight);
 
         animator.SetBool("IsSlaming", isSlaming);
+
+        animator.SetBool("IsHurt", isHurt > 0 ? true : false);
+        if (isHurt > 0)
+        {
+            isHurt--;
+        }
+
+        animator.SetBool("IsDying", GameData.playerManager.isDead);
     }
 }

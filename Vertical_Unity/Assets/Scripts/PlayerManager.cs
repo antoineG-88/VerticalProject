@@ -30,6 +30,7 @@ public class PlayerManager : MonoBehaviour
     [HideInInspector] public bool isStunned;
     [HideInInspector] public int currentHealth;  // à récupérer pour l'interface
     [HideInInspector] public int currentEnergy;
+    [HideInInspector] public bool isDead;
     private Rigidbody2D rb;
     private Color baseColor;
     private float invulnerableTimeRemaining;
@@ -52,6 +53,7 @@ public class PlayerManager : MonoBehaviour
         baseColor = GetComponentInChildren<SpriteRenderer>().color;
         isDodging = false;
         isStunned = false;
+        isDead = false;
         invulnerableTimeRemaining = 0;
         currentEnergy = baseEnergy;
         hpIconsState = new HpState[maxhealthPoint];
@@ -81,17 +83,19 @@ public class PlayerManager : MonoBehaviour
     public bool TakeDamage(int damage, Vector2 knockBack, float stunTime)
     {
         bool tookDamage = false;
-        if(isVulnerable && !isDodging)
+        if(isVulnerable && !isDodging && !isDead)
         {
             tookDamage = true;
             currentHealth -= damage;
             GameData.playerMovement.Propel(knockBack, false, false);
             GameData.playerGrapplingHandler.ReleaseHook();
+            GameData.playerVisuals.isHurt = 10;
             StartCoroutine(Stun(stunTime));
             invulnerableTimeRemaining = invulnerableTime;
             isVulnerable = false;
             if (currentHealth <= 0)
             {
+                isDead = true;
                 StartCoroutine(Die());
             }
         }
@@ -128,13 +132,21 @@ public class PlayerManager : MonoBehaviour
 
     private IEnumerator Die()
     {
-        GetComponentInChildren<SpriteRenderer>().enabled = false;
-        GetComponent<Collider2D>().enabled = false;
-        rb.simulated = false;
+        transform.GetChild(2).gameObject.SetActive(false);
+        transform.GetChild(4).gameObject.SetActive(false);
         GameData.playerMovement.inControl = false;
         GameData.playerGrapplingHandler.canShoot = false;
-
-        yield return new WaitForSeconds(0);
+        GameData.gameController.takePlayerInput = false;
+        float timer = 0;
+        while (!GameData.playerMovement.IsOnGround() || timer < 0.2f)
+        {
+            GameData.playerVisuals.isHurt = 3;
+            yield return new WaitForFixedUpdate();
+            timer += Time.fixedDeltaTime;
+        }
+        StartCoroutine(GameData.cameraHandler.CinematicLook(transform.position, 100.0f, 2.0f, 4.0f));
+        StartCoroutine(GameData.gameController.postProcessHandler.ActivateDeathVignette());
+        GameData.playerVisuals.isHurt = 0;
     }
 
     public void EarnEnergy(int energyEarned)
