@@ -12,8 +12,11 @@ public class PlayerGrapplingHandler : MonoBehaviour
     public float ropeAttachLengthDifference;
     public float shootCooldown;
     public float releasingHookDist;
+    public bool dashCooledReachingTarget;
+    public bool dashCooledOnReleasing;
     public bool useGhostHook;
     public float minAttachDistance;
+    public GameObject hookEffectPrefab;
     public bool keepAim;
     public bool useJoint;
     [Space]
@@ -329,11 +332,21 @@ public class PlayerGrapplingHandler : MonoBehaviour
 
                 isTracting = true;
             }
-
-            if(isTracting && (GameData.gameController.input.rightTriggerAxis == 0 || (Vector2.Distance(transform.position, currentHook.transform.position) < releasingHookDist)))
+            float distance = 10;
+            if(isTracting && (GameData.gameController.input.rightTriggerAxis == 0 || ((distance = Vector2.Distance(transform.position, currentHook.transform.position)) < releasingHookDist)))
             {
                 rb.velocity *= velocityKeptReleasingHook / 100;
                 isTracting = false;
+
+                if(distance < releasingHookDist && dashCooledReachingTarget)
+                {
+                    GameData.playerMovement.dashCooldownRemaining = 0;
+                }
+
+                if(dashCooledOnReleasing)
+                {
+                    GameData.playerMovement.dashCooldownRemaining = 0;
+                }
 
                 ReleaseHook();
             }
@@ -399,6 +412,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
         {
             isHooked = true;
             attachedObject = attachPos;
+            Instantiate(hookEffectPrefab, attachedObject.transform.position, Quaternion.identity);
             if(attachedObject.CompareTag("Enemy"))
             {
                 attachedObject.GetComponent<EnemyHandler>().provoked = true;

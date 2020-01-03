@@ -23,7 +23,8 @@ public class WatchBot : EnemyHandler
     public float projectileSpawnDistance;
     public float projectileKnockbackForce;
     public float projectileLifeTime;
-    [Header("Spike-attack settings")]
+    [Header("Spike-attack settings OBSOLETE")]
+    public bool useSpikeAttack = false;
     public float spikeAttackRange;
     public float spikeAttackDelay;
     public int spikeAttackDamage;
@@ -182,7 +183,7 @@ public class WatchBot : EnemyHandler
         isAtRange = distanceToPlayer < rangeAttackTriggerRange && distanceToPlayer > fleeDistance && provoked ? true : false;
         isFleeing = distanceToPlayer < fleeDistance && provoked ? true : false;
 
-        if(distanceToPlayer < spikeAttackRange && !Is(Effect.NoControl))
+        if(distanceToPlayer < spikeAttackRange && !Is(Effect.NoControl) && useSpikeAttack)
         {
             StartCoroutine(SpikeAttack());
         }

@@ -17,6 +17,7 @@ public class Spider_Bot : EnemyHandler
     public float jumpShotAngleRange;
     public surfaceDirection startSurfaceDirection;
     public Transform spriteTransform;
+    public ParticleSystem chargingParticle;
     [Header("Debug settings")]
     public GameObject particleDebugPrefab;
 
@@ -76,7 +77,8 @@ public class Spider_Bot : EnemyHandler
             if (onSurface && jumpShotCooldownRemaining <= 0)
             {
                 jumpShotDelayRemaining -= Time.deltaTime;
-                if(jumpShotDelayRemaining <= 0)
+                chargingParticle.Play();
+                if (jumpShotDelayRemaining <= 0)
                 {
                     float jumpCenterAngle = GetAngleFromSurfaceDirection(currentSurfaceDirection);
                     float jumpAngle = Random.Range(jumpCenterAngle - (jumpShotAngleRange / 2), jumpCenterAngle + (jumpShotAngleRange / 2));
@@ -104,6 +106,7 @@ public class Spider_Bot : EnemyHandler
         if(jumpCollisionDelay > 0)
         {
             jumpCollisionDelay -= Time.deltaTime;
+            chargingParticle.Stop();
         }
 
         if(onSurface)

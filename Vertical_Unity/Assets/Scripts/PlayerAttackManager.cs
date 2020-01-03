@@ -200,6 +200,7 @@ public class PlayerAttackManager : MonoBehaviour
     private IEnumerator ReAim()
     {
         isReAiming = true;
+        StartCoroutine(GameData.gameController.postProcessHandler.ActivateSlowMoEffect());
         GameData.playerMovement.dashCooldownRemaining = 0;
         Time.timeScale = slowMoTimeSpeed;
         Time.fixedDeltaTime = 0.02f * slowMoTimeSpeed;
@@ -212,6 +213,7 @@ public class PlayerAttackManager : MonoBehaviour
         }
 
         isReAiming = false;
+        StartCoroutine(GameData.gameController.postProcessHandler.StopSlowMoEffect());
         Time.timeScale = 1.0f;
         Time.fixedDeltaTime = 0.02f;
     }

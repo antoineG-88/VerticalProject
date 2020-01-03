@@ -19,9 +19,11 @@ public class GameController : MonoBehaviour
     [HideInInspector] public InputManager input;
     [HideInInspector] public bool pause;
     [HideInInspector] public bool takePlayerInput;
+    [HideInInspector] public PostProcessHandler postProcessHandler;
 
     private void Awake()
     {
+        postProcessHandler = GameObject.Find("PostProcess").GetComponent<PostProcessHandler>();
         takePlayerInput = true;
         pause = false;
         input = GetComponent<InputManager>();

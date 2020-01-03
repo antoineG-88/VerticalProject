@@ -25,8 +25,9 @@ public class PlayerVisuals : MonoBehaviour
 
     private void UpdateVisuals()
     {
-        facingRight = GameData.playerGrapplingHandler.isTracting ? (GameData.playerGrapplingHandler.tractionDirection.x > 0 ? true : false) : (GameData.playerMovement.targetVelocity.x != 0 ? (GameData.playerMovement.targetVelocity.x > 0 ? true : false) : facingRight);
-        
+        facingRight = GameData.playerGrapplingHandler.isTracting ? (GameData.playerGrapplingHandler.tractionDirection.x > 0 ? true : false) :
+                (GameData.playerMovement.targetVelocity.x != 0 ? (GameData.playerMovement.targetVelocity.x > 0 ? true : false) : facingRight);
+
         if (facingRight != transformFacingRight)
         {
             transformFacingRight = facingRight;

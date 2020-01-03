@@ -8,9 +8,8 @@ using UnityEngine;
 /// </summary>
 public class PowerTeleportation : Power
 {
-    public float range;
-    public float stunTime;
     public int timewait;
+    public Vector2 tpBackPropel;
     private Vector2 initialPosition;
     public GameObject TpPoint;
     private GameObject CurrentTpPoint;
@@ -21,6 +20,7 @@ public class PowerTeleportation : Power
         CurrentTpPoint = Instantiate(TpPoint, GameData.playerMovement.transform.position,Quaternion.identity);
         yield return new WaitForSeconds(timewait);
         GameData.playerMovement.transform.position = initialPosition;
+        GameData.playerMovement.Propel(tpBackPropel, true, true);
         CurrentTpPoint.GetComponent<Animator>().SetBool("Closed", true);
         Destroy(CurrentTpPoint, 0.3f);
     }
