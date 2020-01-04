@@ -11,7 +11,6 @@ public class LevelHandler : MonoBehaviour
     public float currentZoneUpdateTime;
 
     private LevelBuilder levelBuilder;
-    private Room.RoomPart[,] towerGrid;
     private float timeBeforeNextZoneUpdate;
     private Coord currentPlayerZone;
     private RoomHandler currentRoom;
@@ -24,7 +23,6 @@ public class LevelHandler : MonoBehaviour
     {
         gridGraph = (GridGraph)AstarData.active.graphs[0];
         levelBuilder = GetComponent<LevelBuilder>();
-        towerGrid = levelBuilder.towerGrid;
         timeBeforeNextZoneUpdate = 0;
         currentPlayerZone = new Coord(0, 2);
         previousRoom = new RoomHandler(null, 0, 0);
@@ -50,6 +48,11 @@ public class LevelHandler : MonoBehaviour
 
     private void UpdateZone()
     {
+        if(GameData.playerMovement.transform.position.y < levelBuilder.bottomCenterTowerPos.y)
+        {
+            GameData.playerManager.TakeDamage(200, Vector2.zero, 0);
+        }
+
         if(currentPlayerZone != GetCurrentPlayerZone())
         {
             currentPlayerZone = GetCurrentPlayerZone();
@@ -107,12 +110,16 @@ public class LevelHandler : MonoBehaviour
     {
         if (finalRing != null && Vector2.Distance(GameData.playerMovement.transform.position, finalRing.transform.position) < minDistanceToFinalRing && GameData.playerGrapplingHandler.attachedObject == finalRing)
         {
-            TransitionToNextLevel();
+            StartCoroutine(TransitionToNextLevel());
         }
     }
 
-    private void TransitionToNextLevel()
+    private IEnumerator TransitionToNextLevel()
     {
+        GameData.cameraHandler.CinematicLook(GameData.playerMovement.transform.position, 3.0f, 5.625f, 4.0f);
+        Time.timeScale = 0.01f;
+        Time.fixedDeltaTime = 0.02f * 0.01f;
+        yield return new WaitForSecondsRealtime(3.0f);
         GameData.gameController.LoadNextLevel();
     }
 }

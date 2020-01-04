@@ -21,6 +21,12 @@ public class PlayerManager : MonoBehaviour
     public Sprite halfHp;
     public Color emptyHpColor;
     public Text currentEnergyText;
+    public GameObject gameOverPanel;
+    public Text gameOverText;
+    public float gameOverFadingSpeed;
+    public float timeBeforeGameOverTextFade;
+    public Text restartText;
+    public float timeBeforeRestartPossible;
     [Header("General debug settings")]
     public Color stunColor;
     public bool vulnerable;
@@ -57,6 +63,7 @@ public class PlayerManager : MonoBehaviour
         invulnerableTimeRemaining = 0;
         currentEnergy = baseEnergy;
         hpIconsState = new HpState[maxhealthPoint];
+        gameOverPanel.SetActive(false);
         InitializeHealthBar();
     }
 
@@ -132,21 +139,48 @@ public class PlayerManager : MonoBehaviour
 
     private IEnumerator Die()
     {
-        transform.GetChild(2).gameObject.SetActive(false);
-        transform.GetChild(4).gameObject.SetActive(false);
         GameData.playerMovement.inControl = false;
         GameData.playerGrapplingHandler.canShoot = false;
         GameData.gameController.takePlayerInput = false;
         float timer = 0;
-        while (!GameData.playerMovement.IsOnGround() || timer < 0.2f)
+        while ((!GameData.playerMovement.IsOnGround() && GameData.playerMovement.transform.position.y > GameData.levelBuilder.bottomCenterTowerPos.y) || timer < 0.2f)
         {
             GameData.playerVisuals.isHurt = 3;
             yield return new WaitForFixedUpdate();
             timer += Time.fixedDeltaTime;
         }
-        StartCoroutine(GameData.cameraHandler.CinematicLook(transform.position, 100.0f, 2.0f, 4.0f));
+        StartCoroutine(GameData.cameraHandler.CinematicLook(transform.position, 1000.0f, 2.0f, 4.0f));
         StartCoroutine(GameData.gameController.postProcessHandler.ActivateDeathVignette());
         GameData.playerVisuals.isHurt = 0;
+
+        yield return new WaitForSeconds(timeBeforeGameOverTextFade);
+
+        gameOverPanel.SetActive(true);
+
+        gameOverText.color = new Color(gameOverText.color.r, gameOverText.color.g, gameOverText.color.b, 0);
+        restartText.color = new Color(restartText.color.r, restartText.color.g, restartText.color.b, 0);
+        while (gameOverText.color.a <= 0.95f)
+        {
+            gameOverText.color = new Color(gameOverText.color.r, gameOverText.color.g, gameOverText.color.b, gameOverText.color.a + Time.deltaTime * gameOverFadingSpeed);
+            yield return new WaitForEndOfFrame();
+        }
+
+        gameOverText.color = new Color(gameOverText.color.r, gameOverText.color.g, gameOverText.color.b, 1);
+        yield return new WaitForSeconds(timeBeforeRestartPossible);
+        while (restartText.color.a <= 0.95f)
+        {
+            restartText.color = new Color(restartText.color.r, restartText.color.g, restartText.color.b, restartText.color.a + Time.deltaTime * gameOverFadingSpeed);
+            yield return new WaitForEndOfFrame();
+        }
+
+        restartText.color = new Color(restartText.color.r, restartText.color.g, restartText.color.b, 1);
+
+        while (!Input.anyKey)
+        {
+            yield return new WaitForEndOfFrame();
+        }
+
+        GameData.gameController.RestartLevel();
     }
 
     public void EarnEnergy(int energyEarned)
@@ -185,7 +219,7 @@ public class PlayerManager : MonoBehaviour
         UpdateHealthBar();
     }
 
-    private void UpdateHealthBar()
+    public void UpdateHealthBar()
     {
         int hpRemaining = currentHealth;
         for (int i = 0; i < maxhealthPoint; i++)

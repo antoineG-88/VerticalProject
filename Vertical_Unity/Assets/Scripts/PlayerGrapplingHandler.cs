@@ -212,6 +212,8 @@ public class PlayerGrapplingHandler : MonoBehaviour
                     ringHighLighterO.SetActive(true);
                     ringHighLighterO.transform.position = selectedRing.transform.position;
                     shootDirection = new Vector2(selectedRing.transform.position.x - shootPoint.position.x, selectedRing.transform.position.y - shootPoint.position.y).normalized;
+
+                    ringHighLighterO.GetComponent<Animator>().SetBool("IsEnemy", selectedRing.CompareTag("Enemy") ? true : false);
                 }
                 else
                 {

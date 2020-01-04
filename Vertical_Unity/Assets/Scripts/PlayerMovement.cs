@@ -257,6 +257,7 @@ public class PlayerMovement : MonoBehaviour
         Vector2 origin = transform.position;
         while (!GameData.playerManager.isStunned && timer > 0 && !Physics2D.Raycast(transform.position, dashDirection, dashStopDistance, LayerMask.GetMask("Ground")))
         {
+            isDashing = true;
             timer -= Time.fixedDeltaTime;
             if(invulnerableDash)
             {

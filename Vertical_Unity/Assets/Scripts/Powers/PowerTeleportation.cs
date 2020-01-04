@@ -19,6 +19,7 @@ public class PowerTeleportation : Power
         initialPosition = GameData.playerMovement.transform.position;
         CurrentTpPoint = Instantiate(TpPoint, GameData.playerMovement.transform.position,Quaternion.identity);
         yield return new WaitForSeconds(timewait);
+        GameData.playerGrapplingHandler.ReleaseHook();
         GameData.playerMovement.transform.position = initialPosition;
         GameData.playerMovement.Propel(tpBackPropel, true, true);
         CurrentTpPoint.GetComponent<Animator>().SetBool("Closed", true);

@@ -19,6 +19,8 @@ public class Doors : MonoBehaviour
 
     private void FixedUpdate()
     {
+        doorUp.SetBool("IsLocked", isLocked);
+        doorDown.SetBool("IsLocked", isLocked);
         doorUp.SetBool("opened", isOpened);
         doorDown.SetBool("opened", isOpened);
     }
