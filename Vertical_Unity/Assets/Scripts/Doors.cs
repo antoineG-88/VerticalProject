@@ -25,7 +25,7 @@ public class Doors : MonoBehaviour
         doorDown.SetBool("opened", isOpened);
     }
 
-    private void OnTriggerEnter2D(Collider2D collider)
+    private void OnTriggerStay2D(Collider2D collider)
     {
         if (collider.CompareTag("Player") && !isLocked)
         {
@@ -36,7 +36,7 @@ public class Doors : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collider)
     {
-        if (collider.CompareTag("Player") && !isLocked)
+        if (collider.CompareTag("Player"))
         {
             isOpened = false;
             doorCollisionCollider.enabled = true;

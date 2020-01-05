@@ -307,6 +307,11 @@ PrefabInstance:
       propertyPath: ringReAim
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4744132222942516713, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
+        type: 3}
+      propertyPath: maxReAimingTime
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 1164104435070563982, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
         type: 3}
       propertyPath: powerCharge
@@ -1747,6 +1752,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: WatchBot1
       objectReference: {fileID: 0}
+    - target: {fileID: 6312095705553650338, guid: a26b0a6c805712744b996ae50874c35c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6312095705553650344, guid: a26b0a6c805712744b996ae50874c35c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3013,7 +3023,54 @@ PrefabInstance:
     - target: {fileID: 6067586404583493703, guid: 2044c8ad1f8c46645b594a2e4cb2b141,
         type: 3}
       propertyPath: instantCreation
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6067586404583493703, guid: 2044c8ad1f8c46645b594a2e4cb2b141,
+        type: 3}
+      propertyPath: timeSearchingOpening
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6067586404583493703, guid: 2044c8ad1f8c46645b594a2e4cb2b141,
+        type: 3}
+      propertyPath: horizontalDoors
+      value: 
+      objectReference: {fileID: 8691098761835378645, guid: fc2cb0a1986c23f43a96a958da5d9c17,
+        type: 3}
+    - target: {fileID: 6067586404583493703, guid: 2044c8ad1f8c46645b594a2e4cb2b141,
+        type: 3}
+      propertyPath: verticalDoors
+      value: 
+      objectReference: {fileID: 1381551278141193564, guid: 918f67c9913a3ac40a7351d968e0a0e2,
+        type: 3}
+    - target: {fileID: 6067586404583493703, guid: 2044c8ad1f8c46645b594a2e4cb2b141,
+        type: 3}
+      propertyPath: timeBetweenRoomCreation
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6067586404583493703, guid: 2044c8ad1f8c46645b594a2e4cb2b141,
+        type: 3}
+      propertyPath: verticalDoorsOffset.x
+      value: -0.02
+      objectReference: {fileID: 0}
+    - target: {fileID: 6067586404583493703, guid: 2044c8ad1f8c46645b594a2e4cb2b141,
+        type: 3}
+      propertyPath: verticalDoorsOffset.y
+      value: -1.94
+      objectReference: {fileID: 0}
+    - target: {fileID: 6067586404583493703, guid: 2044c8ad1f8c46645b594a2e4cb2b141,
+        type: 3}
+      propertyPath: horizontalDoorsOffset.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6067586404583493703, guid: 2044c8ad1f8c46645b594a2e4cb2b141,
+        type: 3}
+      propertyPath: horizontalDoorsOffset.y
+      value: -0.02
+      objectReference: {fileID: 0}
+    - target: {fileID: 6067586404583493703, guid: 2044c8ad1f8c46645b594a2e4cb2b141,
+        type: 3}
+      propertyPath: healthTerminalNumbers
+      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2044c8ad1f8c46645b594a2e4cb2b141, type: 3}
