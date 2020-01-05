@@ -8,6 +8,7 @@ public class RoomHandler
     public List<Vector2> zonesCenterPos;
     public bool discovered;
     public List<EnemyHandler> currentEnemies;
+    public List<Doors> doors;
     public Vector2 center;
 
     public RoomHandler(Room _originRoom, int floorNumber, int zoneNumber)
@@ -16,6 +17,7 @@ public class RoomHandler
         zonesCenterPos = new List<Vector2>();
         discovered = false;
         currentEnemies = new List<EnemyHandler>();
+        doors = new List<Doors>();
     }
 
     public void Pause()
@@ -38,10 +40,23 @@ public class RoomHandler
     public void RemoveEnemy(EnemyHandler enemy)
     {
         currentEnemies.Remove(enemy);
+        UpdateRoomLockState();
     }
 
     public void SetCenter(Vector2 bottomLeftZoneCenter)
     {
         center = bottomLeftZoneCenter;
+        UpdateRoomLockState();
+    }
+
+    public void UpdateRoomLockState()
+    {
+        if (currentEnemies.Count == 0)
+        {
+            foreach (Doors door in doors)
+            {
+                door.isLocked = false;
+            }
+        }
     }
 }

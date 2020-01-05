@@ -5,22 +5,24 @@ using Pathfinding;
 
 public class LevelHandler : MonoBehaviour
 {
+    public float minDistanceToFinalRing;
+
     public CameraHandler cameraHandler;
     public float currentZoneUpdateTime;
 
     private LevelBuilder levelBuilder;
-    private Room.RoomPart[,] towerGrid;
     private float timeBeforeNextZoneUpdate;
     private Coord currentPlayerZone;
     private RoomHandler currentRoom;
     private RoomHandler previousRoom;
     private GridGraph gridGraph;
 
+    [HideInInspector] public GameObject finalRing;
+
     void Start()
     {
         gridGraph = (GridGraph)AstarData.active.graphs[0];
         levelBuilder = GetComponent<LevelBuilder>();
-        towerGrid = levelBuilder.towerGrid;
         timeBeforeNextZoneUpdate = 0;
         currentPlayerZone = new Coord(0, 2);
         previousRoom = new RoomHandler(null, 0, 0);
@@ -28,19 +30,29 @@ public class LevelHandler : MonoBehaviour
 
     private void Update()
     {
-        if(timeBeforeNextZoneUpdate > 0)
+        if(GameData.levelBuilder.towerCreated)
         {
-            timeBeforeNextZoneUpdate -= Time.deltaTime;
-        }
-        else
-        {
-            timeBeforeNextZoneUpdate = currentZoneUpdateTime;
-            UpdateZone();
+            UpdatePlayerProgression();
+
+            if (timeBeforeNextZoneUpdate > 0)
+            {
+                timeBeforeNextZoneUpdate -= Time.deltaTime;
+            }
+            else
+            {
+                timeBeforeNextZoneUpdate = currentZoneUpdateTime;
+                UpdateZone();
+            }
         }
     }
 
     private void UpdateZone()
     {
+        if(GameData.playerMovement.transform.position.y < levelBuilder.bottomCenterTowerPos.y)
+        {
+            GameData.playerManager.TakeDamage(200, Vector2.zero, 0);
+        }
+
         if(currentPlayerZone != GetCurrentPlayerZone())
         {
             currentPlayerZone = GetCurrentPlayerZone();
@@ -92,5 +104,22 @@ public class LevelHandler : MonoBehaviour
         gridGraph.SetDimensions((int)((currentRoom.originRoom.roomParts.GetLength(1) / gridGraph.nodeSize) * levelBuilder.tileLength), (int)((currentRoom.originRoom.roomParts.GetLength(0) / gridGraph.nodeSize) * levelBuilder.tileLength), gridGraph.nodeSize);
         gridGraph.center = currentRoom.center;
         gridGraph.Scan();
+    }
+
+    private void UpdatePlayerProgression()
+    {
+        if (finalRing != null && Vector2.Distance(GameData.playerMovement.transform.position, finalRing.transform.position) < minDistanceToFinalRing && GameData.playerGrapplingHandler.attachedObject == finalRing)
+        {
+            StartCoroutine(TransitionToNextLevel());
+        }
+    }
+
+    private IEnumerator TransitionToNextLevel()
+    {
+        GameData.cameraHandler.CinematicLook(GameData.playerMovement.transform.position, 3.0f, 5.625f, 4.0f);
+        Time.timeScale = 0.01f;
+        Time.fixedDeltaTime = 0.02f * 0.01f;
+        yield return new WaitForSecondsRealtime(3.0f);
+        GameData.gameController.LoadNextLevel();
     }
 }

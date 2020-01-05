@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 public class LevelBuilder : MonoBehaviour
 {
     #region variables
@@ -16,7 +17,7 @@ public class LevelBuilder : MonoBehaviour
     public int towerHeight;
     public Coord startPositionIndexes;
     public int roomBuildBeforeYokaiRoom;
-
+    [Space]
     public List<Room> roomList;
     public List<Room> deadEndList;
     public List<Room> rightEdgeList;
@@ -24,8 +25,9 @@ public class LevelBuilder : MonoBehaviour
     public List<Room> endRoomList;
     public List<Room> yokaiRoomList;
     public List<Room> startRoomList;
-
     public GameObject fillerPrefab;
+    public GameObject verticalDoors;
+    public GameObject horizontalDoors;
     [Space]
     [Space]
     public bool fillEmptySpaces;
@@ -42,7 +44,12 @@ public class LevelBuilder : MonoBehaviour
     public Vector2 bottomCenterTowerPos;
     public float tileLength;
     public int maxRoom;
+    public bool towerCreated;
     public GameObject levelHolderPrefab;
+    [Space]
+    [Space]
+    [Space]
+    public bool hideDebugTowerGenerationLog;
 
     [HideInInspector] public Room.RoomPart[,] towerGrid;
     [HideInInspector] public RoomHandler[,] towerRooms;
@@ -87,6 +94,10 @@ public class LevelBuilder : MonoBehaviour
         levelScanned = false;
         ReArrangeRooms(new List<List<Room>> { roomList, deadEndList, leftEdgeList, rightEdgeList, endRoomList, yokaiRoomList, startRoomList});
         StartCoroutine(BuildLevel());
+        if (hideDebugTowerGenerationLog)
+        {
+            Debug.unityLogger.logEnabled = false;
+        }
     }
 
     private void Update()
@@ -103,8 +114,10 @@ public class LevelBuilder : MonoBehaviour
 
     public IEnumerator BuildLevel()
     {
-        Debug.Log("Beginning Tower creation");
+        yield return new WaitForEndOfFrame();
 
+        Debug.Log("Beginning Tower creation");
+        towerCreated = false;
         int towerCreationAttempt = 0;
         do
         {
@@ -192,6 +205,12 @@ public class LevelBuilder : MonoBehaviour
         else
         {
             Debug.Log("Tower correctly designed with a total of " + roomBuiltNumber + " rooms on " + towerHeight + " floors with " + towerWidth + " zones each");
+        }
+        towerCreated = true;
+
+        if (hideDebugTowerGenerationLog)
+        {
+            Debug.unityLogger.logEnabled = true;
         }
     }
 
@@ -536,8 +555,36 @@ public class LevelBuilder : MonoBehaviour
                                                     for(int t = 0; t < child.childCount; t++)
                                                     {
                                                         EnemyHandler enemy = child.GetChild(t).GetComponent<EnemyHandler>();
-                                                        newRoomHandler.currentEnemies.Add(enemy);
-                                                        enemy.room = newRoomHandler;
+                                                        if (enemy != null)
+                                                        {
+                                                            newRoomHandler.currentEnemies.Add(enemy);
+                                                            enemy.room = newRoomHandler;
+                                                        }
+                                                        else
+                                                        {
+                                                            Debug.LogError("No EnemyHandler script found on " + child.GetChild(t).name);
+                                                        }
+                                                    }
+                                                }
+                                                else if (child.name == "FinalRing")
+                                                {
+                                                    GetComponent<LevelHandler>().finalRing = child.gameObject;
+                                                    //GameData.levelHandler.finalRing = child.gameObject;
+                                                    Debug.Log("Final ring found on zone " + (nextZone + relativeIndexes));
+                                                }
+                                                else if(child.name == "Doors")
+                                                {
+                                                    for (int t = 0; t < child.childCount; t++)
+                                                    {
+                                                        Doors door = child.GetChild(t).GetComponent<Doors>();
+                                                        if(door != null)
+                                                        {
+                                                            newRoomHandler.doors.Add(door);
+                                                        }
+                                                        else
+                                                        {
+                                                            Debug.LogError("No Doors script found on " + child.GetChild(t).name);
+                                                        }
                                                     }
                                                 }
                                             }
@@ -1109,6 +1156,7 @@ public class LevelBuilder : MonoBehaviour
                                 if (Coord.GetZone(accessibleZones, floorToCheck + 1, zoneToCheck) == null)
                                 {
                                     freeOpeningZones.Add(new Coord(floorToCheck + 1, zoneToCheck));
+                                    // place doors here !!!!!
                                 }
                             }
                         }
@@ -1401,41 +1449,6 @@ public class LevelBuilder : MonoBehaviour
                 room.Rearrange();
             }
         }
-
-        /*foreach(Room room in roomList)
-        {
-            room.Rearrange();
-        }
-
-        foreach (Room deadEnd in deadEndList)
-        {
-            deadEnd.Rearrange();
-        }
-
-        foreach (Room leftEdge in leftEdgeList)
-        {
-            leftEdge.Rearrange();
-        }
-
-        foreach (Room rightEdge in rightEdgeList)
-        {
-            rightEdge.Rearrange();
-        }
-
-        foreach(Room endRoom in endRoomList)
-        {
-            endRoom.Rearrange();
-        }
-
-        foreach (Room yokaiRoom in yokaiRoomList)
-        {
-            yokaiRoom.Rearrange();
-        }
-
-        foreach (Room startRoom in startRoomList)
-        {
-            startRoom.Rearrange();
-        }*/
     }
 
     private void FillRoomList(List<Room> listOfRoom)

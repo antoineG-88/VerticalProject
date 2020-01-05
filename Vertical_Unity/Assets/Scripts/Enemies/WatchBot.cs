@@ -23,7 +23,8 @@ public class WatchBot : EnemyHandler
     public float projectileSpawnDistance;
     public float projectileKnockbackForce;
     public float projectileLifeTime;
-    [Header("Spike-attack settings")]
+    [Header("Spike-attack settings OBSOLETE")]
+    public bool useSpikeAttack = false;
     public float spikeAttackRange;
     public float spikeAttackDelay;
     public int spikeAttackDamage;
@@ -56,18 +57,24 @@ public class WatchBot : EnemyHandler
 
     private void Update()
     {
-        HandlerUpdate();
+        if (!GameData.gameController.pause)
+        {
+            HandlerUpdate();
 
-        ProvocationUpdate();
+            ProvocationUpdate();
 
-        Behavior();
+            Behavior();
+        }
     }
 
     private void FixedUpdate()
     {
-        HandlerFixedUpdate();
+        if (!GameData.gameController.pause)
+        {
+            HandlerFixedUpdate();
 
-        UpdateMovement();
+            UpdateMovement();
+        }
     }
 
     public override void UpdateMovement()
@@ -176,7 +183,7 @@ public class WatchBot : EnemyHandler
         isAtRange = distanceToPlayer < rangeAttackTriggerRange && distanceToPlayer > fleeDistance && provoked ? true : false;
         isFleeing = distanceToPlayer < fleeDistance && provoked ? true : false;
 
-        if(distanceToPlayer < spikeAttackRange && !Is(Effect.NoControl))
+        if(distanceToPlayer < spikeAttackRange && !Is(Effect.NoControl) && useSpikeAttack)
         {
             StartCoroutine(SpikeAttack());
         }
@@ -232,7 +239,6 @@ public class WatchBot : EnemyHandler
         else if (Vector2.Distance(transform.position, GameData.playerMovement.transform.position) > agroRange)
         {
             provoked = false;
-            Debug.Log(gameObject.name + " unprovoked because too far");
         }
     }
 

@@ -23,7 +23,9 @@ public class PlayerMovement : MonoBehaviour
     public bool dashBreakRope;
     public float dashCooldown;
     public bool invulnerableDash;
+    public bool dashCooledOnLanding;
     [Range(0, 100)] public float dashVelocityKept;
+    public GameObject dashShadowPrefab;
     [Header("Technical settings")]
     public Transform feetPos;
     public float groundCheckThickness = 0.1f;
@@ -39,9 +41,10 @@ public class PlayerMovement : MonoBehaviour
     private bool jumpFlag;
     private float timeBeforeControl;
     [HideInInspector] public bool isDashing;
-    private float dashCooldownRemaining;
+    [HideInInspector] public float dashCooldownRemaining;
     private Collider2D passThroughPlatform;
     private float passThroughTime;
+    private bool isGrounded;
 
     void Start()
     {
@@ -57,16 +60,29 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        UpdateInput();
+        if (!GameData.gameController.pause)
+        {
+            UpdateInput();
+        }
     }
 
     private void FixedUpdate()
     {
-        UpdateMovement();
-
-        if(timeBeforeControl > 0)
+        if (!GameData.gameController.pause)
         {
-            timeBeforeControl -= Time.fixedDeltaTime;
+            UpdateMovement();
+
+            isGrounded = IsOnGround();
+
+            if (isGrounded && dashCooledOnLanding)
+            {
+                dashCooldownRemaining = 0;
+            }
+
+            if(timeBeforeControl > 0)
+            {
+                timeBeforeControl -= Time.fixedDeltaTime;
+            }
         }
     }
 
@@ -91,7 +107,7 @@ public class PlayerMovement : MonoBehaviour
             dashCooldownRemaining -= Time.deltaTime;
         }
 
-        if(GameData.gameController.input.leftJoystickVertical < 0)
+        if(GameData.gameController.input.leftJoystickVertical < 0 || GameData.playerGrapplingHandler.isTracting)
         {
             RaycastHit2D hit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + 2.0f), Vector2.down, 5.0f, LayerMask.GetMask("Platform"));
             if(hit && passThroughPlatform == null && IsOnGround())
@@ -122,7 +138,7 @@ public class PlayerMovement : MonoBehaviour
                 float xDirection = Mathf.Sign(targetVelocity.x - rb.velocity.x);
                 if (targetVelocity.x > 0 && rb.velocity.x < targetVelocity.x || targetVelocity.x < 0 && rb.velocity.x > targetVelocity.x)
                 {
-                    if (IsOnGround())
+                    if (isGrounded)
                     {
                         addedXVelocity = xDirection * runningAcceleration * Time.fixedDeltaTime;
                     }
@@ -133,7 +149,7 @@ public class PlayerMovement : MonoBehaviour
                 }
                 else
                 {
-                    if (IsOnGround())
+                    if (isGrounded)
                     {
                         addedXVelocity = xDirection * groundSlowing * Time.fixedDeltaTime;
                     }
@@ -165,7 +181,7 @@ public class PlayerMovement : MonoBehaviour
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y - gravityForce * Time.fixedDeltaTime);
         }
 
-        if(!IsOnGround() && !GameData.playerGrapplingHandler.isTracting && !isDashing)
+        if(!isGrounded && !GameData.playerGrapplingHandler.isTracting && !isDashing)
         {
             rb.velocity -= rb.velocity.normalized * airDragForce * Time.fixedDeltaTime;
         }
@@ -228,6 +244,8 @@ public class PlayerMovement : MonoBehaviour
         dashCooldownRemaining = dashTime + 1;
         isDashing = true;
         isAffectedbyGravity = false;
+        PlayerVisuals playerVisuals = GetComponentInChildren<PlayerVisuals>();
+        GameData.playerAttackManager.isReAiming = false;
         Vector2 dashDirection = new Vector2(GameData.gameController.input.leftJoystickHorizontal, GameData.gameController.input.leftJoystickVertical).normalized;
         if(dashDirection == Vector2.zero)
         {
@@ -237,9 +255,9 @@ public class PlayerMovement : MonoBehaviour
         float currentSpeed = dashStartSpeed;
         float timer = dashTime;
         Vector2 origin = transform.position;
-
         while (!GameData.playerManager.isStunned && timer > 0 && !Physics2D.Raycast(transform.position, dashDirection, dashStopDistance, LayerMask.GetMask("Ground")))
         {
+            isDashing = true;
             timer -= Time.fixedDeltaTime;
             if(invulnerableDash)
             {
@@ -254,16 +272,14 @@ public class PlayerMovement : MonoBehaviour
                 rb.velocity = dashDirection * dashMaxSpeed;
             }
 
-            if(timer > 0)
+            GameObject shadow =  Instantiate(dashShadowPrefab, transform.position, Quaternion.identity);
+            shadow.transform.localScale = new Vector3(playerVisuals.facingRight ? 1 : -1, 1, 1);
+
+            if (timer > 0)
             {
                 yield return new WaitForFixedUpdate();
             }
         }
-
-        /*if(timer <= 0 && !Physics2D.Raycast(origin, dashDirection, dashDistance, LayerMask.GetMask("Ground")))
-        {
-            transform.position = origin + dashDirection * dashDistance;
-        }*/
 
         GameData.playerManager.isDodging = false;
         isAffectedbyGravity = true;

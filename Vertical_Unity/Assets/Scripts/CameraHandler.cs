@@ -13,7 +13,7 @@ public class CameraHandler : MonoBehaviour
     public float momentumOffsetAmplitude;
     public float maxMomentumOffset;
     [Header("General settings")]
-    public float orthographicSize = 5.625f;
+    public float baseOrthographicSize = 5.625f;
     public float sizeLerpSpeed;
     [Header("Tower settings")]
     public float roomWidth;
@@ -25,6 +25,8 @@ public class CameraHandler : MonoBehaviour
     private Vector2 cameraTarget;
     private Vector2 cameraFinalPos;
     [HideInInspector] public bool followPlayer;
+    private float currentOrthographicSize;
+    private float currentLerpSpeed;
 
     private List<Vector2> rooms = new List<Vector2>();
 
@@ -32,18 +34,8 @@ public class CameraHandler : MonoBehaviour
     {
         mainCamera = Camera.main;
         followPlayer = true;
-    }
-
-    private void Update()
-    {
-        if(mainCamera.orthographicSize - orthographicSize > 0.1f)
-        {
-            mainCamera.orthographicSize -= (mainCamera.orthographicSize - orthographicSize) * sizeLerpSpeed * Time.deltaTime;
-        }
-        else
-        {
-            mainCamera.orthographicSize = orthographicSize;
-        }
+        currentOrthographicSize = baseOrthographicSize;
+        currentLerpSpeed = baseLerpSpeed;
     }
 
     private void FixedUpdate()
@@ -135,8 +127,17 @@ public class CameraHandler : MonoBehaviour
 
     private void MoveCamera(Vector2 targetCameraPos)
     {
-        Vector2 lerpPos = Vector2.Lerp(mainCamera.transform.position, targetCameraPos, baseLerpSpeed * Time.fixedDeltaTime * 50);
+        Vector2 lerpPos = Vector2.Lerp(mainCamera.transform.position, targetCameraPos, currentLerpSpeed * Time.fixedDeltaTime * 50);
         mainCamera.transform.position = new Vector3(lerpPos.x, lerpPos.y, -10.0f);
+
+        if (Mathf.Abs(mainCamera.orthographicSize - currentOrthographicSize) > 0.01f)
+        {
+            mainCamera.orthographicSize -= (mainCamera.orthographicSize - currentOrthographicSize) * sizeLerpSpeed * Time.fixedDeltaTime;
+        }
+        else
+        {
+            mainCamera.orthographicSize = currentOrthographicSize;
+        }
     }
 
     private void UpdateCameraTarget()
@@ -147,6 +148,8 @@ public class CameraHandler : MonoBehaviour
             cameraFinalPos = useWallAvoidance ? cameraTarget + OffsetForCamera(cameraTarget, rooms, roomWidth) : cameraTarget;
             if (displayDebugs)
                 Debug.DrawLine(cameraTarget, cameraTarget + Vector2.up, Color.red);
+            currentOrthographicSize = baseOrthographicSize;
+            currentLerpSpeed = baseLerpSpeed;
         }
     }
 
@@ -176,5 +179,21 @@ public class CameraHandler : MonoBehaviour
         {
             rooms.Add(roomPos);
         }
+    }
+
+    public IEnumerator CinematicLook(Vector2 lookPosition, float lookingTime, float orthographicSize, float lerpSpeed)
+    {
+        GameData.playerMovement.transform.GetChild(2).gameObject.SetActive(false);
+        GameData.playerMovement.transform.GetChild(4).gameObject.SetActive(false);
+        GameData.playerMovement.transform.GetChild(6).gameObject.SetActive(false);
+        followPlayer = false;
+        cameraFinalPos = lookPosition;
+        currentLerpSpeed = lerpSpeed;
+        currentOrthographicSize = orthographicSize;
+        yield return new WaitForSeconds(lookingTime);
+        followPlayer = true;
+        GameData.playerMovement.transform.GetChild(2).gameObject.SetActive(true);
+        GameData.playerMovement.transform.GetChild(4).gameObject.SetActive(true);
+        GameData.playerMovement.transform.GetChild(6).gameObject.SetActive(true);
     }
 }

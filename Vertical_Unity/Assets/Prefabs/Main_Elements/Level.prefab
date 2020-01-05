@@ -1,0 +1,107 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6067586404583493700
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6067586404583493702}
+  - component: {fileID: 6067586404583493703}
+  - component: {fileID: 6067586404583493697}
+  m_Layer: 0
+  m_Name: Level
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6067586404583493702
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6067586404583493700}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6067586404583493703
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6067586404583493700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3124397cf40a2448a12f923378fa423, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  instantCreation: 1
+  timeBetweenRoomCreation: 0.01
+  timeTestingRoom: 0
+  timeSearchingOpening: 0
+  gizmoColor:
+  - {r: 0, g: 0.92708635, b: 1, a: 0.2901961}
+  - {r: 0.6886792, g: 0, b: 0.3068029, a: 0.4117647}
+  - {r: 0.62455136, g: 0.8901961, b: 0.09803922, a: 0.25882354}
+  towerWidth: 3
+  towerHeight: 5
+  startPositionIndexes:
+    x: 0
+    y: 1
+  roomBuildBeforeYokaiRoom: 2
+  roomList:
+  - {fileID: 11400000, guid: 0654c6c3838c4144ca8381e70acedae0, type: 2}
+  - {fileID: 11400000, guid: 07b9ccac0d2c1964d95e2ab078fdb8b2, type: 2}
+  - {fileID: 11400000, guid: 958ce7e18a03bbf4fbe5f9a04961f40b, type: 2}
+  - {fileID: 11400000, guid: f47042f3d77f6404b8805c4caa563231, type: 2}
+  deadEndList: []
+  rightEdgeList: []
+  leftEdgeList:
+  - {fileID: 11400000, guid: c7e6734ed972643408982ccead66b4fa, type: 2}
+  endRoomList:
+  - {fileID: 11400000, guid: 6107682a3a775944d9758d8d8f75073f, type: 2}
+  - {fileID: 11400000, guid: 242223d2ce6323d4aa02f12ed09fbbda, type: 2}
+  - {fileID: 11400000, guid: df12c2dacd97e2149b831919ba6dbdd7, type: 2}
+  yokaiRoomList:
+  - {fileID: 11400000, guid: d2a98fd785869ce4c88bb20bdd62387b, type: 2}
+  startRoomList:
+  - {fileID: 11400000, guid: 6a54f7d05c6fff04ab8d0538952ace77, type: 2}
+  fillerPrefab: {fileID: 778409336111630296, guid: f0f69af25cac0684a9eed2ac813069ce,
+    type: 3}
+  fillEmptySpaces: 0
+  avoidBlockedOpenings: 1
+  mandatoryOpenings: 0
+  mandatoryPlacementDirections: 000000000200000003000000
+  createIntentionalDeadEnd: 0
+  intentionalDeadEndChance: 0
+  creatingTime: 0
+  bottomCenterTowerPos: {x: 0, y: -15}
+  tileLength: 24
+  maxRoom: 2000
+  levelHolderPrefab: {fileID: 8950924055697529316, guid: 08edfc2d1768c8d4ea9091cd097551b2,
+    type: 3}
+--- !u!114 &6067586404583493697
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6067586404583493700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf36b8f1c2c9fce40a95ebd19d7c7a10, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minDistanceToFinalRing: 0.5
+  cameraHandler: {fileID: 0}
+  currentZoneUpdateTime: 0.1
+  finalRing: {fileID: 0}

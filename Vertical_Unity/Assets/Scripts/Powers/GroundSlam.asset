@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c74ea6bac53ddd4db07de99c76d09a9, type: 3}
+  m_Name: GroundSlam
+  m_EditorClassIdentifier: 
+  powerName: BigSlam
+  description: Make Boki rush downwards until he it the ground and magnetise all enemies
+    encounterd during the fall
+  icon: {fileID: 21300000, guid: 178a134ee387d13479043769d3b5898e, type: 3}
+  price: 160
+  cooldown: 3
+  frappevelocity: 30
+  timePosInstantiate: 0.05
+  prefabexplosion: {fileID: 7326937197211514682, guid: 3263d02eb5092d043b30858a9857fed5,
+    type: 3}
+  impactPrefab: {fileID: 278224624660791933, guid: 136074e6df8e09842b345d109cefa578,
+    type: 3}
+  bulletPrefab: {fileID: 3881332320475458819, guid: ceed0a422c8e4ea49902b44a4ebf45bb,
+    type: 3}
+  impactFxOffset: {x: 0, y: 0.25}
+  explosionRange: 1.5
+  duration: 6
+  size: 1

@@ -13,6 +13,8 @@ public class PlayerAttackManager : MonoBehaviour
     public GameObject kickPreview;
     [Space]
     public bool reAimMode;
+    public float kickEffectOffset;
+    public bool ringReAim;
     public GameObject repropulsionPreview;
     public float maxRepropulsionReleaseTime;
     public float maxReAimingTime;
@@ -36,7 +38,10 @@ public class PlayerAttackManager : MonoBehaviour
 
     private void Update()
     {
-        Input();
+        if(!GameData.gameController.pause)
+        {
+            Input();
+        }
     }
 
     private void Input()
@@ -47,6 +52,7 @@ public class PlayerAttackManager : MonoBehaviour
             if(GameData.playerGrapplingHandler.isTracting && !isKicking)
             {
                 isKicking = true;
+                GameData.playerVisuals.isKicking = 10;
                 StartCoroutine(currentKick.Use(gameObject, Quaternion.Euler(0.0f, 0.0f, Vector2.SignedAngle(Vector2.right, GameData.playerGrapplingHandler.tractionDirection))));
             }
         }
@@ -58,6 +64,8 @@ public class PlayerAttackManager : MonoBehaviour
         if(GameData.gameController.input.leftTriggerAxis > 0 && powerCooldownRemaining <= 0)
         {
             powerCooldownRemaining = currentPower.cooldown;
+            GameData.playerVisuals.isCastingPower = 10;
+            isReAiming = false;
             StartCoroutine(currentPower.Use());
         }
 
@@ -70,6 +78,7 @@ public class PlayerAttackManager : MonoBehaviour
     public bool Hit()
     {
         bool successfullKick = false;
+        bool hitSomething = false;
         List<Collider2D> hitColliders = new List<Collider2D>();
         GameObject attachedObject = GameData.playerGrapplingHandler.attachedObject;
         GameData.playerGrapplingHandler.ReleaseHook();
@@ -115,6 +124,7 @@ public class PlayerAttackManager : MonoBehaviour
             }
             else
             {
+                hitSomething = true;
                 foreach (Collider2D collider in hitColliders)
                 {
                     if (collider.CompareTag("Enemy"))
@@ -125,6 +135,16 @@ public class PlayerAttackManager : MonoBehaviour
             }
         }
         isKicking = false;
+
+        if(!hitSomething)
+        {
+            GameData.playerMovement.Propel(GetComponent<Rigidbody2D>().velocity * GameData.playerGrapplingHandler.velocityKeptReleasingHook / 100, true, true);
+        }
+        else
+        {
+            if(ringReAim)
+                StartCoroutine(ReAim());
+        }
 
         return successfullKick;
     }
@@ -180,6 +200,8 @@ public class PlayerAttackManager : MonoBehaviour
     private IEnumerator ReAim()
     {
         isReAiming = true;
+        GameData.gameController.postProcessHandler.EnableSlowMoEffect();
+        GameData.playerMovement.dashCooldownRemaining = 0;
         Time.timeScale = slowMoTimeSpeed;
         Time.fixedDeltaTime = 0.02f * slowMoTimeSpeed;
         float timeRemaining = Time.realtimeSinceStartup + maxReAimingTime;
@@ -188,14 +210,10 @@ public class PlayerAttackManager : MonoBehaviour
         {
             GameData.playerGrapplingHandler.timeBeforeNextShoot = 0;
             yield return new WaitForEndOfFrame();
-
-            if (GameData.playerGrapplingHandler.currentHook != null)
-            {
-                isReAiming = false;
-            }
         }
 
         isReAiming = false;
+        GameData.gameController.postProcessHandler.DisableSlowMoEffect();
         Time.timeScale = 1.0f;
         Time.fixedDeltaTime = 0.02f;
     }
@@ -217,5 +235,11 @@ public class PlayerAttackManager : MonoBehaviour
         Power previousPower = currentPower;
         currentPower = newPower;
         return previousPower;
+    }
+
+    public void StartCloudsUpdate()
+    {
+        PowerTrainee powerTrainee = (PowerTrainee)currentPower;
+        StartCoroutine(powerTrainee.UpdateClouds());
     }
 }
