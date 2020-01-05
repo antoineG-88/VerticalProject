@@ -12,8 +12,11 @@ public class PlayerGrapplingHandler : MonoBehaviour
     public float ropeAttachLengthDifference;
     public float shootCooldown;
     public float releasingHookDist;
+    public bool dashCooledReachingTarget;
+    public bool dashCooledOnReleasing;
     public bool useGhostHook;
     public float minAttachDistance;
+    public GameObject hookEffectPrefab;
     public bool keepAim;
     public bool useJoint;
     [Space]
@@ -113,7 +116,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
             timeBeforeNextShoot -= Time.deltaTime;
         }
 
-        if (canShoot)
+        if (canShoot && GameData.gameController.takePlayerInput)
         {
             if (!isAiming && (Mathf.Abs(GameData.gameController.input.rightJoystickHorizontal) > 0.1f || Mathf.Abs(GameData.gameController.input.rightJoystickVertical) > 0.1f))
             {
@@ -209,6 +212,8 @@ public class PlayerGrapplingHandler : MonoBehaviour
                     ringHighLighterO.SetActive(true);
                     ringHighLighterO.transform.position = selectedRing.transform.position;
                     shootDirection = new Vector2(selectedRing.transform.position.x - shootPoint.position.x, selectedRing.transform.position.y - shootPoint.position.y).normalized;
+
+                    ringHighLighterO.GetComponent<Animator>().SetBool("IsEnemy", selectedRing.CompareTag("Enemy") ? true : false);
                 }
                 else
                 {
@@ -329,11 +334,21 @@ public class PlayerGrapplingHandler : MonoBehaviour
 
                 isTracting = true;
             }
-
-            if(isTracting && (GameData.gameController.input.rightTriggerAxis == 0 || (Vector2.Distance(transform.position, currentHook.transform.position) < releasingHookDist)))
+            float distance = 10;
+            if(isTracting && (GameData.gameController.input.rightTriggerAxis == 0 || ((distance = Vector2.Distance(transform.position, currentHook.transform.position)) < releasingHookDist)))
             {
                 rb.velocity *= velocityKeptReleasingHook / 100;
                 isTracting = false;
+
+                if(distance < releasingHookDist && dashCooledReachingTarget)
+                {
+                    GameData.playerMovement.dashCooldownRemaining = 0;
+                }
+
+                if(dashCooledOnReleasing)
+                {
+                    GameData.playerMovement.dashCooldownRemaining = 0;
+                }
 
                 ReleaseHook();
             }
@@ -399,6 +414,7 @@ public class PlayerGrapplingHandler : MonoBehaviour
         {
             isHooked = true;
             attachedObject = attachPos;
+            Instantiate(hookEffectPrefab, attachedObject.transform.position, Quaternion.identity);
             if(attachedObject.CompareTag("Enemy"))
             {
                 attachedObject.GetComponent<EnemyHandler>().provoked = true;

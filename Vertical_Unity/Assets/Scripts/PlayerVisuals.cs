@@ -7,6 +7,8 @@ public class PlayerVisuals : MonoBehaviour
     [HideInInspector] public bool facingRight;
     [HideInInspector] public int isKicking;
     [HideInInspector] public int isCastingPower;
+    [HideInInspector] public int isHurt;
+
     [HideInInspector] public bool isSlaming;
 
     private Animator animator;
@@ -25,8 +27,9 @@ public class PlayerVisuals : MonoBehaviour
 
     private void UpdateVisuals()
     {
-        facingRight = GameData.playerGrapplingHandler.isTracting ? (GameData.playerGrapplingHandler.tractionDirection.x > 0 ? true : false) : (GameData.playerMovement.targetVelocity.x != 0 ? (GameData.playerMovement.targetVelocity.x > 0 ? true : false) : facingRight);
-        
+        facingRight = GameData.playerGrapplingHandler.isTracting ? (GameData.playerGrapplingHandler.tractionDirection.x > 0 ? true : false) :
+                (GameData.playerMovement.targetVelocity.x != 0 ? (GameData.playerMovement.targetVelocity.x > 0 ? true : false) : facingRight);
+
         if (facingRight != transformFacingRight)
         {
             transformFacingRight = facingRight;
@@ -75,5 +78,13 @@ public class PlayerVisuals : MonoBehaviour
         animator.SetBool("IsFacingRight", facingRight);
 
         animator.SetBool("IsSlaming", isSlaming);
+
+        animator.SetBool("IsHurt", isHurt > 0 ? true : false);
+        if (isHurt > 0)
+        {
+            isHurt--;
+        }
+
+        animator.SetBool("IsDying", GameData.playerManager.isDead);
     }
 }

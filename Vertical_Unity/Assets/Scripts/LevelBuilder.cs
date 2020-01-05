@@ -17,7 +17,7 @@ public class LevelBuilder : MonoBehaviour
     public int towerHeight;
     public Coord startPositionIndexes;
     public int roomBuildBeforeYokaiRoom;
-
+    [Space]
     public List<Room> roomList;
     public List<Room> deadEndList;
     public List<Room> rightEdgeList;
@@ -25,8 +25,9 @@ public class LevelBuilder : MonoBehaviour
     public List<Room> endRoomList;
     public List<Room> yokaiRoomList;
     public List<Room> startRoomList;
-
     public GameObject fillerPrefab;
+    public GameObject verticalDoors;
+    public GameObject horizontalDoors;
     [Space]
     [Space]
     public bool fillEmptySpaces;
@@ -1155,6 +1156,7 @@ public class LevelBuilder : MonoBehaviour
                                 if (Coord.GetZone(accessibleZones, floorToCheck + 1, zoneToCheck) == null)
                                 {
                                     freeOpeningZones.Add(new Coord(floorToCheck + 1, zoneToCheck));
+                                    // place doors here !!!!!
                                 }
                             }
                         }

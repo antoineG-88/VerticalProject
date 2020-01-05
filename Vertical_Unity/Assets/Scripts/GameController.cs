@@ -19,9 +19,11 @@ public class GameController : MonoBehaviour
     [HideInInspector] public InputManager input;
     [HideInInspector] public bool pause;
     [HideInInspector] public bool takePlayerInput;
+    [HideInInspector] public PostProcessHandler postProcessHandler;
 
     private void Awake()
     {
+        postProcessHandler = GameObject.Find("PostProcess").GetComponent<PostProcessHandler>();
         takePlayerInput = true;
         pause = false;
         input = GetComponent<InputManager>();
@@ -47,7 +49,7 @@ public class GameController : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.R) && Input.GetKey(KeyCode.E) && Input.GetKey(KeyCode.S) && Input.GetKeyDown(KeyCode.T))
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            RestartLevel();
         }
     }
 
@@ -55,6 +57,11 @@ public class GameController : MonoBehaviour
     {
         SavePlayerData();
         SceneManager.LoadScene(nextSceneIndex);
+    }
+
+    public void RestartLevel()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void SavePlayerData()

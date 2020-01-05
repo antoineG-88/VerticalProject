@@ -183,11 +183,17 @@ public class CameraHandler : MonoBehaviour
 
     public IEnumerator CinematicLook(Vector2 lookPosition, float lookingTime, float orthographicSize, float lerpSpeed)
     {
+        GameData.playerMovement.transform.GetChild(2).gameObject.SetActive(false);
+        GameData.playerMovement.transform.GetChild(4).gameObject.SetActive(false);
+        GameData.playerMovement.transform.GetChild(6).gameObject.SetActive(false);
         followPlayer = false;
         cameraFinalPos = lookPosition;
         currentLerpSpeed = lerpSpeed;
         currentOrthographicSize = orthographicSize;
         yield return new WaitForSeconds(lookingTime);
         followPlayer = true;
+        GameData.playerMovement.transform.GetChild(2).gameObject.SetActive(true);
+        GameData.playerMovement.transform.GetChild(4).gameObject.SetActive(true);
+        GameData.playerMovement.transform.GetChild(6).gameObject.SetActive(true);
     }
 }

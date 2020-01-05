@@ -105,7 +105,7 @@ public class YokaiPrisonHandler : MonoBehaviour
             firstPowerO.GetComponent<SpriteRenderer>().sprite = firstPower.icon;
             firstPowerWindow.SetBool("Closed", false);
             firstPrice = Instantiate(energyPriceText, firstPowerO.transform.position, Quaternion.identity, yokaiCanvas.transform);
-            firstPrice.GetComponent<Text>().text = firstPower.name + System.Environment.NewLine + firstPower.price.ToString();
+            firstPrice.GetComponent<Text>().text = firstPower.powerName + System.Environment.NewLine + firstPower.price.ToString();
 
         }
         yield return new WaitForSeconds(timeBetweenPowerSpawn);
@@ -115,7 +115,7 @@ public class YokaiPrisonHandler : MonoBehaviour
             secondPowerO.GetComponent<SpriteRenderer>().sprite = secondPower.icon;
             secondPowerWindow.SetBool("Closed", false);
             secondPrice = Instantiate(energyPriceText, firstPowerO.transform.position, Quaternion.identity, yokaiCanvas.transform);
-            secondPrice.GetComponent<Text>().text = secondPower.name + System.Environment.NewLine + secondPower.price.ToString();
+            secondPrice.GetComponent<Text>().text = secondPower.powerName + System.Environment.NewLine + secondPower.price.ToString();
         }
         isSelling = true;
 

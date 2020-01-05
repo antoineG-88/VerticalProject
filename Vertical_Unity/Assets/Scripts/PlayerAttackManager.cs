@@ -52,7 +52,7 @@ public class PlayerAttackManager : MonoBehaviour
             if(GameData.playerGrapplingHandler.isTracting && !isKicking)
             {
                 isKicking = true;
-                GetComponentInChildren<PlayerVisuals>().isKicking = 10;
+                GameData.playerVisuals.isKicking = 10;
                 StartCoroutine(currentKick.Use(gameObject, Quaternion.Euler(0.0f, 0.0f, Vector2.SignedAngle(Vector2.right, GameData.playerGrapplingHandler.tractionDirection))));
             }
         }
@@ -64,7 +64,7 @@ public class PlayerAttackManager : MonoBehaviour
         if(GameData.gameController.input.leftTriggerAxis > 0 && powerCooldownRemaining <= 0)
         {
             powerCooldownRemaining = currentPower.cooldown;
-            GetComponentInChildren<PlayerVisuals>().isCastingPower = 10;
+            GameData.playerVisuals.isCastingPower = 10;
             isReAiming = false;
             StartCoroutine(currentPower.Use());
         }
@@ -200,6 +200,7 @@ public class PlayerAttackManager : MonoBehaviour
     private IEnumerator ReAim()
     {
         isReAiming = true;
+        GameData.gameController.postProcessHandler.EnableSlowMoEffect();
         GameData.playerMovement.dashCooldownRemaining = 0;
         Time.timeScale = slowMoTimeSpeed;
         Time.fixedDeltaTime = 0.02f * slowMoTimeSpeed;
@@ -212,6 +213,7 @@ public class PlayerAttackManager : MonoBehaviour
         }
 
         isReAiming = false;
+        GameData.gameController.postProcessHandler.DisableSlowMoEffect();
         Time.timeScale = 1.0f;
         Time.fixedDeltaTime = 0.02f;
     }

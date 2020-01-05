@@ -621,6 +621,7 @@ MonoBehaviour:
   facingRight: 0
   isKicking: 0
   isCastingPower: 0
+  isHurt: 0
   isSlaming: 0
 --- !u!1 &4503195422415338485
 GameObject:
@@ -663,6 +664,7 @@ Transform:
   - {fileID: 269809584}
   - {fileID: 1618943583}
   - {fileID: 8944864289153792122}
+  - {fileID: 3982552868600831007}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -694,13 +696,14 @@ MonoBehaviour:
   dashStopDistance: 0.7
   dashBreakRope: 1
   dashCooldown: 1
-  invulnerableDash: 0
+  invulnerableDash: 1
+  dashCooledOnLanding: 1
   dashVelocityKept: 15
   dashShadowPrefab: {fileID: 3788763055611250903, guid: f724113b506e72348b79ee55e7ce1db7,
     type: 3}
   feetPos: {fileID: 4503195423458372692}
   groundCheckThickness: 0.05
-  groundCheckWidth: 0.8
+  groundCheckWidth: 0.15
   currentPlayerPlatform: {fileID: 0}
   inControl: 0
   isAffectedbyGravity: 0
@@ -728,8 +731,12 @@ MonoBehaviour:
   ropeAttachLengthDifference: 4
   shootCooldown: 0.2
   releasingHookDist: 0.5
+  dashCooledReachingTarget: 1
+  dashCooledOnReleasing: 1
   useGhostHook: 1
   minAttachDistance: 2
+  hookEffectPrefab: {fileID: 8953067431079608497, guid: 2eb064535628d6942bba6d6d95e5986d,
+    type: 3}
   keepAim: 1
   useJoint: 0
   resetMomentumOnTraction: 1
@@ -747,8 +754,8 @@ MonoBehaviour:
   shootPoint: {fileID: 1895484423}
   hookPrefab: {fileID: 2211880245883361801, guid: 041f2b0a20ef83746947ff243b04874a,
     type: 3}
-  ringHighLighterO: {fileID: 0}
-  grapplingStartPointO: {fileID: 0}
+  ringHighLighterO: {fileID: 6334502560266481810}
+  grapplingStartPointO: {fileID: 1895484422}
   ghostHookColor: {r: 1, g: 0.65, b: 0, a: 0.4}
   displayAutoAimRaycast: 0
   aimDirection: {x: 0, y: 0}
@@ -779,6 +786,7 @@ MonoBehaviour:
   kickPreview: {fileID: 0}
   reAimMode: 1
   kickEffectOffset: 0.5
+  ringReAim: 0
   repropulsionPreview: {fileID: 269809583}
   maxRepropulsionReleaseTime: 2
   maxReAimingTime: 5
@@ -814,6 +822,12 @@ MonoBehaviour:
   halfHp: {fileID: 21300000, guid: 9b149e84d12d104418623dd66099afc7, type: 3}
   emptyHpColor: {r: 0.48235294, g: 0, b: 0.07651675, a: 0.49019608}
   currentEnergyText: {fileID: 0}
+  gameOverPanel: {fileID: 0}
+  gameOverText: {fileID: 0}
+  gameOverFadingSpeed: 0.5
+  timeBeforeGameOverTextFade: 1
+  restartText: {fileID: 0}
+  timeBeforeRestartPossible: 0.1
   stunColor: {r: 0.7264151, g: 0.099368125, b: 0.099368125, a: 1}
   vulnerable: 1
   isVulnerable: 1
@@ -821,6 +835,7 @@ MonoBehaviour:
   isStunned: 0
   currentHealth: 0
   currentEnergy: 0
+  isDead: 0
 --- !u!50 &4503195422415338475
 Rigidbody2D:
   serializedVersion: 4
@@ -851,11 +866,11 @@ BoxCollider2D:
   m_GameObject: {fileID: 4503195422415338485}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 11e62417d5f030e4aa0c6b8f6f06e4d1, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -0.051969767}
+  m_Offset: {x: 0, y: -0.036448404}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -866,7 +881,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.39470482, y: 0.89606047}
+  m_Size: {x: 0.39470482, y: 0.8650178}
   m_EdgeRadius: 0
 --- !u!120 &1050642299
 LineRenderer:
@@ -1013,3 +1028,103 @@ Transform:
   m_Father: {fileID: 4503195422415338473}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6334502560266481810
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3982552868600831007}
+  - component: {fileID: 6535924904661501494}
+  - component: {fileID: 9032809169350728964}
+  m_Layer: 0
+  m_Name: Target_Highlighter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3982552868600831007
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6334502560266481810}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4503195422415338473}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &6535924904661501494
+SpriteRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6334502560266481810}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 5
+  m_Sprite: {fileID: 21300000, guid: 9555af43b04b07446ae458af78b0efb8, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 2, y: 2}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_MaskInteraction: 0
+  m_SpriteSortPoint: 0
+--- !u!95 &9032809169350728964
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6334502560266481810}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 88cf466a0201f6146b0360800ab9cf59, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0

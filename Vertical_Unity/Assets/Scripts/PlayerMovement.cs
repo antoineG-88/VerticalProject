@@ -23,6 +23,7 @@ public class PlayerMovement : MonoBehaviour
     public bool dashBreakRope;
     public float dashCooldown;
     public bool invulnerableDash;
+    public bool dashCooledOnLanding;
     [Range(0, 100)] public float dashVelocityKept;
     public GameObject dashShadowPrefab;
     [Header("Technical settings")]
@@ -43,6 +44,7 @@ public class PlayerMovement : MonoBehaviour
     [HideInInspector] public float dashCooldownRemaining;
     private Collider2D passThroughPlatform;
     private float passThroughTime;
+    private bool isGrounded;
 
     void Start()
     {
@@ -69,6 +71,13 @@ public class PlayerMovement : MonoBehaviour
         if (!GameData.gameController.pause)
         {
             UpdateMovement();
+
+            isGrounded = IsOnGround();
+
+            if (isGrounded && dashCooledOnLanding)
+            {
+                dashCooldownRemaining = 0;
+            }
 
             if(timeBeforeControl > 0)
             {
@@ -129,7 +138,7 @@ public class PlayerMovement : MonoBehaviour
                 float xDirection = Mathf.Sign(targetVelocity.x - rb.velocity.x);
                 if (targetVelocity.x > 0 && rb.velocity.x < targetVelocity.x || targetVelocity.x < 0 && rb.velocity.x > targetVelocity.x)
                 {
-                    if (IsOnGround())
+                    if (isGrounded)
                     {
                         addedXVelocity = xDirection * runningAcceleration * Time.fixedDeltaTime;
                     }
@@ -140,7 +149,7 @@ public class PlayerMovement : MonoBehaviour
                 }
                 else
                 {
-                    if (IsOnGround())
+                    if (isGrounded)
                     {
                         addedXVelocity = xDirection * groundSlowing * Time.fixedDeltaTime;
                     }
@@ -172,7 +181,7 @@ public class PlayerMovement : MonoBehaviour
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y - gravityForce * Time.fixedDeltaTime);
         }
 
-        if(!IsOnGround() && !GameData.playerGrapplingHandler.isTracting && !isDashing)
+        if(!isGrounded && !GameData.playerGrapplingHandler.isTracting && !isDashing)
         {
             rb.velocity -= rb.velocity.normalized * airDragForce * Time.fixedDeltaTime;
         }
@@ -248,6 +257,7 @@ public class PlayerMovement : MonoBehaviour
         Vector2 origin = transform.position;
         while (!GameData.playerManager.isStunned && timer > 0 && !Physics2D.Raycast(transform.position, dashDirection, dashStopDistance, LayerMask.GetMask("Ground")))
         {
+            isDashing = true;
             timer -= Time.fixedDeltaTime;
             if(invulnerableDash)
             {

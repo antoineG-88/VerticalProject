@@ -14,10 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   powerName: TimeRift
   description: Place a portal where Kibo will be teleported to after 3sec
-  icon: {fileID: 21300000, guid: 9250a8023fd733641a5dc5fd97a93e98, type: 3}
+  icon: {fileID: 21300000, guid: 18f1be8a72d3fa44aada544e811d330b, type: 3}
   price: 354
   cooldown: 3
-  range: 0
-  stunTime: 0
   timewait: 3
+  tpBackPropel: {x: 0, y: 3}
   TpPoint: {fileID: 2588264934062278200, guid: 5ef0b6fdef1ed0542995904dae2e2040, type: 3}
