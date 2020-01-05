@@ -204,8 +204,11 @@ public class LevelBuilder : MonoBehaviour
 
         } while (!endRoomBuild || !yokaiRoomBuild);
 
-        PLaceHealthTerminal();
-
+        if(healthTerminalNumbers > 0)
+        {
+            PLaceHealthTerminal();
+        }
+        yield return new WaitForFixedUpdate();
 
         if (!openingRemaining)
         {

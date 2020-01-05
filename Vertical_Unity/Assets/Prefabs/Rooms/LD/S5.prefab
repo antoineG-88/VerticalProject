@@ -9154,6 +9154,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2513291496578351605}
     m_Modifications:
+    - target: {fileID: 3211333030400184261, guid: c5d1583d1cd8bf74b9fe6a39ca0ce033,
+        type: 3}
+      propertyPath: m_Name
+      value: OS-Bot (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3211333030400184261, guid: c5d1583d1cd8bf74b9fe6a39ca0ce033,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3211333030400184260, guid: c5d1583d1cd8bf74b9fe6a39ca0ce033,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -9209,11 +9219,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3211333030400184261, guid: c5d1583d1cd8bf74b9fe6a39ca0ce033,
-        type: 3}
-      propertyPath: m_Name
-      value: OS-Bot (1)
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c5d1583d1cd8bf74b9fe6a39ca0ce033, type: 3}
 --- !u!4 &3256225225338662716 stripped
@@ -9229,6 +9234,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2513291496578351605}
     m_Modifications:
+    - target: {fileID: 3211333030400184261, guid: c5d1583d1cd8bf74b9fe6a39ca0ce033,
+        type: 3}
+      propertyPath: m_Name
+      value: OS-Bot
+      objectReference: {fileID: 0}
+    - target: {fileID: 3211333030400184261, guid: c5d1583d1cd8bf74b9fe6a39ca0ce033,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3211333030400184260, guid: c5d1583d1cd8bf74b9fe6a39ca0ce033,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -9283,11 +9298,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3211333030400184261, guid: c5d1583d1cd8bf74b9fe6a39ca0ce033,
-        type: 3}
-      propertyPath: m_Name
-      value: OS-Bot
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c5d1583d1cd8bf74b9fe6a39ca0ce033, type: 3}
@@ -9534,6 +9544,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2513291497145559124}
     m_Modifications:
+    - target: {fileID: 1960271053136261069, guid: 198e8820df55ff042b26701a20a7d15c,
+        type: 3}
+      propertyPath: m_Name
+      value: Platform
+      objectReference: {fileID: 0}
     - target: {fileID: 1960271053136261056, guid: 198e8820df55ff042b26701a20a7d15c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -9588,11 +9603,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1960271053136261069, guid: 198e8820df55ff042b26701a20a7d15c,
-        type: 3}
-      propertyPath: m_Name
-      value: Platform
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 198e8820df55ff042b26701a20a7d15c, type: 3}
@@ -10214,6 +10224,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: OverBot (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 4670905135045009076, guid: 53fb27a9ca242df41837e5b248ca612d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4670905135045009077, guid: 53fb27a9ca242df41837e5b248ca612d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -10288,6 +10303,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Spider bot
+      objectReference: {fileID: 0}
+    - target: {fileID: 7943056003815322884, guid: 04c0802a92785ad41a3d22982ddb941f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7943056003815322887, guid: 04c0802a92785ad41a3d22982ddb941f,
         type: 3}
@@ -10438,6 +10458,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: WatchBot1 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6312095705553650338, guid: a26b0a6c805712744b996ae50874c35c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6312095705553650344, guid: a26b0a6c805712744b996ae50874c35c,
         type: 3}
@@ -10813,6 +10838,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: OverBot
+      objectReference: {fileID: 0}
+    - target: {fileID: 4670905135045009076, guid: 53fb27a9ca242df41837e5b248ca612d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4670905135045009077, guid: 53fb27a9ca242df41837e5b248ca612d,
         type: 3}

@@ -8972,7 +8972,7 @@ Tilemap:
   - first: {x: -2, y: 11, z: 0}
     second:
       m_TileIndex: 16
-      m_TileSpriteIndex: 16
+      m_TileSpriteIndex: 52
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
@@ -9347,9 +9347,8 @@ Tilemap:
     m_Data: {fileID: 0}
   - m_RefCount: 0
     m_Data: {fileID: 0}
-  - m_RefCount: 1
-    m_Data: {fileID: 3993335394658836515, guid: d849c1487e6e5b34d8ebb97c77be0c04,
-      type: 3}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
   - m_RefCount: 1
     m_Data: {fileID: -4979146204891633423, guid: d849c1487e6e5b34d8ebb97c77be0c04,
       type: 3}
@@ -9453,8 +9452,9 @@ Tilemap:
   - m_RefCount: 2
     m_Data: {fileID: -2056857495581299771, guid: 47c74942043987649a3d0998fc427ec8,
       type: 3}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
+  - m_RefCount: 1
+    m_Data: {fileID: 3993335394658836515, guid: d849c1487e6e5b34d8ebb97c77be0c04,
+      type: 3}
   - m_RefCount: 3
     m_Data: {fileID: -7159403738037090544, guid: 47c74942043987649a3d0998fc427ec8,
       type: 3}
@@ -9676,6 +9676,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: WatchBot1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6312095705553650338, guid: a26b0a6c805712744b996ae50874c35c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6312095705553650344, guid: a26b0a6c805712744b996ae50874c35c,
         type: 3}
@@ -9972,6 +9977,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4857023034933079688}
     m_Modifications:
+    - target: {fileID: 1960271053136261069, guid: 198e8820df55ff042b26701a20a7d15c,
+        type: 3}
+      propertyPath: m_Name
+      value: Platform
+      objectReference: {fileID: 0}
     - target: {fileID: 1960271053136261056, guid: 198e8820df55ff042b26701a20a7d15c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -10026,11 +10036,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1960271053136261069, guid: 198e8820df55ff042b26701a20a7d15c,
-        type: 3}
-      propertyPath: m_Name
-      value: Platform
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 198e8820df55ff042b26701a20a7d15c, type: 3}
@@ -10502,6 +10507,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: WatchBot1 (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 6312095705553650338, guid: a26b0a6c805712744b996ae50874c35c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6312095705553650344, guid: a26b0a6c805712744b996ae50874c35c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -10651,6 +10661,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: OverBot
+      objectReference: {fileID: 0}
+    - target: {fileID: 4670905135045009076, guid: 53fb27a9ca242df41837e5b248ca612d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4670905135045009077, guid: 53fb27a9ca242df41837e5b248ca612d,
         type: 3}
@@ -11026,6 +11041,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: OverBot (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4670905135045009076, guid: 53fb27a9ca242df41837e5b248ca612d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4670905135045009077, guid: 53fb27a9ca242df41837e5b248ca612d,
         type: 3}
