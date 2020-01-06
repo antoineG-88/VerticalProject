@@ -6,6 +6,7 @@ using UnityEngine.Rendering.PostProcessing;
 public class PostProcessHandler : MonoBehaviour
 {
     public PostProcessProfile originProfile;
+    public float hurtEffectTime;
     [Header("SlowMo settings")]
     public PostProcessProfile slowMoProfile;
     [Range(0.0f, 20.0f)] public float slowMoTransitionlerpSpeed;
@@ -25,6 +26,7 @@ public class PostProcessHandler : MonoBehaviour
     private float lastRealTime;
     private float realTimeSpend;
     private Vignette vignette;
+    private ColorGrading hurtColorGrading;
 
     private void Start()
     {
@@ -32,6 +34,7 @@ public class PostProcessHandler : MonoBehaviour
         lens = slowMoProfile.GetSetting<LensDistortion>();
         aberration = slowMoProfile.GetSetting<ChromaticAberration>();
         vignette = gameOverProfile.GetSetting<Vignette>();
+        hurtColorGrading = originProfile.GetSetting<ColorGrading>();
         transitionState = 1;
         slowMoActivated = false;
         lastRealTime = Time.realtimeSinceStartup;
@@ -89,5 +92,13 @@ public class PostProcessHandler : MonoBehaviour
         }
 
         vignette.intensity.value = vignetteItensity;
+    }
+
+    public IEnumerator TriggerHurtEffect()
+    {
+        ColorGrading colorGrading = postProcessVolume.profile.GetSetting<ColorGrading>();
+        colorGrading.enabled.value = true;
+        yield return new WaitForSecondsRealtime(hurtEffectTime);
+        colorGrading.enabled.value = false;
     }
 }

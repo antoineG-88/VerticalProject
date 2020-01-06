@@ -67,7 +67,7 @@ public class Spider_Bot : EnemyHandler
     public override bool TestCounter()
     {
         // counter avec dégats
-        return isJumping;
+        return false;
     }
 
     public override void UpdateMovement()
@@ -113,7 +113,13 @@ public class Spider_Bot : EnemyHandler
         {
             Propel(Vector2.zero, true, true);
         }
+
+        if (Physics2D.OverlapBox(transform.position, Vector2.one / 3, LayerMask.GetMask("Ground")))
+        {
+            TakeDamage(10, Vector2.zero);
+        }
     }
+
     private IEnumerator JumpShot(Vector2 jumpShotDirection)
     {
         jumpShotCooldownRemaining = jumpShotCooldown;
@@ -214,6 +220,7 @@ public class Spider_Bot : EnemyHandler
         {
             isTouchingWall = true;
             collisionPoint = collision.contacts[0].point;
+            Instantiate(debugParticlePrefab, collisionPoint, Quaternion.identity);
         }
     }
 }

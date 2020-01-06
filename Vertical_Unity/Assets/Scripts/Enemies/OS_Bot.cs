@@ -74,7 +74,7 @@ public class OS_Bot : EnemyHandler
 
     public override void UpdateMovement()
     {
-        if (!Is(Effect.Stun) && !Is(Effect.NoControl) && !Is(Effect.NoGravity))
+        if (!Is(Effect.Stun) && !Is(Effect.NoControl) && !Is(Effect.NoGravity) && !isDead)
         {
             if(!targetReached)
             {
@@ -197,7 +197,7 @@ public class OS_Bot : EnemyHandler
         laserLockLine.startWidth = 0.3f;
         laserLockLine.endWidth = 0.3f;
         isCharging = true;
-        while (timer > 0 && !Is(Effect.Stun) && !Is(Effect.Hack))
+        while (timer > 0 && !Is(Effect.Stun) && !Is(Effect.Hack) && !isDead)
         {
             RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, 100.0f, LayerMask.GetMask("Player", "Ground"));
             laserLockLine.enabled = true;
@@ -216,7 +216,7 @@ public class OS_Bot : EnemyHandler
             laserLockLine.SetPosition(1, hit.point);
             float laserTimer = laserBeamTime;
 
-            while (laserTimer > 0)
+            while (laserTimer > 0 && !Is(Effect.Stun) && !Is(Effect.Hack) && !isDead)
             {
                 RaycastHit2D playerHit = Physics2D.Raycast(transform.position, direction, 100.0f, LayerMask.GetMask("Player"));
                 if(playerHit)

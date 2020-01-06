@@ -650,10 +650,10 @@ public class LevelBuilder : MonoBehaviour
                                                     GameData.levelHandler.finalRing = child.gameObject;
                                                     Debug.Log("Final ring found on zone " + (nextZone + relativeIndexes));
                                                 }
-                                                else if (child.name == "HealthTerminal")
+                                                else if (child.name == "HealTerminal")
                                                 {
-                                                    newRoomHandler.healthTerminals = child.gameObject;
-                                                    newRoomHandler.healthTerminals.SetActive(false);
+                                                    newRoomHandler.healTerminal = child.gameObject;
+                                                    newRoomHandler.healTerminal.SetActive(false);
                                                 }
                                             }
                                         }
@@ -1571,9 +1571,9 @@ public class LevelBuilder : MonoBehaviour
             while(!placed)
             {
                 int rand = Random.Range(0, GameData.levelHandler.allTowerRooms.Count);
-                if(!roomFilledWithHT[rand] && GameData.levelHandler.allTowerRooms[rand].healthTerminals != null)
+                if(!roomFilledWithHT[rand] && GameData.levelHandler.allTowerRooms[rand].healTerminal != null)
                 {
-                    GameData.levelHandler.allTowerRooms[rand].healthTerminals.SetActive(true);
+                    GameData.levelHandler.allTowerRooms[rand].healTerminal.SetActive(true);
                     placed = true;
                     healthTerminalPlaced++;
                     Debug.Log("Health terminal placed at " + GameData.levelHandler.allTowerRooms[rand].center);
