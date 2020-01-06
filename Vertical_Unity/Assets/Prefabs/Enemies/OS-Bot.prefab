@@ -292,6 +292,14 @@ MonoBehaviour:
   laserBeamTime: 0.8
   laserStunTime: 0.3
   knockBackForce: 10
+  laserBeamfxPartPrefab: {fileID: 1547842563203652144, guid: 25b87f7ebb3bc854d9a1039f9c628c98,
+    type: 3}
+  laserBeamfxBeginPrefab: {fileID: 8569763683674064460, guid: c866f529733d2fe4097584aab010b07a,
+    type: 3}
+  laserBeamfxEndPrefab: {fileID: 8896480801409200114, guid: 5fbcb5d683d5e414c96cdf4dcd19433e,
+    type: 3}
+  spaceBetweenLaserBeamFx: 1.1
+  laserFxStartOffset: 2
   particleDebugPrefab: {fileID: 743808000188852099, guid: 1cf7fde50c7c4334dbeb307cefb2d3dd,
     type: 3}
   projectilePrefab: {fileID: 733819507943030622, guid: d718da2d5dc7bf64a86dc8b40ec37cb2,

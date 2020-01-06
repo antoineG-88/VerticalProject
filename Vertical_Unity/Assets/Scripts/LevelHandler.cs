@@ -8,6 +8,7 @@ public class LevelHandler : MonoBehaviour
     public float minDistanceToFinalRing;
 
     public CameraHandler cameraHandler;
+    public ParallaxHandler backGroundParallaxHandler;
     public float currentZoneUpdateTime;
 
     private LevelBuilder levelBuilder;
@@ -77,6 +78,7 @@ public class LevelHandler : MonoBehaviour
                 previousRoom.Pause();
                 UpdatePathfindingGraph();
                 previousRoom = currentRoom;
+                backGroundParallaxHandler.SetNewOrigin(currentRoom.center);
             }
 
             if (levelBuilder.towerRooms[currentPlayerZone.x, currentPlayerZone.y] != null)

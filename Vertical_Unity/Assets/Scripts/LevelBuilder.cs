@@ -27,6 +27,8 @@ public class LevelBuilder : MonoBehaviour
     public List<Room> yokaiRoomList;
     public List<Room> startRoomList;
     public GameObject fillerPrefab;
+    public GameObject leftTowerWall;
+    public GameObject rightTowerWall;
     public GameObject verticalDoors;
     public GameObject horizontalDoors;
     public Vector2 verticalDoorsOffset;
@@ -603,7 +605,10 @@ public class LevelBuilder : MonoBehaviour
 
                                         if(floorNumber == 0 && zoneNumber == 0)
                                         {
-                                            newRoomHandler.SetCenter(Coord.ZoneToTowerPos(nextZone + relativeIndexes, this));
+                                            Vector2 bottomLeftOffset;
+                                            bottomLeftOffset.x = (selectedRoom.roomParts.GetLength(1) * tileLength) / 2 - (tileLength / 2);
+                                            bottomLeftOffset.y = (selectedRoom.roomParts.GetLength(0) * tileLength) / 2 - (tileLength / 2);
+                                            newRoomHandler.SetCenter(Coord.ZoneToTowerPos(nextZone + relativeIndexes, this) + bottomLeftOffset);
                                         }
 
                                         if (selectedRoom.roomParts[floorNumber, zoneNumber] != null)
@@ -622,8 +627,17 @@ public class LevelBuilder : MonoBehaviour
                                                 newRoomHandler.zonesCenterPos.Add(Coord.ZoneToTowerPos(new Coord(nextZone.x + relativeIndexes.x, nextZone.y + relativeIndexes.y + 1), this));
                                             }
 
+                                            if(zoneNumber == 0 && nextZone.y == 0 && !leftEdgeChosen)
+                                            {
+                                                CreateBorder(nextZone + relativeIndexes);
+                                            }
+                                            else if (zoneNumber == (selectedRoom.roomParts.GetLength(1) - 1) && nextZone.y == (towerWidth - 1) && !rightEdgeChosen)
+                                            {
+                                                CreateBorder(nextZone + relativeIndexes);
+                                            }
+
                                             Debug.Log(selectedRoom.name + " part placed on " + (nextZone + relativeIndexes));
-                                            GameObject newRoomObject = CreateTile(new Coord(nextZone.x + relativeIndexes.x, nextZone.y + relativeIndexes.y));
+                                            GameObject newRoomObject = CreateTile(nextZone + relativeIndexes);
 
                                             for (int i = 0; i < newRoomObject.transform.childCount; i++)
                                             {
@@ -1510,6 +1524,11 @@ public class LevelBuilder : MonoBehaviour
         return roomInstantiated;
     }
 
+    private void CreateBorder(Coord borderZone)
+    {
+        Instantiate(borderZone.y == 0 ? leftTowerWall : rightTowerWall, Coord.ZoneToTowerPos(borderZone, this), Quaternion.identity, levelHolder.transform);
+    }
+
     private void FillEmptyZones()
     {
         for (int floorNumber = 0; floorNumber < towerHeight; floorNumber++)
@@ -1519,6 +1538,15 @@ public class LevelBuilder : MonoBehaviour
                 if (towerGrid[floorNumber, zoneNumber] == null)
                 {
                     CreateTile(new Coord(floorNumber, zoneNumber));
+
+                    if (zoneNumber == 0 && !leftEdgeChosen)
+                    {
+                        CreateBorder(new Coord(floorNumber, zoneNumber));
+                    }
+                    else if (zoneNumber == towerWidth - 1 && !rightEdgeChosen)
+                    {
+                        CreateBorder(new Coord(floorNumber, zoneNumber));
+                    }
                 }
             }
         }

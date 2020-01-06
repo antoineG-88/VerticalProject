@@ -21,6 +21,11 @@ public class OS_Bot : EnemyHandler
     public float laserBeamTime;
     public float laserStunTime;
     public float knockBackForce;
+    public GameObject laserBeamfxPartPrefab;
+    public GameObject laserBeamfxBeginPrefab;
+    public GameObject laserBeamfxEndPrefab;
+    public float spaceBetweenLaserBeamFx;
+    public float laserFxStartOffset;
     [Header("Debug settings")]
     public GameObject particleDebugPrefab;
     public GameObject projectilePrefab;
@@ -209,13 +214,29 @@ public class OS_Bot : EnemyHandler
         if (timer <= 0)
         {
             RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, 100.0f, LayerMask.GetMask("Ground"));
-            laserLockLine.startWidth = 1f;
-            laserLockLine.endWidth = 1f;
-            laserLockLine.enabled = true;
-            laserLockLine.SetPosition(0, transform.position);
-            laserLockLine.SetPosition(1, hit.point);
-            float laserTimer = laserBeamTime;
+            laserLockLine.enabled = false;
 
+            List<GameObject> laserFxO = new List<GameObject>();
+            float laserDistance = Vector2.Distance((Vector2)transform.position, hit.point) - laserFxStartOffset;
+            int laserFxNumber = Mathf.CeilToInt(laserDistance / spaceBetweenLaserBeamFx);
+            GameObject laserFx = null;
+            for (int i = 0; i < laserFxNumber; i++)
+            {
+                if(i == 0)
+                {
+                    laserFx = laserBeamfxBeginPrefab;
+                }
+                else
+                {
+                    laserFx = laserBeamfxPartPrefab;
+                }
+                laserFxO.Add(Instantiate(laserFx, (Vector2)transform.position + direction.normalized * laserFxStartOffset + direction.normalized * (i * spaceBetweenLaserBeamFx), Quaternion.Euler(0, 0, Vector2.SignedAngle(Vector2.up, direction))));
+            }
+
+            laserFxO.Add(Instantiate(laserBeamfxEndPrefab, hit.point, Quaternion.identity));
+
+            float laserTimer = laserBeamTime;
+            SetEffect(Effect.NoControl, laserBeamTime, false);
             while (laserTimer > 0 && !Is(Effect.Stun) && !Is(Effect.Hack) && !isDead)
             {
                 RaycastHit2D playerHit = Physics2D.Raycast(transform.position, direction, 100.0f, LayerMask.GetMask("Player"));
@@ -223,11 +244,16 @@ public class OS_Bot : EnemyHandler
                 {
                     GameData.playerManager.TakeDamage(laserDamage, direction * knockBackForce, laserStunTime);
                 }
-
+                Propel(Vector2.zero, true, true);
                 laserTimer -= Time.fixedDeltaTime;
                 yield return new WaitForFixedUpdate();
             }
-            laserLockLine.enabled = false;
+
+            for (int i = laserFxO.Count - 1; i >= 0; i--)
+            {
+                Destroy(laserFxO[i]);
+                laserFxO.RemoveAt(i);
+            }
             isCharging = false;
         }
 

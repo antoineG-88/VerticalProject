@@ -23,11 +23,6 @@ public class Doors : MonoBehaviour
         doorDown.SetBool("IsLocked", isLocked);
         doorUp.SetBool("opened", isOpened);
         doorDown.SetBool("opened", isOpened);
-
-        if(isLocked && !doorCollisionCollider.enabled)
-        {
-            doorCollisionCollider.enabled = true;
-        }
     }
 
     private void OnTriggerStay2D(Collider2D collider)
