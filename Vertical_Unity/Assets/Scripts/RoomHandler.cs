@@ -9,7 +9,7 @@ public class RoomHandler
     public bool discovered;
     public List<EnemyHandler> currentEnemies;
     public List<RoomDoors> doors;
-    public GameObject healthTerminals;
+    public GameObject healTerminal;
     public Vector2 center;
 
     public RoomHandler(Room _originRoom, int floorNumber, int zoneNumber)
