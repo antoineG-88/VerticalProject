@@ -317,15 +317,15 @@ MonoBehaviour:
   maxSpeed: 4
   slowingForce: 5
   timeBetweenPatrolMoves: 4
-  patrolRadius: 15
-  stopDistance: 2
-  fleeDistance: 3
-  rangeAttackTriggerRange: 8
+  patrolRadius: 5
+  stopDistance: 1.5
+  fleeDistance: 1
+  rangeAttackTriggerRange: 12
   projectileNumber: 4
   attackWidthAngle: 40
   projectileSpeed: 8
   projectileDamage: 1
-  rangeAttackCooldown: 2
+  rangeAttackCooldown: 3
   rangeAttackDelay: 0.5
   projectileSpawnDistance: 0.5
   projectileKnockbackForce: 3

@@ -253,7 +253,7 @@ MonoBehaviour:
   viewAngle: 0.1
   viewAngleWidth: 360
   raycastNumber: 100
-  agroRange: 20
+  agroRange: 15
   useAStar: 1
   nextWaypointDistance: 2
   waypointAhead: 0
@@ -310,7 +310,7 @@ MonoBehaviour:
   timeBetweenPatrolMoves: 4
   patrolRadius: 15
   stopDistance: 2
-  fleeDistance: 3
+  fleeDistance: 1
   rushTime: 0.5
   rangeAttackTriggerRange: 5
   rushVelocity: 10
@@ -320,7 +320,7 @@ MonoBehaviour:
   projectileSpeed: 8
   projectileDamage: 1
   rangeAttackCooldown: 3
-  rangeAttackDelay: 0.2
+  rangeAttackDelay: 0.5
   projectileSpawnDistance: 0.5
   projectileKnockbackForce: 3
   projectileLifeTime: 20
