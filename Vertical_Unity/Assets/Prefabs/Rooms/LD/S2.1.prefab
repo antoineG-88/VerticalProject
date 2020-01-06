@@ -9928,6 +9928,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Spider bot
       objectReference: {fileID: 0}
+    - target: {fileID: 7943056003815322884, guid: 04c0802a92785ad41a3d22982ddb941f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7943056003815322887, guid: 04c0802a92785ad41a3d22982ddb941f,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -10228,6 +10233,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Spider bot (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 7943056003815322884, guid: 04c0802a92785ad41a3d22982ddb941f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7943056003815322887, guid: 04c0802a92785ad41a3d22982ddb941f,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -10378,6 +10388,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Spider bot (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 7943056003815322884, guid: 04c0802a92785ad41a3d22982ddb941f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7943056003815322887, guid: 04c0802a92785ad41a3d22982ddb941f,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -10452,6 +10467,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Spider bot (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7943056003815322884, guid: 04c0802a92785ad41a3d22982ddb941f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7943056003815322887, guid: 04c0802a92785ad41a3d22982ddb941f,
         type: 3}
@@ -10602,6 +10622,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Spider bot (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7943056003815322884, guid: 04c0802a92785ad41a3d22982ddb941f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7943056003815322887, guid: 04c0802a92785ad41a3d22982ddb941f,
         type: 3}
@@ -10903,6 +10928,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Spider bot (5)
       objectReference: {fileID: 0}
+    - target: {fileID: 7943056003815322884, guid: 04c0802a92785ad41a3d22982ddb941f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7943056003815322887, guid: 04c0802a92785ad41a3d22982ddb941f,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -10973,6 +11003,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8241327233813228835}
     m_Modifications:
+    - target: {fileID: 1960271053136261069, guid: 198e8820df55ff042b26701a20a7d15c,
+        type: 3}
+      propertyPath: m_Name
+      value: Platform
+      objectReference: {fileID: 0}
     - target: {fileID: 1960271053136261056, guid: 198e8820df55ff042b26701a20a7d15c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -11028,11 +11063,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1960271053136261069, guid: 198e8820df55ff042b26701a20a7d15c,
-        type: 3}
-      propertyPath: m_Name
-      value: Platform
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 198e8820df55ff042b26701a20a7d15c, type: 3}
 --- !u!4 &8775869521103666946 stripped
@@ -11048,6 +11078,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8241327233505949411}
     m_Modifications:
+    - target: {fileID: 3211333030400184261, guid: c5d1583d1cd8bf74b9fe6a39ca0ce033,
+        type: 3}
+      propertyPath: m_Name
+      value: OS-Bot
+      objectReference: {fileID: 0}
+    - target: {fileID: 3211333030400184261, guid: c5d1583d1cd8bf74b9fe6a39ca0ce033,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3211333030400184260, guid: c5d1583d1cd8bf74b9fe6a39ca0ce033,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -11102,11 +11142,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3211333030400184261, guid: c5d1583d1cd8bf74b9fe6a39ca0ce033,
-        type: 3}
-      propertyPath: m_Name
-      value: OS-Bot
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c5d1583d1cd8bf74b9fe6a39ca0ce033, type: 3}

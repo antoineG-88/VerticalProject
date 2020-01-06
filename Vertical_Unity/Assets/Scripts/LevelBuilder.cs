@@ -17,6 +17,7 @@ public class LevelBuilder : MonoBehaviour
     public int towerHeight;
     public Coord startPositionIndexes;
     public int roomBuildBeforeYokaiRoom;
+    public int healthTerminalNumbers;
     [Space]
     public List<Room> roomList;
     public List<Room> deadEndList;
@@ -28,6 +29,8 @@ public class LevelBuilder : MonoBehaviour
     public GameObject fillerPrefab;
     public GameObject verticalDoors;
     public GameObject horizontalDoors;
+    public Vector2 verticalDoorsOffset;
+    public Vector2 horizontalDoorsOffset;
     [Space]
     [Space]
     public bool fillEmptySpaces;
@@ -61,6 +64,8 @@ public class LevelBuilder : MonoBehaviour
     private List<Coord> checkedZones = new List<Coord>();
     private List<Coord> accessibleZones = new List<Coord>();
     private List<Coord> freeOpeningZones = new List<Coord>();
+    private List<Coord> goodOpeningZones = new List<Coord>();
+    private List<int> goodOpeningDirection = new List<int>();
     private Coord nextRoomStart;
     private int nextRoomOpeningDirection;
     private Coord originRoom;
@@ -71,6 +76,7 @@ public class LevelBuilder : MonoBehaviour
     private bool yokaiRoomChosen;
     private bool leftEdgeChosen;
     private bool rightEdgeChosen;
+    private int healthTerminalPlaced;
 
     private bool levelBuilt;
     private bool levelScanned;
@@ -133,6 +139,7 @@ public class LevelBuilder : MonoBehaviour
             roomBuiltNumber = 0;
             endRoomBuild = false;
             yokaiRoomBuild = false;
+            healthTerminalPlaced = 0;
             towerGrid = new Room.RoomPart[towerHeight, towerWidth];
             checkedFloors = new bool[towerHeight];
             emptyZones = Coord.CreateFullZoneGrid(towerHeight, towerWidth);
@@ -197,6 +204,11 @@ public class LevelBuilder : MonoBehaviour
 
         } while (!endRoomBuild || !yokaiRoomBuild);
 
+        if(healthTerminalNumbers > 0)
+        {
+            PLaceHealthTerminal();
+        }
+        yield return new WaitForFixedUpdate();
 
         if (!openingRemaining)
         {
@@ -490,6 +502,8 @@ public class LevelBuilder : MonoBehaviour
                             if (avoidBlockedOpenings)
                             {
                                 freeOpeningZones.Clear();
+                                goodOpeningZones.Clear();
+                                goodOpeningDirection.Clear();
                                 floorNumber = 0;
                                 while (allRoomOpeningsFree && floorNumber < potentialRoom.roomParts.GetLength(0))
                                 {
@@ -516,6 +530,70 @@ public class LevelBuilder : MonoBehaviour
                                 Debug.Log("Room found ! The room " + selectedRoom.name + " has all needed features. Placed at Floor " + nextZone.x + " Zone " + nextZone.y);
 
                                 RoomHandler newRoomHandler = new RoomHandler(selectedRoom, selectedRoom.roomParts.GetLength(0), selectedRoom.roomParts.GetLength(1));
+                                GameData.levelHandler.allTowerRooms.Add(newRoomHandler);
+
+                                // Placement des portes et liaison au roomHandler
+                                Vector2 doorPos;
+                                for (int i = 0; i < goodOpeningDirection.Count; i++)
+                                {
+                                    doorPos = Coord.ZoneToTowerPos(goodOpeningZones[i], this);
+                                    GameObject newDoor = null;
+                                    RoomHandler.RoomDoors newRoomDoors;
+                                    switch (goodOpeningDirection[i])
+                                    {
+                                        case 0:
+                                            doorPos.y += tileLength / 2;
+                                            doorPos += horizontalDoorsOffset;
+                                            newDoor = Instantiate(horizontalDoors, doorPos, horizontalDoors.transform.rotation, levelHolder.transform);
+                                            newRoomDoors = new RoomHandler.RoomDoors(newDoor.GetComponent<Doors>(), 0);
+                                            newRoomHandler.doors.Add(newRoomDoors);
+
+                                            if (towerRooms[nextZone.x + 1, nextZone.y] != null)
+                                            {
+                                                towerRooms[nextZone.x + 1, nextZone.y].doors.Add(newRoomDoors);
+                                            }
+                                            break;
+
+                                        case 1:
+                                            doorPos.y -= tileLength / 2;
+                                            doorPos += horizontalDoorsOffset;
+                                            newDoor = Instantiate(horizontalDoors, doorPos, horizontalDoors.transform.rotation, levelHolder.transform);
+                                            newRoomDoors = new RoomHandler.RoomDoors(newDoor.GetComponent<Doors>(), 1);
+                                            newRoomHandler.doors.Add(newRoomDoors);
+
+                                            if (towerRooms[nextZone.x - 1, nextZone.y] != null)
+                                            {
+                                                towerRooms[nextZone.x - 1, nextZone.y].doors.Add(newRoomDoors);
+                                            }
+                                            break;
+
+                                        case 2:
+                                            doorPos.x += tileLength / 2;
+                                            doorPos += verticalDoorsOffset;
+                                            newDoor = Instantiate(verticalDoors, doorPos, verticalDoors.transform.rotation, levelHolder.transform);
+                                            newRoomDoors = new RoomHandler.RoomDoors(newDoor.GetComponent<Doors>(), 2);
+                                            newRoomHandler.doors.Add(newRoomDoors);
+
+                                            if (towerRooms[nextZone.x, nextZone.y + 1] != null)
+                                            {
+                                                towerRooms[nextZone.x, nextZone.y + 1].doors.Add(newRoomDoors);
+                                            }
+                                            break;
+
+                                        case 3:
+                                            doorPos.x -= tileLength / 2;
+                                            doorPos += verticalDoorsOffset;
+                                            newDoor = Instantiate(verticalDoors, doorPos, verticalDoors.transform.rotation, levelHolder.transform);
+                                            newRoomDoors = new RoomHandler.RoomDoors(newDoor.GetComponent<Doors>(), 3);
+                                            newRoomHandler.doors.Add(newRoomDoors);
+
+                                            if (towerRooms[nextZone.x, nextZone.y - 1] != null)
+                                            {
+                                                towerRooms[nextZone.x, nextZone.y - 1].doors.Add(newRoomDoors);
+                                            }
+                                            break;
+                                    }
+                                }
 
                                 for (floorNumber = 0; floorNumber < selectedRoom.roomParts.GetLength(0); floorNumber++)
                                 {
@@ -568,24 +646,14 @@ public class LevelBuilder : MonoBehaviour
                                                 }
                                                 else if (child.name == "FinalRing")
                                                 {
-                                                    GetComponent<LevelHandler>().finalRing = child.gameObject;
-                                                    //GameData.levelHandler.finalRing = child.gameObject;
+                                                    //GetComponent<LevelHandler>().finalRing = child.gameObject;
+                                                    GameData.levelHandler.finalRing = child.gameObject;
                                                     Debug.Log("Final ring found on zone " + (nextZone + relativeIndexes));
                                                 }
-                                                else if(child.name == "Doors")
+                                                else if (child.name == "HealthTerminal")
                                                 {
-                                                    for (int t = 0; t < child.childCount; t++)
-                                                    {
-                                                        Doors door = child.GetChild(t).GetComponent<Doors>();
-                                                        if(door != null)
-                                                        {
-                                                            newRoomHandler.doors.Add(door);
-                                                        }
-                                                        else
-                                                        {
-                                                            Debug.LogError("No Doors script found on " + child.GetChild(t).name);
-                                                        }
-                                                    }
+                                                    newRoomHandler.healthTerminals = child.gameObject;
+                                                    newRoomHandler.healthTerminals.SetActive(false);
                                                 }
                                             }
                                         }
@@ -679,6 +747,8 @@ public class LevelBuilder : MonoBehaviour
                             {
                                 Debug.Log("Some openings on " + potentialRoom.name + " are blocked");
                                 freeOpeningZones.Clear();
+                                goodOpeningZones.Clear();
+                                goodOpeningDirection.Clear();
                             }
                         }
                     }
@@ -1150,13 +1220,19 @@ public class LevelBuilder : MonoBehaviour
                                 {
                                     isAllFree = false;
                                 }
+                                else
+                                {
+                                    goodOpeningZones.Add(new Coord(floorToCheck, zoneToCheck));
+                                    goodOpeningDirection.Add(0);
+                                }
                             }
                             else
                             {
                                 if (Coord.GetZone(accessibleZones, floorToCheck + 1, zoneToCheck) == null)
                                 {
                                     freeOpeningZones.Add(new Coord(floorToCheck + 1, zoneToCheck));
-                                    // place doors here !!!!!
+                                    //goodOpeningZones.Add(new Coord(floorToCheck, zoneToCheck));
+                                    //goodOpeningDirection.Add(0);
                                 }
                             }
                         }
@@ -1175,12 +1251,19 @@ public class LevelBuilder : MonoBehaviour
                                 {
                                     isAllFree = false;
                                 }
+                                else
+                                {
+                                    goodOpeningZones.Add(new Coord(floorToCheck, zoneToCheck));
+                                    goodOpeningDirection.Add(1);
+                                }
                             }
                             else
                             {
                                 if (Coord.GetZone(accessibleZones, floorToCheck - 1, zoneToCheck) == null)
                                 {
                                     freeOpeningZones.Add(new Coord(floorToCheck - 1, zoneToCheck));
+                                    //goodOpeningZones.Add(new Coord(floorToCheck, zoneToCheck));
+                                    //goodOpeningDirection.Add(1);
                                 }
                             }
                         }
@@ -1199,12 +1282,19 @@ public class LevelBuilder : MonoBehaviour
                                 {
                                     isAllFree = false;
                                 }
+                                else
+                                {
+                                    goodOpeningZones.Add(new Coord(floorToCheck, zoneToCheck));
+                                    goodOpeningDirection.Add(2);
+                                }
                             }
                             else
                             {
                                 if (Coord.GetZone(accessibleZones, floorToCheck, zoneToCheck + 1) == null)
                                 {
                                     freeOpeningZones.Add(new Coord(floorToCheck, zoneToCheck + 1));
+                                    //goodOpeningZones.Add(new Coord(floorToCheck, zoneToCheck));
+                                    //goodOpeningDirection.Add(2);
                                 }
                             }
                         }
@@ -1223,12 +1313,19 @@ public class LevelBuilder : MonoBehaviour
                                 {
                                     isAllFree = false;
                                 }
+                                else
+                                {
+                                    goodOpeningZones.Add(new Coord(floorToCheck, zoneToCheck));
+                                    goodOpeningDirection.Add(3);
+                                }
                             }
                             else
                             {
                                 if (Coord.GetZone(accessibleZones, floorToCheck, zoneToCheck - 1) == null)
                                 {
                                     freeOpeningZones.Add(new Coord(floorToCheck, zoneToCheck - 1));
+                                    //goodOpeningZones.Add(new Coord(floorToCheck, zoneToCheck));
+                                    //goodOpeningDirection.Add(3);
                                 }
                             }
                         }
@@ -1462,6 +1559,26 @@ public class LevelBuilder : MonoBehaviour
             room.allRooms.AddRange(endRoomList);
             room.allRooms.AddRange(yokaiRoomList);
             room.allRooms.AddRange(startRoomList);
+        }
+    }
+
+    private void PLaceHealthTerminal()
+    {
+        bool[] roomFilledWithHT = new bool[GameData.levelHandler.allTowerRooms.Count];
+        while (healthTerminalPlaced <= healthTerminalNumbers)
+        {
+            bool placed = false;
+            while(!placed)
+            {
+                int rand = Random.Range(0, GameData.levelHandler.allTowerRooms.Count);
+                if(!roomFilledWithHT[rand] && GameData.levelHandler.allTowerRooms[rand].healthTerminals != null)
+                {
+                    GameData.levelHandler.allTowerRooms[rand].healthTerminals.SetActive(true);
+                    placed = true;
+                    healthTerminalPlaced++;
+                    Debug.Log("Health terminal placed at " + GameData.levelHandler.allTowerRooms[rand].center);
+                }
+            }
         }
     }
 

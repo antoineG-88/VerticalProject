@@ -8,7 +8,8 @@ public class RoomHandler
     public List<Vector2> zonesCenterPos;
     public bool discovered;
     public List<EnemyHandler> currentEnemies;
-    public List<Doors> doors;
+    public List<RoomDoors> doors;
+    public GameObject healthTerminals;
     public Vector2 center;
 
     public RoomHandler(Room _originRoom, int floorNumber, int zoneNumber)
@@ -17,7 +18,7 @@ public class RoomHandler
         zonesCenterPos = new List<Vector2>();
         discovered = false;
         currentEnemies = new List<EnemyHandler>();
-        doors = new List<Doors>();
+        doors = new List<RoomDoors>();
     }
 
     public void Pause()
@@ -40,23 +41,40 @@ public class RoomHandler
     public void RemoveEnemy(EnemyHandler enemy)
     {
         currentEnemies.Remove(enemy);
-        UpdateRoomLockState();
     }
 
     public void SetCenter(Vector2 bottomLeftZoneCenter)
     {
         center = bottomLeftZoneCenter;
-        UpdateRoomLockState();
     }
 
     public void UpdateRoomLockState()
     {
         if (currentEnemies.Count == 0)
         {
-            foreach (Doors door in doors)
+            foreach (RoomDoors door in doors)
             {
-                door.isLocked = false;
+                door.doors.isLocked = false;
             }
+        }
+        else
+        {
+            foreach (RoomDoors door in doors)
+            {
+                door.doors.isLocked = true;
+            }
+        }
+    }
+
+    public class RoomDoors
+    {
+        public Doors doors;
+        public int direction;
+
+        public RoomDoors(Doors _doors, int _direction)
+        {
+            doors = _doors;
+            direction = _direction;
         }
     }
 }

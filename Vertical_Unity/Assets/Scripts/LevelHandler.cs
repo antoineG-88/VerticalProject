@@ -16,8 +16,10 @@ public class LevelHandler : MonoBehaviour
     private RoomHandler currentRoom;
     private RoomHandler previousRoom;
     private GridGraph gridGraph;
+    [HideInInspector] public List<RoomHandler> allTowerRooms;
 
     [HideInInspector] public GameObject finalRing;
+    private bool towerCreationFlag;
 
     void Start()
     {
@@ -26,12 +28,23 @@ public class LevelHandler : MonoBehaviour
         timeBeforeNextZoneUpdate = 0;
         currentPlayerZone = new Coord(0, 2);
         previousRoom = new RoomHandler(null, 0, 0);
+        allTowerRooms = new List<RoomHandler>();
+        towerCreationFlag = true;
     }
 
     private void Update()
     {
         if(GameData.levelBuilder.towerCreated)
         {
+            if(towerCreationFlag)
+            {
+                towerCreationFlag = false;
+                foreach(RoomHandler room in allTowerRooms)
+                {
+                    room.Pause();
+                }
+            }
+
             UpdatePlayerProgression();
 
             if (timeBeforeNextZoneUpdate > 0)
@@ -69,6 +82,8 @@ public class LevelHandler : MonoBehaviour
             if (levelBuilder.towerRooms[currentPlayerZone.x, currentPlayerZone.y] != null)
                 UpdateCamera(currentRoom.zonesCenterPos);
         }
+
+        currentRoom.UpdateRoomLockState();
     }
 
     private Coord GetCurrentPlayerZone()
