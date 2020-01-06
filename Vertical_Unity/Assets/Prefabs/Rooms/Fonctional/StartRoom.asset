@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f0370ba6983387a48b2e32f8cd29cc0f, type: 3}
-  m_Name: Room 1x1 LD 1
+  m_Name: StartRoom
   m_EditorClassIdentifier: 
   name: 
   floors:
   - roomPartsByFloor:
-    - partPrefab: {fileID: 6649508678962274148, guid: c53a85cb10e21da419125b514725311c,
+    - partPrefab: {fileID: 3564556701710042226, guid: 6fb1c3f22c1e0594db60cf771e55b6b5,
         type: 3}
-      openings: 00010001
+      openings: 00000101
       room: {fileID: 0}
   allRooms: []
