@@ -98,6 +98,7 @@ public class PlayerManager : MonoBehaviour
             GameData.playerGrapplingHandler.ReleaseHook();
             GameData.playerVisuals.isHurt = 10;
             StartCoroutine(Stun(stunTime));
+            StartCoroutine(GameData.gameController.postProcessHandler.TriggerHurtEffect());
             invulnerableTimeRemaining = invulnerableTime;
             isVulnerable = false;
             if (currentHealth <= 0)
@@ -155,6 +156,7 @@ public class PlayerManager : MonoBehaviour
 
         yield return new WaitForSeconds(timeBeforeGameOverTextFade);
 
+        gameOverPanel.transform.parent.gameObject.SetActive(true);
         gameOverPanel.SetActive(true);
 
         gameOverText.color = new Color(gameOverText.color.r, gameOverText.color.g, gameOverText.color.b, 0);

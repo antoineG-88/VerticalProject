@@ -12,7 +12,7 @@ public class LevelHandler : MonoBehaviour
 
     private LevelBuilder levelBuilder;
     private float timeBeforeNextZoneUpdate;
-    private Coord currentPlayerZone;
+    [HideInInspector] public Coord currentPlayerZone;
     private RoomHandler currentRoom;
     private RoomHandler previousRoom;
     private GridGraph gridGraph;
