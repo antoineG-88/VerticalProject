@@ -8528,11 +8528,11 @@ Tilemap:
   - m_RefCount: 0
     m_Data: {r: 0, g: 0, b: 0, a: 0}
   - m_RefCount: 1
-    m_Data: {r: 0.79126006, g: 0.49769276, b: 0.5353428, a: 1}
+    m_Data: {r: 0.97777635, g: 0.61033493, b: 0.6121811, a: 1}
   - m_RefCount: 1
-    m_Data: {r: 0.9998024, g: 0.43864843, b: 0.5273375, a: 1}
+    m_Data: {r: 0.79588497, g: 0.3974922, b: 0.52760714, a: 1}
   - m_RefCount: 1
-    m_Data: {r: 0.8953984, g: 0.44046655, b: 0.46577126, a: 1}
+    m_Data: {r: 0.8806321, g: 0.41515738, b: 0.5256973, a: 1}
   m_AnimationFrameRate: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Origin: {x: -26, y: -14, z: 0}
@@ -8919,6 +8919,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: WatchBot1
       objectReference: {fileID: 0}
+    - target: {fileID: 6312095705553650338, guid: a26b0a6c805712744b996ae50874c35c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6312095705553650344, guid: a26b0a6c805712744b996ae50874c35c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -8993,6 +8998,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Spider bot (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7943056003815322884, guid: 04c0802a92785ad41a3d22982ddb941f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7943056003815322887, guid: 04c0802a92785ad41a3d22982ddb941f,
         type: 3}
@@ -9218,6 +9228,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: OS-Bot (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3211333030400184261, guid: c5d1583d1cd8bf74b9fe6a39ca0ce033,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3211333030400184260, guid: c5d1583d1cd8bf74b9fe6a39ca0ce033,
         type: 3}
@@ -9669,6 +9684,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: OverBot
       objectReference: {fileID: 0}
+    - target: {fileID: 4670905135045009076, guid: 53fb27a9ca242df41837e5b248ca612d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4670905135045009077, guid: 53fb27a9ca242df41837e5b248ca612d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -10118,6 +10138,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: OS-Bot (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3211333030400184261, guid: c5d1583d1cd8bf74b9fe6a39ca0ce033,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3211333030400184260, guid: c5d1583d1cd8bf74b9fe6a39ca0ce033,
         type: 3}

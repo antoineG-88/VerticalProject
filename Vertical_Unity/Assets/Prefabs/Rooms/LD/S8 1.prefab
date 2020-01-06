@@ -8328,9 +8328,9 @@ Tilemap:
   - m_RefCount: 499
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   - m_RefCount: 1
-    m_Data: {r: 0.8611246, g: 0.4224733, b: 0.51281846, a: 1}
+    m_Data: {r: 0.89576, g: 0.516429, b: 0.527771, a: 1}
   - m_RefCount: 1
-    m_Data: {r: 0.8238825, g: 0.35547695, b: 0.37993187, a: 1}
+    m_Data: {r: 0.94784206, g: 0.58464, b: 0.5986811, a: 1}
   m_AnimationFrameRate: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Origin: {x: -34, y: -15, z: 0}
@@ -8430,8 +8430,6 @@ Transform:
   - {fileID: 8023488772461521977}
   - {fileID: 8023488772783658790}
   - {fileID: 8023488772469370460}
-  - {fileID: 3386602943090897470}
-  - {fileID: 804845458429323652}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -8550,6 +8548,8 @@ Transform:
   - {fileID: 8693378015273676994}
   - {fileID: 8693378015781000889}
   - {fileID: 8693378014925488382}
+  - {fileID: 3386602943090897470}
+  - {fileID: 804845458429323652}
   m_Father: {fileID: 8023488771700934653}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -8558,7 +8558,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 8023488771700934653}
+    m_TransformParent: {fileID: 8023488772783658790}
     m_Modifications:
     - target: {fileID: 1960271053136261069, guid: 198e8820df55ff042b26701a20a7d15c,
         type: 3}
@@ -8603,7 +8603,7 @@ PrefabInstance:
     - target: {fileID: 1960271053136261056, guid: 198e8820df55ff042b26701a20a7d15c,
         type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 1960271053136261056, guid: 198e8820df55ff042b26701a20a7d15c,
         type: 3}
@@ -8715,6 +8715,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: OS-Bot (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 3211333030400184261, guid: c5d1583d1cd8bf74b9fe6a39ca0ce033,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3211333030400184260, guid: c5d1583d1cd8bf74b9fe6a39ca0ce033,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -8790,6 +8795,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: OverBot
       objectReference: {fileID: 0}
+    - target: {fileID: 4670905135045009076, guid: 53fb27a9ca242df41837e5b248ca612d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4670905135045009077, guid: 53fb27a9ca242df41837e5b248ca612d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -8864,6 +8874,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: WatchBot1 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6312095705553650338, guid: a26b0a6c805712744b996ae50874c35c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6312095705553650344, guid: a26b0a6c805712744b996ae50874c35c,
         type: 3}
@@ -9240,6 +9255,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: WatchBot1
       objectReference: {fileID: 0}
+    - target: {fileID: 6312095705553650338, guid: a26b0a6c805712744b996ae50874c35c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6312095705553650344, guid: a26b0a6c805712744b996ae50874c35c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -9389,6 +9409,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: OS-Bot
+      objectReference: {fileID: 0}
+    - target: {fileID: 3211333030400184261, guid: c5d1583d1cd8bf74b9fe6a39ca0ce033,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3211333030400184260, guid: c5d1583d1cd8bf74b9fe6a39ca0ce033,
         type: 3}
@@ -9608,7 +9633,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 8023488771700934653}
+    m_TransformParent: {fileID: 8023488772783658790}
     m_Modifications:
     - target: {fileID: 1960271053136261069, guid: 198e8820df55ff042b26701a20a7d15c,
         type: 3}
@@ -9653,7 +9678,7 @@ PrefabInstance:
     - target: {fileID: 1960271053136261056, guid: 198e8820df55ff042b26701a20a7d15c,
         type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 1960271053136261056, guid: 198e8820df55ff042b26701a20a7d15c,
         type: 3}
