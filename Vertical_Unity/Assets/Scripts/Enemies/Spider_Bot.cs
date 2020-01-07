@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Spider_Bot : EnemyHandler
 {
-    [Header("OverBot settings")]
+    [Header("SpiderBot settings")]
     public float jumpSpeed;
     [Header("JumpShot")]
     public int jumpShotDamage;
@@ -112,11 +112,6 @@ public class Spider_Bot : EnemyHandler
         if(onSurface)
         {
             Propel(Vector2.zero, true, true);
-        }
-
-        if (Physics2D.OverlapBox(transform.position, Vector2.one / 3, LayerMask.GetMask("Ground")))
-        {
-            TakeDamage(10, Vector2.zero);
         }
     }
 

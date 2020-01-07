@@ -13,6 +13,7 @@ public static class GameData
     public static LevelBuilder levelBuilder;
     public static LevelHandler levelHandler;
     public static CameraHandler cameraHandler;
+    public static AudioSource playerSource;
 
     public static void Initialize(PlayerManager _playerManager, PlayerMovement _playerMovement, PlayerGrapplingHandler _playerGrapplingHandler, PlayerAttackManager _playerAttackManager, GameController _gameController, CameraHandler _cameraHandler, LevelBuilder _levelBuilder, LevelHandler _levelHandler)
     {
@@ -25,6 +26,7 @@ public static class GameData
         levelHandler = _levelHandler;
         cameraHandler = _cameraHandler;
         playerVisuals = _playerManager.GetComponentInChildren<PlayerVisuals>();
+        playerSource = playerMovement.GetComponent<AudioSource>();
     }
 
     public static void Initialize(PlayerManager _playerManager, PlayerMovement _playerMovement, PlayerGrapplingHandler _playerGrapplingHandler, PlayerAttackManager _playerAttackManager, GameController _gameController, CameraHandler _cameraHandler)
@@ -36,5 +38,6 @@ public static class GameData
         gameController = _gameController;
         cameraHandler = _cameraHandler;
         playerVisuals = _playerManager.GetComponentInChildren<PlayerVisuals>();
+        playerSource = playerMovement.GetComponent<AudioSource>();
     }
 }

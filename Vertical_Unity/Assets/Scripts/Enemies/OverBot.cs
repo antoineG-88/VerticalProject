@@ -29,6 +29,9 @@ public class OverBot : EnemyHandler
     public int counterRushAttackDamage;
     public float counterRushAttackKnockback;
     public float bulletAttackSpeed = 0.3f;
+    [Header("Audio Clips")]
+    public AudioClip shootClip;
+    public float shootPitch;
     [Header("Debug settings")]
     public GameObject particleDebugPrefab;
     public GameObject projectilePrefab;
@@ -41,8 +44,8 @@ public class OverBot : EnemyHandler
     [HideInInspector] public float timebeforeRushAttack;
     [HideInInspector] public float rushAttackCooldownRemaining;
     private Vector2 aimDirection;
-    private bool isRushing;
-
+    [HideInInspector] public bool isRushing;
+    [HideInInspector] public bool isShooting;
 
     private void Start()
     {
@@ -166,7 +169,7 @@ public class OverBot : EnemyHandler
                 timebeforeRushAttack -= Time.deltaTime;
                 if (timebeforeRushAttack <= 0)
                 {
-                   StartCoroutine( RushAttack());
+                   StartCoroutine(RushAttack());
                 }
             }
         }
@@ -207,11 +210,13 @@ public class OverBot : EnemyHandler
         isRushing = false;
         // Fin du rush 
 
-
+        isShooting = true;
         float subAngle = attackWidthAngle / (projectileNumber - 1);
         float firstAngle = - attackWidthAngle / 2;
         for(int x = 0; x < projectileSend && !Is(Effect.Stun); x++)
         {
+            source.pitch = shootPitch;
+            source.PlayOneShot(shootClip);
             for (int i = 0; i < projectileNumber && !Is(Effect.Stun); i++)
 
             {
@@ -231,6 +236,7 @@ public class OverBot : EnemyHandler
             }
             yield return new WaitForSeconds(bulletAttackSpeed);
         }
+        isShooting = false;
     }
 
 
@@ -239,7 +245,10 @@ public class OverBot : EnemyHandler
     {
         if(isRushing)
         {
+            SetEffect(Effect.Stun, 0.1f, false);
+            GameData.playerMovement.Propel(Vector2.zero, true, true);
             GameData.playerManager.TakeDamage(counterRushAttackDamage, aimDirection * counterRushAttackKnockback, 0.2f);
+            Propel(-aimDirection * counterRushAttackKnockback, true, true);
         }
 
         return isRushing;
@@ -252,6 +261,7 @@ public class OverBot : EnemyHandler
             if (PlayerInSight() && !Is(Effect.NoControl) && !Is(Effect.Stun))
             {
                 provoked = true;
+                source.PlayOneShot(spotedClip);
             }
         }
         else if (Vector2.Distance(transform.position, GameData.playerMovement.transform.position) > agroRange)

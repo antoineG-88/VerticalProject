@@ -23,6 +23,9 @@ public class WatchBot : EnemyHandler
     public float projectileSpawnDistance;
     public float projectileKnockbackForce;
     public float projectileLifeTime;
+    [Header("Audio Clips")]
+    public AudioClip shootClip;
+    public float shootPitch;
     [Header("Spike-attack settings OBSOLETE")]
     public bool useSpikeAttack = false;
     public float spikeAttackRange;
@@ -193,6 +196,9 @@ public class WatchBot : EnemyHandler
     {
         rangeAttackCooldownRemaining = rangeAttackCooldown;
 
+        source.pitch = shootPitch;
+        source.PlayOneShot(shootClip);
+
         float subAngle = attackWidthAngle / (projectileNumber - 1);
         float firstAngle = - attackWidthAngle / 2;
         for (int i = 0; i < projectileNumber; i++)
@@ -234,6 +240,7 @@ public class WatchBot : EnemyHandler
             if (PlayerInSight() && !Is(Effect.NoControl) && !Is(Effect.Stun))
             {
                 provoked = true;
+                source.PlayOneShot(spotedClip);
             }
         }
         else if (Vector2.Distance(transform.position, GameData.playerMovement.transform.position) > agroRange)

@@ -96,6 +96,7 @@ public class PostProcessHandler : MonoBehaviour
 
     public IEnumerator TriggerHurtEffect()
     {
+        postProcessVolume.profile = originProfile;
         ColorGrading colorGrading = postProcessVolume.profile.GetSetting<ColorGrading>();
         colorGrading.enabled.value = true;
         yield return new WaitForSecondsRealtime(hurtEffectTime);

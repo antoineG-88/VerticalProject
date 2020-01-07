@@ -117,6 +117,7 @@ GameObject:
   - component: {fileID: 3211333030400184269}
   - component: {fileID: 3211333030400184268}
   - component: {fileID: 3211333030400184266}
+  - component: {fileID: 6751888625952392175}
   m_Layer: 11
   m_Name: OS-Bot
   m_TagString: Enemy
@@ -250,6 +251,7 @@ MonoBehaviour:
     type: 3}
   deathExplosionPrefab: {fileID: 4121049825518759165, guid: 27ff6e54c4d154d48be10e3f87b4e012,
     type: 3}
+  spotedClip: {fileID: 8300000, guid: e8715db1cddb26d48a3b07088ca99026, type: 3}
   pauseAI: 0
   debugParticlePrefab: {fileID: 743808000188852099, guid: 1cf7fde50c7c4334dbeb307cefb2d3dd,
     type: 3}
@@ -277,6 +279,7 @@ MonoBehaviour:
   targetConnectedConnection: {fileID: 0}
   timeBeforeNextPathUpdate: 0
   pJumpCDRemaining: 0
+  source: {fileID: 0}
   acceleration: 5
   maxSpeed: 1
   slowingForce: 5
@@ -292,6 +295,15 @@ MonoBehaviour:
   laserBeamTime: 0.8
   laserStunTime: 0.3
   knockBackForce: 10
+  laserBeamfxPartPrefab: {fileID: 2801014645305650685, guid: 6a11b86081890c44aa2921cc9bd8c4aa,
+    type: 3}
+  laserBeamfxBeginPrefab: {fileID: 8596842640959088378, guid: 4d34c68a59f081c46a6cb01143fc9eeb,
+    type: 3}
+  laserBeamfxEndPrefab: {fileID: 8918203217984456147, guid: 87f22f5ab8488e540947df88beef3214,
+    type: 3}
+  spaceBetweenLaserBeamFx: 1.5
+  laserFxStartOffset: 1.2
+  laserClip: {fileID: 8300000, guid: 95f348431ac7dac43b86f4133ab53833, type: 3}
   particleDebugPrefab: {fileID: 743808000188852099, guid: 1cf7fde50c7c4334dbeb307cefb2d3dd,
     type: 3}
   projectilePrefab: {fileID: 733819507943030622, guid: d718da2d5dc7bf64a86dc8b40ec37cb2,
@@ -400,8 +412,8 @@ LineRenderer:
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 0.8207547, g: 0.011614433, b: 0.011614433, a: 1}
-      key1: {r: 1, g: 1, b: 1, a: 1}
+      key0: {r: 0.7075472, g: 0, b: 0, a: 0.5882353}
+      key1: {r: 0.6886792, g: 0, b: 0, a: 0.5882353}
       key2: {r: 0, g: 0, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}
@@ -447,6 +459,102 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b110f172776b274eb1af810339582e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!82 &6751888625952392175
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3211333030400184261}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &6424994580696548667
 GameObject:
   m_ObjectHideFlags: 0

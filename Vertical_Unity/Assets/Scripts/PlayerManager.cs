@@ -85,6 +85,16 @@ public class PlayerManager : MonoBehaviour
                 Debug.Log("PlayerData health : " + PlayerData.playerHealth);
             }
         }
+
+        if(Input.GetKey(KeyCode.G) && Input.GetKey(KeyCode.O) && Input.GetKey(KeyCode.D))
+        {
+            vulnerable = false;
+        }
+
+        if(Input.GetKey(KeyCode.V) && Input.GetKey(KeyCode.U) && Input.GetKey(KeyCode.L))
+        {
+            vulnerable = true;
+        }
     }
 
     public bool TakeDamage(int damage, Vector2 knockBack, float stunTime)

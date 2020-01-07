@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6067586404583493702}
   - component: {fileID: 6067586404583493703}
   - component: {fileID: 6067586404583493697}
+  - component: {fileID: 3785642451537043172}
   m_Layer: 0
   m_Name: Level
   m_TagString: Untagged
@@ -58,6 +59,7 @@ MonoBehaviour:
     x: 0
     y: 1
   roomBuildBeforeYokaiRoom: 2
+  healthTerminalNumbers: 0
   roomList:
   - {fileID: 11400000, guid: 0654c6c3838c4144ca8381e70acedae0, type: 2}
   - {fileID: 11400000, guid: 07b9ccac0d2c1964d95e2ab078fdb8b2, type: 2}
@@ -77,6 +79,12 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 6a54f7d05c6fff04ab8d0538952ace77, type: 2}
   fillerPrefab: {fileID: 778409336111630296, guid: f0f69af25cac0684a9eed2ac813069ce,
     type: 3}
+  leftTowerWall: {fileID: 0}
+  rightTowerWall: {fileID: 0}
+  verticalDoors: {fileID: 0}
+  horizontalDoors: {fileID: 0}
+  verticalDoorsOffset: {x: 0, y: 0}
+  horizontalDoorsOffset: {x: 0, y: 0}
   fillEmptySpaces: 0
   avoidBlockedOpenings: 1
   mandatoryOpenings: 0
@@ -87,8 +95,10 @@ MonoBehaviour:
   bottomCenterTowerPos: {x: 0, y: -15}
   tileLength: 24
   maxRoom: 2000
+  towerCreated: 0
   levelHolderPrefab: {fileID: 8950924055697529316, guid: 08edfc2d1768c8d4ea9091cd097551b2,
     type: 3}
+  hideDebugTowerGenerationLog: 0
 --- !u!114 &6067586404583493697
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -103,5 +113,105 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   minDistanceToFinalRing: 0.5
   cameraHandler: {fileID: 0}
+  backGroundParallaxHandler: {fileID: 0}
   currentZoneUpdateTime: 0.1
+  currentPlayerZone:
+    x: 0
+    y: 0
   finalRing: {fileID: 0}
+--- !u!82 &3785642451537043172
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6067586404583493700}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4

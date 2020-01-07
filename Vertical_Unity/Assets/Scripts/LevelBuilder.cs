@@ -27,6 +27,8 @@ public class LevelBuilder : MonoBehaviour
     public List<Room> yokaiRoomList;
     public List<Room> startRoomList;
     public GameObject fillerPrefab;
+    public GameObject leftTowerWall;
+    public GameObject rightTowerWall;
     public GameObject verticalDoors;
     public GameObject horizontalDoors;
     public Vector2 verticalDoorsOffset;
@@ -53,6 +55,7 @@ public class LevelBuilder : MonoBehaviour
     [Space]
     [Space]
     public bool hideDebugTowerGenerationLog;
+    public bool deactivateRoomOnCreation;
 
     [HideInInspector] public Room.RoomPart[,] towerGrid;
     [HideInInspector] public RoomHandler[,] towerRooms;
@@ -603,7 +606,10 @@ public class LevelBuilder : MonoBehaviour
 
                                         if(floorNumber == 0 && zoneNumber == 0)
                                         {
-                                            newRoomHandler.SetCenter(Coord.ZoneToTowerPos(nextZone + relativeIndexes, this));
+                                            Vector2 bottomLeftOffset;
+                                            bottomLeftOffset.x = (selectedRoom.roomParts.GetLength(1) * tileLength) / 2 - (tileLength / 2);
+                                            bottomLeftOffset.y = (selectedRoom.roomParts.GetLength(0) * tileLength) / 2 - (tileLength / 2);
+                                            newRoomHandler.SetCenter(Coord.ZoneToTowerPos(nextZone + relativeIndexes, this) + bottomLeftOffset);
                                         }
 
                                         if (selectedRoom.roomParts[floorNumber, zoneNumber] != null)
@@ -622,39 +628,23 @@ public class LevelBuilder : MonoBehaviour
                                                 newRoomHandler.zonesCenterPos.Add(Coord.ZoneToTowerPos(new Coord(nextZone.x + relativeIndexes.x, nextZone.y + relativeIndexes.y + 1), this));
                                             }
 
-                                            Debug.Log(selectedRoom.name + " part placed on " + (nextZone + relativeIndexes));
-                                            GameObject newRoomObject = CreateTile(new Coord(nextZone.x + relativeIndexes.x, nextZone.y + relativeIndexes.y));
-
-                                            for (int i = 0; i < newRoomObject.transform.childCount; i++)
+                                            if(zoneNumber == 0 && nextZone.y == 0 && !leftEdgeChosen)
                                             {
-                                                Transform child = newRoomObject.transform.GetChild(i);
-                                                if(child.name == "Enemies")
-                                                {
-                                                    for(int t = 0; t < child.childCount; t++)
-                                                    {
-                                                        EnemyHandler enemy = child.GetChild(t).GetComponent<EnemyHandler>();
-                                                        if (enemy != null)
-                                                        {
-                                                            newRoomHandler.currentEnemies.Add(enemy);
-                                                            enemy.room = newRoomHandler;
-                                                        }
-                                                        else
-                                                        {
-                                                            Debug.LogError("No EnemyHandler script found on " + child.GetChild(t).name);
-                                                        }
-                                                    }
-                                                }
-                                                else if (child.name == "FinalRing")
-                                                {
-                                                    //GetComponent<LevelHandler>().finalRing = child.gameObject;
-                                                    GameData.levelHandler.finalRing = child.gameObject;
-                                                    Debug.Log("Final ring found on zone " + (nextZone + relativeIndexes));
-                                                }
-                                                else if (child.name == "HealTerminal")
-                                                {
-                                                    newRoomHandler.healTerminal = child.gameObject;
-                                                    newRoomHandler.healTerminal.SetActive(false);
-                                                }
+                                                CreateBorder(nextZone + relativeIndexes);
+                                            }
+                                            else if (zoneNumber == (selectedRoom.roomParts.GetLength(1) - 1) && nextZone.y == (towerWidth - 1) && !rightEdgeChosen)
+                                            {
+                                                CreateBorder(nextZone + relativeIndexes);
+                                            }
+
+                                            Debug.Log(selectedRoom.name + " part placed on " + (nextZone + relativeIndexes));
+                                            GameObject newRoomObject = CreateTile(nextZone + relativeIndexes);
+                                            newRoomHandler.roomParts.Add(newRoomObject);
+                                            newRoomHandler.InitializeRoomObjects();
+
+                                            if( deactivateRoomOnCreation)
+                                            {
+                                                newRoomHandler.DeActivate();
                                             }
                                         }
                                         else
@@ -772,7 +762,7 @@ public class LevelBuilder : MonoBehaviour
                         }
                         else if (nextZone.y == (towerWidth - 1) && rightEdgeLeft)
                         {
-                            leftEdgesTested[y] = false;
+                            rightEdgesTested[y] = false;
                         }
                         else
                         {
@@ -1494,6 +1484,12 @@ public class LevelBuilder : MonoBehaviour
     private GameObject CreateTile(Coord zoneToCreate)
     {
         GameObject roomInstantiated = null;
+        if(zoneToCreate.x == 0)
+        {
+            roomInstantiated = Instantiate(fillerPrefab, Coord.ZoneToTowerPos(new Coord(zoneToCreate.x - 1, zoneToCreate.y), this), Quaternion.identity, levelHolder.transform);
+            roomInstantiated.name = fillerPrefab.name + " under tower >  " + (zoneToCreate.x - 1) + " / " + zoneToCreate.y;
+        }
+
         if (towerGrid[zoneToCreate.x, zoneToCreate.y] != null)
         {
             roomInstantiated = Instantiate(towerGrid[zoneToCreate.x, zoneToCreate.y].partPrefab, Coord.ZoneToTowerPos(zoneToCreate, this), Quaternion.identity, levelHolder.transform);
@@ -1510,6 +1506,11 @@ public class LevelBuilder : MonoBehaviour
         return roomInstantiated;
     }
 
+    private void CreateBorder(Coord borderZone)
+    {
+        Instantiate(borderZone.y == 0 ? leftTowerWall : rightTowerWall, Coord.ZoneToTowerPos(borderZone, this), Quaternion.identity, levelHolder.transform);
+    }
+
     private void FillEmptyZones()
     {
         for (int floorNumber = 0; floorNumber < towerHeight; floorNumber++)
@@ -1519,6 +1520,15 @@ public class LevelBuilder : MonoBehaviour
                 if (towerGrid[floorNumber, zoneNumber] == null)
                 {
                     CreateTile(new Coord(floorNumber, zoneNumber));
+
+                    if (zoneNumber == 0 && !leftEdgeChosen)
+                    {
+                        CreateBorder(new Coord(floorNumber, zoneNumber));
+                    }
+                    else if (zoneNumber == towerWidth - 1 && !rightEdgeChosen)
+                    {
+                        CreateBorder(new Coord(floorNumber, zoneNumber));
+                    }
                 }
             }
         }

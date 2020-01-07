@@ -246,7 +246,17 @@ public class PlayerMovement : MonoBehaviour
         isAffectedbyGravity = false;
         PlayerVisuals playerVisuals = GetComponentInChildren<PlayerVisuals>();
         GameData.playerAttackManager.isReAiming = false;
-        Vector2 dashDirection = new Vector2(GameData.gameController.input.leftJoystickHorizontal, GameData.gameController.input.leftJoystickVertical).normalized;
+        Vector2 dashDirection = Vector2.zero;
+
+        if (GameData.gameController.input.useMouseAim)
+        {
+            dashDirection = new Vector2(GameData.gameController.input.leftJoystickHorizontal, GameData.gameController.input.leftJoystickVertical).normalized;
+        }
+        else
+        {
+            dashDirection = new Vector2(GameData.gameController.input.leftJoystickHorizontal, -GameData.gameController.input.leftJoystickVertical).normalized;
+        }
+
         if(dashDirection == Vector2.zero)
         {
             dashDirection = Vector2.up;
