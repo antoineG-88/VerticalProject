@@ -78,7 +78,8 @@ public class ParallaxHandler : MonoBehaviour
         for (int i = 0; i < layerNumber; i++)
         {
             layerObjects[i].transform.position = new Vector2(layerRelativeStartPos[i].x + (mainCamera.position.x - originPos.x) * layerRelativeSpeed[i].x, layerRelativeStartPos[i].y + (mainCamera.position.y - originPos.y) * layerRelativeSpeed[i].y);
-            if((layerRelativeStartPos[i] - (Vector2)mainCamera.transform.position).x > 0)
+
+            if ((layerRelativeStartPos[i] - (Vector2)mainCamera.transform.position).x > 0)
             {
                 layerDuplicates[i].transform.localPosition = new Vector2(-spriteWidth, layerDuplicates[i].transform.localPosition.y);
             }
@@ -87,11 +88,11 @@ public class ParallaxHandler : MonoBehaviour
                 layerDuplicates[i].transform.localPosition = new Vector2(spriteWidth, layerDuplicates[i].transform.localPosition.y);
             }
 
-            if (layerObjects[i].transform.position.x - mainCamera.transform.position.x < -spriteWidth)
+            if (layerObjects[i].transform.position.x + layerRelativeStartPos[i].x - mainCamera.transform.position.x < -spriteWidth)
             {
                 layerRelativeStartPos[i].x += spriteWidth;
             }
-            else if (layerObjects[i].transform.position.x - mainCamera.transform.position.x > spriteWidth)
+            else if (layerObjects[i].transform.position.x + layerRelativeStartPos[i].x - mainCamera.transform.position.x > spriteWidth)
             {
                 layerRelativeStartPos[i].x -= spriteWidth;
             }
@@ -115,7 +116,7 @@ public class ParallaxHandler : MonoBehaviour
             if (verticalElements[i] != null)
             {
                 float heightReached = 0;
-                while (heightReached < height * layerRelativeSpeed[i].y)
+                while (heightReached < height * (1 -layerRelativeSpeed[i].y))
                 {
                     float addedHeight = Random.Range(vElemVerticalInterval[i].x, vElemVerticalInterval[i].y);
                     GameObject newElement = Instantiate(verticalElements[i], new Vector2(Random.Range(vElemHorizontalInterval[i].x, vElemHorizontalInterval[i].y), heightReached + addedHeight) + elementsStartOffset, Quaternion.identity, layerObjects[i].transform);

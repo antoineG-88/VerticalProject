@@ -31,6 +31,9 @@ public class LevelHandler : MonoBehaviour
         previousRoom = new RoomHandler(null, 0, 0);
         allTowerRooms = new List<RoomHandler>();
         towerCreationFlag = true;
+
+
+        GameData.gameController.OpenLoading();
     }
 
     private void Update()
@@ -58,7 +61,7 @@ public class LevelHandler : MonoBehaviour
                     room.Pause();
                 }
 
-                //backGroundParallaxHandler.SetNewOrigin(currentRoom.center);
+                StartCoroutine(GameData.gameController.CloseLoading());
             }
         }
     }
@@ -168,11 +171,11 @@ public class LevelHandler : MonoBehaviour
             upRight.y = levelBuilder.towerHeight - 1;
         }
 
-        foreach(RoomHandler room in allTowerRooms)
+        /*foreach(RoomHandler room in allTowerRooms)
         {
             if(!levelBuilder.yokaiRoomList.Contains(room.originRoom))
                 room.DeActivate();
-        }
+        }*/
 
         for (int i = bottomLeft.x; i <= upRight.x; i++)
         {

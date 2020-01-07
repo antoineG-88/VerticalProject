@@ -26,6 +26,8 @@ public class OS_Bot : EnemyHandler
     public GameObject laserBeamfxEndPrefab;
     public float spaceBetweenLaserBeamFx;
     public float laserFxStartOffset;
+    [Header("Audio Clips")]
+    public AudioClip laserClip;
     [Header("Debug settings")]
     public GameObject particleDebugPrefab;
     public GameObject projectilePrefab;
@@ -159,6 +161,10 @@ public class OS_Bot : EnemyHandler
 
         if (isAtRange && !Is(Effect.Stun) && !Is(Effect.Hack) && hit && hit.collider.CompareTag("Player") && snipAttackCooldownRemaining <= 0)
         {
+            if(lockTimeRemaining == lockingTime)
+            {
+                source.PlayOneShot(laserClip);
+            }
             SetEffect(Effect.NoControl, 0.2f, false);
             transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, Vector2.SignedAngle(Vector2.right, aimDirection)));
             lockTimeRemaining -= Time.deltaTime;
@@ -179,6 +185,10 @@ public class OS_Bot : EnemyHandler
             if(!isCharging)
             {
                 laserLockLine.enabled = false;
+                if(source.time <= 2)
+                {
+                    source.Stop();
+                }
             }
         }
 
@@ -211,6 +221,7 @@ public class OS_Bot : EnemyHandler
             timer -= Time.fixedDeltaTime;
             yield return new WaitForFixedUpdate();
         }
+
         if (timer <= 0)
         {
             RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, 100.0f, LayerMask.GetMask("Ground"));
@@ -230,7 +241,7 @@ public class OS_Bot : EnemyHandler
                 {
                     laserFx = laserBeamfxPartPrefab;
                 }
-                laserFxO.Add(Instantiate(laserFx, (Vector2)transform.position + direction.normalized * laserFxStartOffset + direction.normalized * (i * spaceBetweenLaserBeamFx), Quaternion.Euler(0, 0, Vector2.SignedAngle(Vector2.up, direction))));
+                laserFxO.Add(Instantiate(laserFx, (Vector2)transform.position + direction.normalized * laserFxStartOffset + direction.normalized * (i * spaceBetweenLaserBeamFx), Quaternion.Euler(0, 0, Vector2.SignedAngle(Vector2.right, direction))));
             }
 
             laserFxO.Add(Instantiate(laserBeamfxEndPrefab, hit.point, Quaternion.identity));
@@ -239,8 +250,8 @@ public class OS_Bot : EnemyHandler
             SetEffect(Effect.NoControl, laserBeamTime, false);
             while (laserTimer > 0 && !Is(Effect.Stun) && !Is(Effect.Hack) && !isDead)
             {
-                RaycastHit2D playerHit = Physics2D.Raycast(transform.position, direction, 100.0f, LayerMask.GetMask("Player"));
-                if(playerHit)
+                RaycastHit2D playerHit = Physics2D.Raycast(transform.position, direction, 100.0f, LayerMask.GetMask("Player","Ground"));
+                if(playerHit.collider.CompareTag("Player"))
                 {
                     GameData.playerManager.TakeDamage(laserDamage, direction * knockBackForce, laserStunTime);
                 }
@@ -257,6 +268,7 @@ public class OS_Bot : EnemyHandler
             isCharging = false;
         }
 
+        source.Stop();
     }
 
 
@@ -272,6 +284,7 @@ public class OS_Bot : EnemyHandler
             if (PlayerInSight() && !Is(Effect.NoControl) && !Is(Effect.Stun))
             {
                 provoked = true;
+                source.PlayOneShot(spotedClip);
             }
         }
         else if (Vector2.Distance(transform.position, GameData.playerMovement.transform.position) > agroRange)

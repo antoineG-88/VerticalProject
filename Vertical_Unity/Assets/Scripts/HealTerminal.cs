@@ -5,18 +5,17 @@ using UnityEngine;
 public class HealTerminal : MonoBehaviour
 {
     public int lifePrice;
-    GameObject interactButton;
     public int lifeAdded;
     bool isUsed;
 
     private void Start()
     {
-        isUsed = true;
+        isUsed = false;
     }
 
     void OnTriggerStay2D(Collider2D collision)
     {
-        if (isUsed == true)
+        if (isUsed == false)
         {
 
             if (Input.GetButton("Interact") == true)
@@ -24,7 +23,9 @@ public class HealTerminal : MonoBehaviour
                 GameData.playerManager.currentEnergy = GameData.playerManager.currentEnergy - lifePrice;
                 GameData.playerManager.currentHealth = GameData.playerManager.currentHealth + lifeAdded;
                 GameData.playerManager.UpdateHealthBar();
-                isUsed = false;
+                isUsed = true;
+
+                GetComponentInChildren<Animator>().SetBool("Used", true);
             }
         }
     }

@@ -11,16 +11,22 @@ public class MainMenuHandler : MonoBehaviour
     public GameObject startPanel;
     public GameObject mainMenuPanel;
     public GameObject creditsPanel;
+    public GameObject yokai;
+    public float yokaiParallaxStrength;
+    public float yokaiLerpSpeed;
     [Space]
     public GameObject startButtonImage;
     public float startButtonLoopSpeed;
     public float startButtonLoopSize;
 
     private Vector3 startButtonOriginScale;
+    private Vector2 yokaiStartPos;
+    private Vector2 yokaiTargetPos;
 
     private void Start()
     {
         startButtonOriginScale = startButtonImage.transform.localScale;
+        yokaiStartPos = yokai.transform.position;
     }
 
     private void Update()
@@ -36,6 +42,10 @@ public class MainMenuHandler : MonoBehaviour
         }
 
         startButtonImage.transform.localScale = startButtonOriginScale + startButtonOriginScale * Mathf.Cos(Time.realtimeSinceStartup * startButtonLoopSpeed) * startButtonLoopSize;
+
+        yokaiTargetPos = yokaiStartPos + ((Vector2)Input.mousePosition - new Vector2(Camera.main.scaledPixelWidth / 2, Camera.main.scaledPixelHeight)) * yokaiParallaxStrength;
+
+        yokai.transform.position = Vector2.Lerp(yokai.transform.position, yokaiTargetPos, yokaiLerpSpeed);
     }
 
     public void SwitchMainMenu()

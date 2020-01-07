@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class ProjectileHandler : MonoBehaviour
 {
+    public GameObject desintegrationPrefab;
+
     [HideInInspector] public int damage;
     [HideInInspector] public float knockBackForce;
     [HideInInspector] public float destroyTime;
@@ -42,7 +44,7 @@ public class ProjectileHandler : MonoBehaviour
         {
             yield return new WaitForSeconds(destroyTime);
         }
-        //destroy animation
+        Instantiate(desintegrationPrefab, transform.position, Quaternion.identity);
         Destroy(gameObject);
     }
 

@@ -55,6 +55,7 @@ public class LevelBuilder : MonoBehaviour
     [Space]
     [Space]
     public bool hideDebugTowerGenerationLog;
+    public bool deactivateRoomOnCreation;
 
     [HideInInspector] public Room.RoomPart[,] towerGrid;
     [HideInInspector] public RoomHandler[,] towerRooms;
@@ -640,6 +641,11 @@ public class LevelBuilder : MonoBehaviour
                                             GameObject newRoomObject = CreateTile(nextZone + relativeIndexes);
                                             newRoomHandler.roomParts.Add(newRoomObject);
                                             newRoomHandler.InitializeRoomObjects();
+
+                                            if( deactivateRoomOnCreation)
+                                            {
+                                                newRoomHandler.DeActivate();
+                                            }
                                         }
                                         else
                                         {
@@ -756,7 +762,7 @@ public class LevelBuilder : MonoBehaviour
                         }
                         else if (nextZone.y == (towerWidth - 1) && rightEdgeLeft)
                         {
-                            leftEdgesTested[y] = false;
+                            rightEdgesTested[y] = false;
                         }
                         else
                         {

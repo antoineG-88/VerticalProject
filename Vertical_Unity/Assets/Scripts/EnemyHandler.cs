@@ -53,6 +53,8 @@ public abstract class EnemyHandler : MonoBehaviour
     public Collider2D collisionCollider;
     public GameObject energyOrbPrefab;
     public GameObject deathExplosionPrefab;
+    [Header("Enemy technical settings")]
+    public AudioClip spotedClip;
     [Space]
     [Header("Debug settings")]
     public bool pauseAI;
@@ -90,6 +92,9 @@ public abstract class EnemyHandler : MonoBehaviour
     [HideInInspector] public float pJumpCDRemaining;
     [HideInInspector] public RoomHandler room;
 
+
+    [HideInInspector] public AudioSource source;
+
     private Color baseColor;
 
     public void HandlerStart()
@@ -115,6 +120,7 @@ public abstract class EnemyHandler : MonoBehaviour
         }
 
         timeBeforeNextPathUpdate = 0;
+        source = GetComponent<AudioSource>();
     }
 
     public void HandlerUpdate()

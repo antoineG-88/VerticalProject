@@ -11,6 +11,8 @@ public class GameController : MonoBehaviour
     public int mainMenuSceneIndex = 0;
     public List<Effect> enemyEffects;
     public List<Power> allPowers;
+    public GameObject loadingPanel;
+    public float closingTime;
     [Header("General settings")]
     public Text speedText;
     public Text debugText;
@@ -70,5 +72,33 @@ public class GameController : MonoBehaviour
         PlayerData.playerEnergy = GameData.playerManager.currentEnergy;
         PlayerData.playerKick = GameData.playerAttackManager.currentKick;
         PlayerData.playerPower = GameData.playerAttackManager.currentPower;
+    }
+
+    public IEnumerator CloseLoading()
+    {
+        float timer = closingTime;
+        Image panelImage = loadingPanel.GetComponent<Image>();
+        loadingPanel.transform.GetChild(0).gameObject.SetActive(false);
+        loadingPanel.transform.GetChild(1).gameObject.SetActive(false);
+        float reduce = 1 / closingTime * Time.fixedDeltaTime;
+        while (timer > 0)
+        {
+            panelImage.color = new Color(0, 0, 0, panelImage.color.a - reduce);
+
+            timer -= Time.fixedDeltaTime;
+            yield return new WaitForFixedUpdate();
+        }
+
+        panelImage.color = new Color(0, 0, 0, 0);
+        loadingPanel.SetActive(false);
+    }
+
+    public void OpenLoading()
+    {
+        loadingPanel.SetActive(true);
+
+        loadingPanel.transform.GetChild(0).gameObject.SetActive(true);
+        loadingPanel.transform.GetChild(1).gameObject.SetActive(true);
+        loadingPanel.GetComponent<Image>().color = new Color(0, 0, 0, 1);
     }
 }
