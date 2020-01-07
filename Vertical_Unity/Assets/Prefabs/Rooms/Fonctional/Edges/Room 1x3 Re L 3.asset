@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0370ba6983387a48b2e32f8cd29cc0f, type: 3}
+  m_Name: Room 1x3 Re L 3
+  m_EditorClassIdentifier: 
+  name: 
+  floors:
+  - roomPartsByFloor:
+    - partPrefab: {fileID: 94742983117213671, guid: c05d7ec82de8bb14ab417ad36a8da571,
+        type: 3}
+      openings: 00010100
+      room: {fileID: 11400000}
+  - roomPartsByFloor:
+    - partPrefab: {fileID: 4628311813676121157, guid: c26162533642a4e4d927474837cd35e8,
+        type: 3}
+      openings: 01000100
+      room: {fileID: 11400000}
+  allRooms: []
