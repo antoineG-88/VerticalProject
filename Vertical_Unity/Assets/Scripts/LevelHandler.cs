@@ -37,15 +37,6 @@ public class LevelHandler : MonoBehaviour
     {
         if(GameData.levelBuilder.towerCreated)
         {
-            if(towerCreationFlag)
-            {
-                towerCreationFlag = false;
-                foreach(RoomHandler room in allTowerRooms)
-                {
-                    room.Pause();
-                }
-            }
-
             UpdatePlayerProgression();
 
             if (timeBeforeNextZoneUpdate > 0)
@@ -56,6 +47,18 @@ public class LevelHandler : MonoBehaviour
             {
                 timeBeforeNextZoneUpdate = currentZoneUpdateTime;
                 UpdateZone();
+            }
+
+
+            if (towerCreationFlag)
+            {
+                towerCreationFlag = false;
+                foreach (RoomHandler room in allTowerRooms)
+                {
+                    room.Pause();
+                }
+
+                //backGroundParallaxHandler.SetNewOrigin(currentRoom.center);
             }
         }
     }
@@ -76,9 +79,9 @@ public class LevelHandler : MonoBehaviour
             {
                 currentRoom.Play();
                 previousRoom.Pause();
+                UpdateNearbyRoomState();
                 UpdatePathfindingGraph();
                 previousRoom = currentRoom;
-                backGroundParallaxHandler.SetNewOrigin(currentRoom.center);
             }
 
             if (levelBuilder.towerRooms[currentPlayerZone.x, currentPlayerZone.y] != null)
@@ -138,5 +141,48 @@ public class LevelHandler : MonoBehaviour
         Time.fixedDeltaTime = 0.02f * 0.01f;
         yield return new WaitForSecondsRealtime(3.0f);
         GameData.gameController.LoadNextLevel();
+    }
+
+    private void UpdateNearbyRoomState()
+    {
+        Coord bottomLeft = new Coord(currentPlayerZone.x -1, currentPlayerZone.y - 1);
+        Coord upRight = new Coord(currentPlayerZone.x + 1, currentPlayerZone.y + 1);
+
+        if (bottomLeft.x < 0)
+        {
+            bottomLeft.x = 0;
+        }
+
+        if (bottomLeft.y < 0)
+        {
+            bottomLeft.y = 0;
+        }
+
+        if (upRight.x > levelBuilder.towerWidth - 1)
+        {
+            upRight.x = levelBuilder.towerWidth - 1;
+        }
+
+        if (upRight.y > levelBuilder.towerHeight - 1)
+        {
+            upRight.y = levelBuilder.towerHeight - 1;
+        }
+
+        foreach(RoomHandler room in allTowerRooms)
+        {
+            if(!levelBuilder.yokaiRoomList.Contains(room.originRoom))
+                room.DeActivate();
+        }
+
+        for (int i = bottomLeft.x; i <= upRight.x; i++)
+        {
+            for (int y = bottomLeft.y; y <= upRight.y; y++)
+            {
+                if(levelBuilder.towerRooms[i, y] != null)
+                {
+                    levelBuilder.towerRooms[i, y].Activate();
+                }
+            }
+        }
     }
 }

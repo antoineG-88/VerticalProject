@@ -11,6 +11,7 @@ public class RoomHandler
     public List<RoomDoors> doors;
     public GameObject healTerminal;
     public Vector2 center;
+    public List<GameObject> roomParts;
 
     public RoomHandler(Room _originRoom, int floorNumber, int zoneNumber)
     {
@@ -19,6 +20,7 @@ public class RoomHandler
         discovered = false;
         currentEnemies = new List<EnemyHandler>();
         doors = new List<RoomDoors>();
+        roomParts = new List<GameObject>();
     }
 
     public void Pause()
@@ -35,6 +37,24 @@ public class RoomHandler
         {
             enemy.gameObject.SetActive(true);
             enemy.provoked = false;
+        }
+    }
+
+    public void Activate()
+    {
+        foreach (GameObject part in roomParts)
+        {
+            if (part != null)
+                part.SetActive(true);
+        }
+    }
+
+    public void DeActivate()
+    {
+        foreach (GameObject part in roomParts)
+        {
+            if(part != null)
+                part.SetActive(false);
         }
     }
 
@@ -62,6 +82,42 @@ public class RoomHandler
             foreach (RoomDoors door in doors)
             {
                 door.doors.isLocked = true;
+            }
+        }
+    }
+
+    public void InitializeRoomObjects()
+    {
+        foreach (GameObject newRoomObject in roomParts)
+        {
+            for (int i = 0; i < newRoomObject.transform.childCount; i++)
+            {
+                Transform child = newRoomObject.transform.GetChild(i);
+                if (child.name == "Enemies")
+                {
+                    for (int t = 0; t < child.childCount; t++)
+                    {
+                        EnemyHandler enemy = child.GetChild(t).GetComponent<EnemyHandler>();
+                        if (enemy != null)
+                        {
+                            currentEnemies.Add(enemy);
+                            enemy.room = this;
+                        }
+                        else
+                        {
+                            Debug.LogError("No EnemyHandler script found on " + child.GetChild(t).name);
+                        }
+                    }
+                }
+                else if (child.name == "FinalRing")
+                {
+                    GameData.levelHandler.finalRing = child.gameObject;
+                }
+                else if (child.name == "HealTerminal")
+                {
+                    healTerminal = child.gameObject;
+                    healTerminal.SetActive(false);
+                }
             }
         }
     }

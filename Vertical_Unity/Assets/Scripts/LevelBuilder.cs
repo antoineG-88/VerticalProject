@@ -638,38 +638,8 @@ public class LevelBuilder : MonoBehaviour
 
                                             Debug.Log(selectedRoom.name + " part placed on " + (nextZone + relativeIndexes));
                                             GameObject newRoomObject = CreateTile(nextZone + relativeIndexes);
-
-                                            for (int i = 0; i < newRoomObject.transform.childCount; i++)
-                                            {
-                                                Transform child = newRoomObject.transform.GetChild(i);
-                                                if(child.name == "Enemies")
-                                                {
-                                                    for(int t = 0; t < child.childCount; t++)
-                                                    {
-                                                        EnemyHandler enemy = child.GetChild(t).GetComponent<EnemyHandler>();
-                                                        if (enemy != null)
-                                                        {
-                                                            newRoomHandler.currentEnemies.Add(enemy);
-                                                            enemy.room = newRoomHandler;
-                                                        }
-                                                        else
-                                                        {
-                                                            Debug.LogError("No EnemyHandler script found on " + child.GetChild(t).name);
-                                                        }
-                                                    }
-                                                }
-                                                else if (child.name == "FinalRing")
-                                                {
-                                                    //GetComponent<LevelHandler>().finalRing = child.gameObject;
-                                                    GameData.levelHandler.finalRing = child.gameObject;
-                                                    Debug.Log("Final ring found on zone " + (nextZone + relativeIndexes));
-                                                }
-                                                else if (child.name == "HealTerminal")
-                                                {
-                                                    newRoomHandler.healTerminal = child.gameObject;
-                                                    newRoomHandler.healTerminal.SetActive(false);
-                                                }
-                                            }
+                                            newRoomHandler.roomParts.Add(newRoomObject);
+                                            newRoomHandler.InitializeRoomObjects();
                                         }
                                         else
                                         {
@@ -1508,6 +1478,12 @@ public class LevelBuilder : MonoBehaviour
     private GameObject CreateTile(Coord zoneToCreate)
     {
         GameObject roomInstantiated = null;
+        if(zoneToCreate.x == 0)
+        {
+            roomInstantiated = Instantiate(fillerPrefab, Coord.ZoneToTowerPos(new Coord(zoneToCreate.x - 1, zoneToCreate.y), this), Quaternion.identity, levelHolder.transform);
+            roomInstantiated.name = fillerPrefab.name + " under tower >  " + (zoneToCreate.x - 1) + " / " + zoneToCreate.y;
+        }
+
         if (towerGrid[zoneToCreate.x, zoneToCreate.y] != null)
         {
             roomInstantiated = Instantiate(towerGrid[zoneToCreate.x, zoneToCreate.y].partPrefab, Coord.ZoneToTowerPos(zoneToCreate, this), Quaternion.identity, levelHolder.transform);
