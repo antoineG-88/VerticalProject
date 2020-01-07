@@ -26,6 +26,7 @@ public class PlayerMovement : MonoBehaviour
     public bool dashCooledOnLanding;
     [Range(0, 100)] public float dashVelocityKept;
     public GameObject dashShadowPrefab;
+    public AudioClip dashClip;
     [Header("Technical settings")]
     public Transform feetPos;
     public float groundCheckThickness = 0.1f;
@@ -241,6 +242,9 @@ public class PlayerMovement : MonoBehaviour
         {
             GameData.playerGrapplingHandler.ReleaseHook();
         }
+
+        GameData.playerSource.PlayOneShot(dashClip);
+
         dashCooldownRemaining = dashTime + 1;
         isDashing = true;
         isAffectedbyGravity = false;

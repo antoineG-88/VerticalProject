@@ -101,4 +101,10 @@ public class GameController : MonoBehaviour
         loadingPanel.transform.GetChild(1).gameObject.SetActive(true);
         loadingPanel.GetComponent<Image>().color = new Color(0, 0, 0, 1);
     }
+
+    public void SwitchGodMod()
+    {
+        GameData.playerManager.vulnerable = !GameData.playerManager.vulnerable;
+    }
+
 }

@@ -10,8 +10,6 @@ public class PlayerAttackManager : MonoBehaviour
     [Space]
     public Vector2 collideSize;
     [Space]
-    public GameObject kickPreview;
-    [Space]
     public bool reAimMode;
     public float kickEffectOffset;
     public bool ringReAim;
@@ -19,6 +17,7 @@ public class PlayerAttackManager : MonoBehaviour
     public float maxRepropulsionReleaseTime;
     public float maxReAimingTime;
     [Range(0.0001f,1.0f)] public float slowMoTimeSpeed;
+    public AudioClip hitClip;
 
     [HideInInspector] public bool isKicking;
     [HideInInspector] public bool kickButtonPressed;
@@ -30,8 +29,6 @@ public class PlayerAttackManager : MonoBehaviour
     private void Start()
     {
         isKicking = false;
-        kickPreview.SetActive(false);
-        kickPreview.transform.localScale = currentKick.hitCollidingSize;
         repropulsionPreview.SetActive(false);
         isRepropulsing = false;
     }
@@ -92,6 +89,7 @@ public class PlayerAttackManager : MonoBehaviour
 
                 if (successfullKick)
                 {
+                    GameData.playerSource.PlayOneShot(hitClip);
                     if (!currentKick.isAOE)
                     {
                         currentKick.DealDamageToEnemy(enemy);
@@ -143,7 +141,10 @@ public class PlayerAttackManager : MonoBehaviour
         else
         {
             if(ringReAim)
+            {
+                GameData.playerSource.PlayOneShot(hitClip);
                 StartCoroutine(ReAim());
+            }
         }
 
         return successfullKick;

@@ -55,6 +55,7 @@ public abstract class EnemyHandler : MonoBehaviour
     public GameObject deathExplosionPrefab;
     [Header("Enemy technical settings")]
     public AudioClip spotedClip;
+    public AudioClip deathClip;
     [Space]
     [Header("Debug settings")]
     public bool pauseAI;
@@ -96,6 +97,7 @@ public abstract class EnemyHandler : MonoBehaviour
     [HideInInspector] public AudioSource source;
 
     private Color baseColor;
+    private float originalPitch;
 
     public void HandlerStart()
     {
@@ -121,6 +123,7 @@ public abstract class EnemyHandler : MonoBehaviour
 
         timeBeforeNextPathUpdate = 0;
         source = GetComponent<AudioSource>();
+        originalPitch = source.pitch;
     }
 
     public void HandlerUpdate()
@@ -128,6 +131,8 @@ public abstract class EnemyHandler : MonoBehaviour
         UpdatePath();
 
         EffectUpdate();
+
+        source.pitch = originalPitch * Time.fixedDeltaTime * 50;
     }
 
     public void HandlerFixedUpdate()
@@ -465,6 +470,7 @@ public abstract class EnemyHandler : MonoBehaviour
         SetEffect(Effect.NoControl, 50.0f, false);
         yield return new WaitForSeconds(deathAnimationTime);
         Instantiate(deathExplosionPrefab, transform.position, Quaternion.identity);
+        GameData.playerSource.PlayOneShot(deathClip);
         int energyDrop = energyBaseDrop + Random.Range(-energyDropMaxVariation, energyDropMaxVariation + 1);
         for (int i = 0; i < energyDrop; i++)
         {

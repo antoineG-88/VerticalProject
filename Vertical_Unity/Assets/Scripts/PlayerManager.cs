@@ -22,10 +22,10 @@ public class PlayerManager : MonoBehaviour
     public Color emptyHpColor;
     public Text currentEnergyText;
     public GameObject gameOverPanel;
-    public Text gameOverText;
+    public Image gameOverText;
     public float gameOverFadingSpeed;
     public float timeBeforeGameOverTextFade;
-    public Text restartText;
+    public Image restartText;
     public float timeBeforeRestartPossible;
     [Header("General debug settings")]
     public Color stunColor;
@@ -95,6 +95,8 @@ public class PlayerManager : MonoBehaviour
         {
             vulnerable = true;
         }
+
+        GameData.playerSource.pitch = Time.fixedDeltaTime * 50;
     }
 
     public bool TakeDamage(int damage, Vector2 knockBack, float stunTime)

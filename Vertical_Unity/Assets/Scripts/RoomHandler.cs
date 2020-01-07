@@ -27,7 +27,10 @@ public class RoomHandler
     {
         foreach (EnemyHandler enemy in currentEnemies)
         {
-            enemy.gameObject.SetActive(false);
+            if(enemy != null)
+            {
+                enemy.gameObject.SetActive(false);
+            }
         }
     }
 

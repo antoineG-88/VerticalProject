@@ -10,6 +10,9 @@ public class LevelHandler : MonoBehaviour
     public CameraHandler cameraHandler;
     public ParallaxHandler backGroundParallaxHandler;
     public float currentZoneUpdateTime;
+    [Space]
+    public float lowPassActivationSpeed;
+    public float lowPassFrequency;
 
     private LevelBuilder levelBuilder;
     private float timeBeforeNextZoneUpdate;
@@ -21,6 +24,10 @@ public class LevelHandler : MonoBehaviour
 
     [HideInInspector] public GameObject finalRing;
     private bool towerCreationFlag;
+    private AudioSource source;
+    private AudioLowPassFilter lowPassFilter;
+    private float lowPassState;
+    private float originInverseFixedDeltaTime;
 
     void Start()
     {
@@ -31,8 +38,10 @@ public class LevelHandler : MonoBehaviour
         previousRoom = new RoomHandler(null, 0, 0);
         allTowerRooms = new List<RoomHandler>();
         towerCreationFlag = true;
-
-
+        source = GetComponent<AudioSource>();
+        lowPassFilter = GetComponent<AudioLowPassFilter>();
+        lowPassState = 1;
+        originInverseFixedDeltaTime = Time.fixedDeltaTime;
         GameData.gameController.OpenLoading();
     }
 
@@ -64,6 +73,18 @@ public class LevelHandler : MonoBehaviour
                 StartCoroutine(GameData.gameController.CloseLoading());
             }
         }
+
+        //source.pitch = Time.fixedDeltaTime * 50;
+        if(Time.fixedDeltaTime * (1 / originInverseFixedDeltaTime) < 1 && lowPassState > 0)
+        {
+            lowPassState -= lowPassState * Time.deltaTime * lowPassActivationSpeed;
+        }
+        else if (Time.fixedDeltaTime * (1 / originInverseFixedDeltaTime) == 1 && lowPassState < 1)
+        {
+            lowPassState += (1 - lowPassState) * Time.deltaTime * lowPassActivationSpeed;
+        }
+
+        lowPassFilter.cutoffFrequency = lowPassFrequency + ((22000 - lowPassFrequency) * lowPassState);
     }
 
     private void UpdateZone()

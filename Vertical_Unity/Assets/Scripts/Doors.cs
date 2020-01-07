@@ -9,12 +9,16 @@ public class Doors : MonoBehaviour
     public BoxCollider2D triggerBox;
     public Collider2D doorCollisionCollider;
     public bool isLocked;
+    public AudioClip doorOpenClip;
+    public AudioClip doorCloseClip;
 
     private bool isOpened;
+    private AudioSource source;
 
     private void Start()
     {
         isOpened = false;
+        source = GetComponent<AudioSource>();
     }
 
     private void FixedUpdate()
@@ -27,8 +31,9 @@ public class Doors : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D collider)
     {
-        if (collider.CompareTag("Player") && !isLocked)
+        if (collider.CompareTag("Player") && !isLocked && !isOpened)
         {
+            source.PlayOneShot(doorOpenClip);
             isOpened = true;
             doorCollisionCollider.enabled = false;
         }
@@ -38,6 +43,7 @@ public class Doors : MonoBehaviour
     {
         if (collider.CompareTag("Player"))
         {
+            source.PlayOneShot(doorCloseClip);
             isOpened = false;
             doorCollisionCollider.enabled = true;
         }

@@ -70,12 +70,15 @@ MonoBehaviour:
     effectFX: {fileID: 0}
     index: 0
   allPowers: []
+  loadingPanel: {fileID: 0}
+  closingTime: 2
   speedText: {fileID: 0}
   debugText: {fileID: 0}
   debubParticle: {fileID: 0}
   input: {fileID: 0}
   pause: 0
   takePlayerInput: 0
+  postProcessHandler: {fileID: 0}
 --- !u!114 &828206619
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -93,9 +93,6 @@ public class PlayerGrapplingHandler : MonoBehaviour
         if (!GameData.gameController.pause)
         {
             ShootManager();
-
-            GameData.gameController.speedText.text = "Speed : " + (rb.velocity.magnitude > 0.01f ? rb.velocity.magnitude : 0);
-            GameData.gameController.debugText.text = "canShoot : " + canShoot;
         }
     }
 
