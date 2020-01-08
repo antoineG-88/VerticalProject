@@ -243,8 +243,6 @@ public class PlayerMovement : MonoBehaviour
             GameData.playerGrapplingHandler.ReleaseHook();
         }
 
-        GameData.playerSource.PlayOneShot(dashClip);
-
         dashCooldownRemaining = dashTime + 1;
         isDashing = true;
         isAffectedbyGravity = false;
@@ -271,6 +269,11 @@ public class PlayerMovement : MonoBehaviour
         Vector2 origin = transform.position;
         while (!GameData.playerManager.isStunned && timer > 0 && !Physics2D.Raycast(transform.position, dashDirection, dashStopDistance, LayerMask.GetMask("Ground")))
         {
+            if(timer == dashTime)
+            {
+                GameData.playerSource.PlayOneShot(dashClip);
+            }
+
             isDashing = true;
             timer -= Time.fixedDeltaTime;
             if(invulnerableDash)

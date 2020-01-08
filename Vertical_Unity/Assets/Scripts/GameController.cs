@@ -49,20 +49,16 @@ public class GameController : MonoBehaviour
 
         if (firstLevel)
         {
-
-            if (firstLevel)
-            {
-                GameData.playerManager.currentHealth = GameData.playerManager.maxhealthPoint * 2;
-                GameData.playerManager.currentEnergy = 0;
-                PlayerData.timeScore = 0;
-            }
-            else
-            {
-                GameData.playerManager.currentHealth = PlayerData.playerHealth;
-                GameData.playerAttackManager.currentKick = PlayerData.playerKick;
-                GameData.playerAttackManager.currentPower = PlayerData.playerPower;
-                GameData.playerManager.currentEnergy = PlayerData.playerEnergy;
-            }
+            GameData.playerManager.currentHealth = GameData.playerManager.maxhealthPoint * 2;
+            GameData.playerManager.currentEnergy = 0;
+            PlayerData.timeScore = 0;
+        }
+        else
+        {
+            GameData.playerManager.currentHealth = PlayerData.playerHealth;
+            GameData.playerAttackManager.currentKick = PlayerData.playerKick;
+            GameData.playerAttackManager.currentPower = PlayerData.playerPower;
+            GameData.playerManager.currentEnergy = PlayerData.playerEnergy;
         }
     }
 
@@ -124,6 +120,7 @@ public class GameController : MonoBehaviour
     public void SwitchGodMod()
     {
         GameData.playerManager.vulnerable = !GameData.playerManager.vulnerable;
+        GameData.playerManager.currentEnergy = 5000;
     }
 
 }

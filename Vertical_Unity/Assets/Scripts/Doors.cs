@@ -41,7 +41,7 @@ public class Doors : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collider)
     {
-        if (collider.CompareTag("Player"))
+        if (collider.CompareTag("Player") && isOpened)
         {
             source.PlayOneShot(doorCloseClip);
             isOpened = false;

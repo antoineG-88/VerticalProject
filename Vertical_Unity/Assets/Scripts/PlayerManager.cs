@@ -52,7 +52,6 @@ public class PlayerManager : MonoBehaviour
         isStunned = false;
         isDead = false;
         invulnerableTimeRemaining = 0;
-        currentEnergy = baseEnergy;
         hpIconsState = new HpState[maxhealthPoint];
         gameOverPanel.SetActive(false);
         InitializeHealthBar();
