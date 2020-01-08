@@ -51,6 +51,7 @@ public class PlayerManager : MonoBehaviour
         if(firstLevel)
         {
             currentHealth = maxhealthPoint * 2;
+            PlayerData.timeScore = 0;
         }
         else
         {

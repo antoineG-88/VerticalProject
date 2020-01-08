@@ -8,4 +8,5 @@ public static class PlayerData
     public static int playerEnergy;
     public static Power playerPower;
     public static Kick playerKick;
+    public static float timeScore;
 }

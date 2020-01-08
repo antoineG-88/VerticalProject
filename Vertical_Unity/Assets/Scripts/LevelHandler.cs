@@ -28,6 +28,7 @@ public class LevelHandler : MonoBehaviour
     private AudioLowPassFilter lowPassFilter;
     private float lowPassState;
     private float originInverseFixedDeltaTime;
+    private float startLevelTime;
 
     void Start()
     {
@@ -43,6 +44,7 @@ public class LevelHandler : MonoBehaviour
         lowPassState = 1;
         originInverseFixedDeltaTime = Time.fixedDeltaTime;
         GameData.gameController.OpenLoading();
+        startLevelTime = Time.realtimeSinceStartup;
     }
 
     private void Update()
@@ -163,6 +165,7 @@ public class LevelHandler : MonoBehaviour
         GameData.cameraHandler.CinematicLook(GameData.playerMovement.transform.position, 3.0f, 5.625f, 4.0f);
         Time.timeScale = 0.01f;
         Time.fixedDeltaTime = 0.02f * 0.01f;
+        PlayerData.timeScore += Time.realtimeSinceStartup - startLevelTime;
         yield return new WaitForSecondsRealtime(3.0f);
         GameData.gameController.LoadNextLevel();
     }

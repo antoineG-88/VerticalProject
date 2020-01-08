@@ -18,6 +18,7 @@ public class Spider_Bot : EnemyHandler
     public surfaceDirection startSurfaceDirection;
     public Transform spriteTransform;
     public ParticleSystem chargingParticle;
+    public GameObject jumpFxPrefab;
     [Header("Debug settings")]
     public GameObject particleDebugPrefab;
 
@@ -26,10 +27,10 @@ public class Spider_Bot : EnemyHandler
     private Vector2 spiderBotPosition;
     private bool onSurface;
     private surfaceDirection currentSurfaceDirection;
-    private float jumpShotDelayRemaining;
+    [HideInInspector] public float jumpShotDelayRemaining;
     private bool isTouchingWall;
     private Vector2 collisionPoint;
-    private bool isJumping;
+    [HideInInspector] public bool isJumping;
     private float jumpCollisionDelay;
 
     public enum surfaceDirection{ up, down, right, left, none};
@@ -121,6 +122,7 @@ public class Spider_Bot : EnemyHandler
         isJumping = true;
         onSurface = false;
         jumpCollisionDelay = 0.2f;
+        Instantiate(jumpFxPrefab, transform.position, Quaternion.Euler(0, 0, Vector2.SignedAngle(Vector2.up, jumpShotDirection)));
         while(!isTouchingWall)
         {
             Propel(jumpShotDirection * jumpSpeed, true, true);
@@ -215,7 +217,6 @@ public class Spider_Bot : EnemyHandler
         {
             isTouchingWall = true;
             collisionPoint = collision.contacts[0].point;
-            Instantiate(debugParticlePrefab, collisionPoint, Quaternion.identity);
         }
     }
 }
