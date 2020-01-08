@@ -6,7 +6,8 @@ using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
-    [Header("References")]
+    [Header("General settings")]
+    public bool firstLevel;
     public int nextSceneIndex;
     public int mainMenuSceneIndex = 0;
     public List<Effect> enemyEffects;
@@ -44,6 +45,24 @@ public class GameController : MonoBehaviour
         for (int i = 0; i < enemyEffects.Count; i++)
         {
             enemyEffects[i].index = i;
+        }
+
+        if (firstLevel)
+        {
+
+            if (firstLevel)
+            {
+                GameData.playerManager.currentHealth = GameData.playerManager.maxhealthPoint * 2;
+                GameData.playerManager.currentEnergy = 0;
+                PlayerData.timeScore = 0;
+            }
+            else
+            {
+                GameData.playerManager.currentHealth = PlayerData.playerHealth;
+                GameData.playerAttackManager.currentKick = PlayerData.playerKick;
+                GameData.playerAttackManager.currentPower = PlayerData.playerPower;
+                GameData.playerManager.currentEnergy = PlayerData.playerEnergy;
+            }
         }
     }
 

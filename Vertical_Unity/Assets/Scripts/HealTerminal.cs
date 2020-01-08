@@ -18,10 +18,14 @@ public class HealTerminal : MonoBehaviour
         if (isUsed == false)
         {
 
-            if (Input.GetButton("Interact") == true)
+            if (Input.GetButton("Interact") == true && GameData.playerManager.currentEnergy >= lifePrice)
             {
-                GameData.playerManager.currentEnergy = GameData.playerManager.currentEnergy - lifePrice;
-                GameData.playerManager.currentHealth = GameData.playerManager.currentHealth + lifeAdded;
+                GameData.playerManager.currentEnergy -= lifePrice;
+                GameData.playerManager.currentHealth += lifeAdded;
+                if(GameData.playerManager.currentHealth > GameData.playerManager.maxhealthPoint * 2)
+                {
+                    GameData.playerManager.currentHealth = GameData.playerManager.maxhealthPoint * 2;
+                }
                 GameData.playerManager.UpdateHealthBar();
                 isUsed = true;
 

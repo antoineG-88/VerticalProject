@@ -373,7 +373,7 @@ public class LevelBuilder : MonoBehaviour
                     }
                     while (rightEdgesTested[y]);
                     potentialRoom = rightEdgeList[y];
-                    rightEdgeChosen = false;
+                    rightEdgeChosen = true;
                 }
                 else if(!isDeadEnd)
                 {
@@ -622,10 +622,14 @@ public class LevelBuilder : MonoBehaviour
                                             if(leftEdgeChosen && zoneNumber == 0)
                                             {
                                                 newRoomHandler.zonesCenterPos.Add(Coord.ZoneToTowerPos(new Coord(nextZone.x + relativeIndexes.x, nextZone.y + relativeIndexes.y - 1), this));
+                                                newRoomHandler.zonesCenterPos.Add(Coord.ZoneToTowerPos(new Coord(nextZone.x + relativeIndexes.x, nextZone.y + relativeIndexes.y - 2), this));
+                                                newRoomHandler.zonesCenterPos.Add(Coord.ZoneToTowerPos(new Coord(nextZone.x + relativeIndexes.x, nextZone.y + relativeIndexes.y - 3), this));
                                             }
                                             else if (rightEdgeChosen && zoneNumber == selectedRoom.roomParts.GetLength(1) - 1)
                                             {
                                                 newRoomHandler.zonesCenterPos.Add(Coord.ZoneToTowerPos(new Coord(nextZone.x + relativeIndexes.x, nextZone.y + relativeIndexes.y + 1), this));
+                                                newRoomHandler.zonesCenterPos.Add(Coord.ZoneToTowerPos(new Coord(nextZone.x + relativeIndexes.x, nextZone.y + relativeIndexes.y + 2), this));
+                                                newRoomHandler.zonesCenterPos.Add(Coord.ZoneToTowerPos(new Coord(nextZone.x + relativeIndexes.x, nextZone.y + relativeIndexes.y + 3), this));
                                             }
 
                                             if(zoneNumber == 0 && nextZone.y == 0 && !leftEdgeChosen)
@@ -635,7 +639,6 @@ public class LevelBuilder : MonoBehaviour
                                             else if (zoneNumber == (selectedRoom.roomParts.GetLength(1) - 1) && nextZone.y == (towerWidth - 1) && !rightEdgeChosen)
                                             {
                                                 CreateBorder(nextZone + relativeIndexes);
-                                                Debug.Log("-y- Border created during : " + selectedRoom.name);
                                             }
 
                                             Debug.Log(selectedRoom.name + " part placed on " + (nextZone + relativeIndexes));

@@ -9,7 +9,6 @@ public class PlayerManager : MonoBehaviour
     public int maxhealthPoint;
     public int baseEnergy;
     public float invulnerableTime;
-    public bool firstLevel;
     [Header("HUD settings")]
     public Image powerCharge;
     public Image currentPowerIcon;
@@ -48,15 +47,6 @@ public class PlayerManager : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        if(firstLevel)
-        {
-            currentHealth = maxhealthPoint * 2;
-            PlayerData.timeScore = 0;
-        }
-        else
-        {
-            currentHealth = PlayerData.playerHealth;
-        }
         baseColor = GetComponentInChildren<SpriteRenderer>().color;
         isDodging = false;
         isStunned = false;

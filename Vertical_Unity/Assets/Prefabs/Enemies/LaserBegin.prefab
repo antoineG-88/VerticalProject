@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1659440192175853045}
   - component: {fileID: 836193997209493117}
   - component: {fileID: 4427161261710034824}
+  - component: {fileID: 8985825935426660444}
   m_Layer: 0
   m_Name: LaserBegin
   m_TagString: Untagged
@@ -100,3 +101,16 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &8985825935426660444
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8596842640959088378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9116b974ba84e4d4ab091cf4065c45c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  visualEffectTime: 2

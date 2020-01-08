@@ -116,7 +116,7 @@ public class LevelHandler : MonoBehaviour
             currentPlayerZone = GetCurrentPlayerZone();
             currentRoom = levelBuilder.towerRooms[currentPlayerZone.x, currentPlayerZone.y];
 
-            if(currentRoom != previousRoom)
+            if(currentRoom != previousRoom && currentRoom != null)
             {
                 currentRoom.Play();
                 previousRoom.Pause();
@@ -150,6 +150,16 @@ public class LevelHandler : MonoBehaviour
         {
             currentZone.y++;
             pos.x -= tileLength;
+        }
+
+        if(currentZone.x > levelBuilder.towerHeight - 1)
+        {
+            currentZone.x = levelBuilder.towerHeight - 1;
+        }
+
+        if (currentZone.y > levelBuilder.towerWidth - 1)
+        {
+            currentZone.y = levelBuilder.towerWidth - 1;
         }
 
         return currentZone;

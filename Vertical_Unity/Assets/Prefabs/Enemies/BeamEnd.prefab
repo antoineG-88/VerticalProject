@@ -102,6 +102,7 @@ GameObject:
   - component: {fileID: 9009727969252886980}
   - component: {fileID: 6848377831685611125}
   - component: {fileID: 3687096437665246052}
+  - component: {fileID: 1384057636677040670}
   m_Layer: 0
   m_Name: BeamEnd
   m_TagString: Untagged
@@ -192,3 +193,16 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &1384057636677040670
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8918203217984456147}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9116b974ba84e4d4ab091cf4065c45c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  visualEffectTime: 2

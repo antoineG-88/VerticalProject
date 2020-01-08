@@ -27,7 +27,7 @@ public class ProjectileHandler : MonoBehaviour
         if(collider.CompareTag("Player"))
         {
             GameData.playerManager.TakeDamage(damage, (GameData.playerMovement.transform.position - transform.position).normalized * knockBackForce, 0.1f);
-            if(!GameData.playerMovement.invulnerableDash && !GameData.playerMovement.isDashing)
+            if(!GameData.playerMovement.isDashing)
             {
                 StartCoroutine(DestroyProjectile());
             }
