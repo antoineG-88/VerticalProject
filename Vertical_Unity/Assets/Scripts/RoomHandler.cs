@@ -112,10 +112,6 @@ public class RoomHandler
                         }
                     }
                 }
-                else if (child.name == "FinalRing")
-                {
-                    GameData.levelHandler.finalRing = child.gameObject;
-                }
                 else if (child.name == "HealTerminal")
                 {
                     healTerminal = child.gameObject;

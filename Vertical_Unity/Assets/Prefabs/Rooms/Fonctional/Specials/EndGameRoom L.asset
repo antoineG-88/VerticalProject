@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0370ba6983387a48b2e32f8cd29cc0f, type: 3}
   m_Name: EndGameRoom L
   m_EditorClassIdentifier: 
-  name: 
+  name: PortalRoom2
   floors:
   - roomPartsByFloor:
     - partPrefab: {fileID: 3564556701710042226, guid: bd85e460a116b8048a20eb4242f8c760,
         type: 3}
       openings: 00000001
-      room: {fileID: 0}
+      room: {fileID: 11400000}
   allRooms: []

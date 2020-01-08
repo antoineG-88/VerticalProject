@@ -248,8 +248,8 @@ MonoBehaviour:
   invulnerableTime: 0.2
   gravityForce: 0
   deathAnimationTime: 0.2
-  energyBaseDrop: 6
-  energyDropMaxVariation: 2
+  energyBaseDrop: 10
+  energyDropMaxVariation: 0
   noGravityLinearDrag: 0.1
   noGravityAngularDrag: 1
   noGravityRiseUpForce: 1
@@ -257,7 +257,7 @@ MonoBehaviour:
   noGravityBouncyMaterial: {fileID: 6200000, guid: e00235c0d57775e488d206f15b485065,
     type: 2}
   basicMaterial: {fileID: 6200000, guid: ca4dce0f1fa4f0a4e956e8e72f1f7a41, type: 2}
-  repulsionForce: 1
+  repulsionForce: 2
   repulsionRange: 3
   viewRange: 8
   viewAngle: 180

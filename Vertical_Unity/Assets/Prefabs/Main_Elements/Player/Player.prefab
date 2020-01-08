@@ -696,12 +696,13 @@ MonoBehaviour:
   dashAcceleration: 50
   dashStopDistance: 0.7
   dashBreakRope: 1
-  dashCooldown: 1
+  dashCooldown: 5
   invulnerableDash: 1
   dashCooledOnLanding: 1
   dashVelocityKept: 15
   dashShadowPrefab: {fileID: 3788763055611250903, guid: f724113b506e72348b79ee55e7ce1db7,
     type: 3}
+  dashClip: {fileID: 8300000, guid: b7ad38358aceddd408c32878d48e8b44, type: 3}
   feetPos: {fileID: 4503195423458372692}
   groundCheckThickness: 0.05
   groundCheckWidth: 0.15
@@ -784,7 +785,6 @@ MonoBehaviour:
   currentPower: {fileID: 11400000, guid: ff0f8183731902d49886d61ef4b47f10, type: 2}
   currentKick: {fileID: 11400000, guid: 36017c2b0cb9d7c4e94557c025c06d43, type: 2}
   collideSize: {x: 1, y: 1}
-  kickPreview: {fileID: 0}
   reAimMode: 1
   kickEffectOffset: 0.5
   ringReAim: 0
@@ -792,6 +792,7 @@ MonoBehaviour:
   maxRepropulsionReleaseTime: 2
   maxReAimingTime: 5
   slowMoTimeSpeed: 0.033
+  hitClip: {fileID: 8300000, guid: 72ce98be35446d9438d6080abe9ab85e, type: 3}
   isKicking: 0
   kickButtonPressed: 0
   isReAiming: 0
@@ -809,7 +810,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxhealthPoint: 8
-  baseEnergy: 512
+  baseEnergy: 0
   invulnerableTime: 0.5
   firstLevel: 1
   powerCharge: {fileID: 0}

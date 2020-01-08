@@ -10,9 +10,17 @@ public class LevelHandler : MonoBehaviour
     public CameraHandler cameraHandler;
     public ParallaxHandler backGroundParallaxHandler;
     public float currentZoneUpdateTime;
+    public float fallDeathOffset;
     [Space]
     public float lowPassActivationSpeed;
     public float lowPassFrequency;
+    [Space]
+    public float liftCameraSize;
+    public Vector2 cameraOffset;
+    public float liftSpeed;
+    public float timeBeforeLift;
+    public bool isFinalLevel;
+    public bool optimize;
 
     private LevelBuilder levelBuilder;
     private float timeBeforeNextZoneUpdate;
@@ -22,13 +30,15 @@ public class LevelHandler : MonoBehaviour
     private GridGraph gridGraph;
     [HideInInspector] public List<RoomHandler> allTowerRooms;
 
-    [HideInInspector] public GameObject finalRing;
+
     private bool towerCreationFlag;
     private AudioSource source;
     private AudioLowPassFilter lowPassFilter;
     private float lowPassState;
     private float originInverseFixedDeltaTime;
     private float startLevelTime;
+    private bool isLifting;
+    private Vector2 liftPos;
 
     void Start()
     {
@@ -45,13 +55,15 @@ public class LevelHandler : MonoBehaviour
         originInverseFixedDeltaTime = Time.fixedDeltaTime;
         GameData.gameController.OpenLoading();
         startLevelTime = Time.realtimeSinceStartup;
+        isLifting = false;
     }
 
     private void Update()
     {
         if(GameData.levelBuilder.towerCreated)
         {
-            UpdatePlayerProgression();
+            if(!isFinalLevel)
+                liftPos = GameObject.Find("EndLiftPos").transform.position;
 
             if (timeBeforeNextZoneUpdate > 0)
             {
@@ -74,9 +86,12 @@ public class LevelHandler : MonoBehaviour
 
                 StartCoroutine(GameData.gameController.CloseLoading());
             }
+
+
+            UpdatePlayerProgression();
         }
 
-        //source.pitch = Time.fixedDeltaTime * 50;
+
         if(Time.fixedDeltaTime * (1 / originInverseFixedDeltaTime) < 1 && lowPassState > 0)
         {
             lowPassState -= lowPassState * Time.deltaTime * lowPassActivationSpeed;
@@ -91,7 +106,7 @@ public class LevelHandler : MonoBehaviour
 
     private void UpdateZone()
     {
-        if(GameData.playerMovement.transform.position.y < levelBuilder.bottomCenterTowerPos.y)
+        if(GameData.playerMovement.transform.position.y < levelBuilder.bottomCenterTowerPos.y + fallDeathOffset)
         {
             GameData.playerManager.TakeDamage(200, Vector2.zero, 0);
         }
@@ -105,6 +120,7 @@ public class LevelHandler : MonoBehaviour
             {
                 currentRoom.Play();
                 previousRoom.Pause();
+                if(optimize)
                 UpdateNearbyRoomState();
                 UpdatePathfindingGraph();
                 previousRoom = currentRoom;
@@ -154,19 +170,44 @@ public class LevelHandler : MonoBehaviour
 
     private void UpdatePlayerProgression()
     {
-        if (finalRing != null && Vector2.Distance(GameData.playerMovement.transform.position, finalRing.transform.position) < minDistanceToFinalRing && GameData.playerGrapplingHandler.attachedObject == finalRing)
+        if(isFinalLevel)
         {
-            StartCoroutine(TransitionToNextLevel());
+            EndPortalHandler endPortalHandler = GameObject.Find("EndPortal").GetComponent<EndPortalHandler>();
+            if ((currentRoom.originRoom.name == "PortalRoom1" || currentRoom.originRoom.name == "PortalRoom2") && currentRoom.currentEnemies.Count == 0)
+            {
+                StartCoroutine(endPortalHandler.End());
+            }
+        }
+        else
+        {
+            if (Vector2.Distance(GameData.playerMovement.transform.position, liftPos) < minDistanceToFinalRing && !isLifting)
+            {
+                StartCoroutine(TransitionToNextLevel());
+            }
         }
     }
 
     private IEnumerator TransitionToNextLevel()
     {
-        GameData.cameraHandler.CinematicLook(GameData.playerMovement.transform.position, 3.0f, 5.625f, 4.0f);
-        Time.timeScale = 0.01f;
-        Time.fixedDeltaTime = 0.02f * 0.01f;
+        isLifting = true;
+        Animator tubeAnimator = GameObject.Find("Tube").GetComponent<Animator>();
+        GameData.gameController.takePlayerInput = false;
+        Vector2 endLiftPos = GameObject.Find("EndLiftPos").transform.position;
+        GameData.playerMovement.transform.position = endLiftPos;
+        GameData.playerMovement.Propel(Vector2.zero, true, true);
+        StartCoroutine(GameData.cameraHandler.CinematicLook(endLiftPos + cameraOffset, 100, liftCameraSize, 4.0f));
         PlayerData.timeScore += Time.realtimeSinceStartup - startLevelTime;
-        yield return new WaitForSecondsRealtime(3.0f);
+        tubeAnimator.SetBool("IsDown", true);
+        yield return new WaitForSecondsRealtime(timeBeforeLift);
+        float timer = 2;
+        Animator playerAnimator = GameData.playerVisuals.animator;
+        while (timer > 0)
+        {
+            playerAnimator.SetBool("IsInTheAir", true);
+            GameData.playerMovement.Propel(Vector2.up * liftSpeed, true, true);
+            timer -= Time.fixedDeltaTime;
+            yield return new WaitForFixedUpdate();
+        }
         GameData.gameController.LoadNextLevel();
     }
 
@@ -174,6 +215,7 @@ public class LevelHandler : MonoBehaviour
     {
         Coord bottomLeft = new Coord(currentPlayerZone.x -1, currentPlayerZone.y - 1);
         Coord upRight = new Coord(currentPlayerZone.x + 1, currentPlayerZone.y + 1);
+
 
         if (bottomLeft.x < 0)
         {
@@ -185,21 +227,21 @@ public class LevelHandler : MonoBehaviour
             bottomLeft.y = 0;
         }
 
-        if (upRight.x > levelBuilder.towerWidth - 1)
+        if (upRight.y > (levelBuilder.towerWidth - 1))
         {
-            upRight.x = levelBuilder.towerWidth - 1;
+            upRight.y = levelBuilder.towerWidth - 1;
         }
 
-        if (upRight.y > levelBuilder.towerHeight - 1)
+        if (upRight.x > (levelBuilder.towerHeight - 1))
         {
-            upRight.y = levelBuilder.towerHeight - 1;
+            upRight.x = levelBuilder.towerHeight - 1;
         }
 
-        /*foreach(RoomHandler room in allTowerRooms)
+        foreach(RoomHandler room in allTowerRooms)
         {
-            if(!levelBuilder.yokaiRoomList.Contains(room.originRoom))
+            if(!levelBuilder.yokaiRoomList.Contains(room.originRoom) && !levelBuilder.endRoomList.Contains(room.originRoom))
                 room.DeActivate();
-        }*/
+        }
 
         for (int i = bottomLeft.x; i <= upRight.x; i++)
         {

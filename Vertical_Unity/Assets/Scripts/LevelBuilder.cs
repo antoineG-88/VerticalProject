@@ -49,7 +49,7 @@ public class LevelBuilder : MonoBehaviour
     public Vector2 bottomCenterTowerPos;
     public float tileLength;
     public int maxRoom;
-    public bool towerCreated;
+    [HideInInspector] public bool towerCreated;
     public GameObject levelHolderPrefab;
     [Space]
     [Space]
@@ -635,6 +635,7 @@ public class LevelBuilder : MonoBehaviour
                                             else if (zoneNumber == (selectedRoom.roomParts.GetLength(1) - 1) && nextZone.y == (towerWidth - 1) && !rightEdgeChosen)
                                             {
                                                 CreateBorder(nextZone + relativeIndexes);
+                                                Debug.Log("-y- Border created during : " + selectedRoom.name);
                                             }
 
                                             Debug.Log(selectedRoom.name + " part placed on " + (nextZone + relativeIndexes));
@@ -762,7 +763,7 @@ public class LevelBuilder : MonoBehaviour
                         }
                         else if (nextZone.y == (towerWidth - 1) && rightEdgeLeft)
                         {
-                            rightEdgesTested[y] = false;
+                            rightEdgesTested[y] = true;
                         }
                         else
                         {

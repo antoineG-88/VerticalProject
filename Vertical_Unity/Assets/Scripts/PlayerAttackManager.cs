@@ -58,7 +58,7 @@ public class PlayerAttackManager : MonoBehaviour
             kickButtonPressed = false;
         }
 
-        if(GameData.gameController.input.leftTriggerAxis > 0 && powerCooldownRemaining <= 0)
+        if(GameData.gameController.input.leftTriggerAxis > 0 && currentPower != null && powerCooldownRemaining <= 0)
         {
             powerCooldownRemaining = currentPower.cooldown;
             GameData.playerVisuals.isCastingPower = 10;

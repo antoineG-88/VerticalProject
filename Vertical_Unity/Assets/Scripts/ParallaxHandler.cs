@@ -111,7 +111,7 @@ public class ParallaxHandler : MonoBehaviour
             height = 200;
         }
 
-        for (int i = 0; i < layerNumber; i++)
+        for (int i = 0; i < verticalElements.Length; i++)
         {
             if (verticalElements[i] != null)
             {
@@ -136,7 +136,7 @@ public class ParallaxHandler : MonoBehaviour
 
     private void UpdateElementsMovement()
     {
-        for (int i = 0; i < layerNumber; i++)
+        for (int i = 0; i < verticalElements.Length; i++)
         {
             if (verticalElements[i] != null)
             {

@@ -11,7 +11,7 @@ public class PlayerVisuals : MonoBehaviour
 
     [HideInInspector] public bool isSlaming;
 
-    private Animator animator;
+    [HideInInspector] public Animator animator;
     private bool transformFacingRight;
     void Start()
     {

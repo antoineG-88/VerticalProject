@@ -211,16 +211,27 @@ public class PlayerManager : MonoBehaviour
     private void UpdateHUD()
     {
         currentEnergyText.text = currentEnergy.ToString();
-        powerCharge.fillAmount = (GameData.playerAttackManager.currentPower.cooldown - GameData.playerAttackManager.powerCooldownRemaining) / GameData.playerAttackManager.currentPower.cooldown;
-        if(powerCharge.fillAmount < 1)
+        if(GameData.playerAttackManager.currentPower != null)
         {
-            currentPowerIcon.color = coolingPowerColor;
+            powerCharge.fillAmount = (GameData.playerAttackManager.currentPower.cooldown - GameData.playerAttackManager.powerCooldownRemaining) / GameData.playerAttackManager.currentPower.cooldown;
+
+
+            if (powerCharge.fillAmount < 1)
+            {
+                currentPowerIcon.color = coolingPowerColor;
+            }
+            else
+            {
+                currentPowerIcon.color = Color.white;
+            }
+            currentPowerIcon.sprite = GameData.playerAttackManager.currentPower.icon;
         }
         else
         {
-            currentPowerIcon.color = Color.white;
+            currentPowerIcon.sprite = null;
+            powerCharge.fillAmount = 0;
+            currentPowerIcon.color = new Color(0,0,0,0);
         }
-        currentPowerIcon.sprite = GameData.playerAttackManager.currentPower.icon;
     }
 
     private void InitializeHealthBar()
