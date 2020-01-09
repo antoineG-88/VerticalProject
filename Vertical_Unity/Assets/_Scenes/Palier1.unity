@@ -137,6 +137,11 @@ PrefabInstance:
       propertyPath: ringHighLighterO
       value: 
       objectReference: {fileID: 1754757854}
+    - target: {fileID: 2276650194064215076, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
+        type: 3}
+      propertyPath: useAutoAim
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4503195422415338473, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -201,8 +206,7 @@ PrefabInstance:
         type: 3}
       propertyPath: currentPower
       value: 
-      objectReference: {fileID: 11400000, guid: ff0f8183731902d49886d61ef4b47f10,
-        type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 4744132222942516713, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
         type: 3}
       propertyPath: ringReAim
@@ -753,6 +757,31 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3262874633279373274, guid: 41f5bbe9ee9a69f4182a78140cfb620d,
+        type: 3}
+      propertyPath: startOffset.y
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3262874633279373274, guid: 41f5bbe9ee9a69f4182a78140cfb620d,
+        type: 3}
+      propertyPath: layerRelativeSpeed.Array.data[1].y
+      value: 0.97
+      objectReference: {fileID: 0}
+    - target: {fileID: 3262874633279373274, guid: 41f5bbe9ee9a69f4182a78140cfb620d,
+        type: 3}
+      propertyPath: layerRelativeSpeed.Array.data[2].y
+      value: 0.94
+      objectReference: {fileID: 0}
+    - target: {fileID: 3262874633279373274, guid: 41f5bbe9ee9a69f4182a78140cfb620d,
+        type: 3}
+      propertyPath: layerRelativeSpeed.Array.data[3].y
+      value: 0.91
+      objectReference: {fileID: 0}
+    - target: {fileID: 3262874633279373274, guid: 41f5bbe9ee9a69f4182a78140cfb620d,
+        type: 3}
+      propertyPath: layerRelativeSpeed.Array.data[4].y
+      value: 0.88
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 41f5bbe9ee9a69f4182a78140cfb620d, type: 3}
 --- !u!114 &884117119 stripped
@@ -1055,6 +1084,10 @@ PrefabInstance:
     - target: {fileID: 9134310131610629846, guid: 90bd2f44b45271c4093db3988ad51804,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 828206619, guid: 90bd2f44b45271c4093db3988ad51804, type: 3}
+      propertyPath: useMouseAim
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -1464,7 +1497,7 @@ PrefabInstance:
     - target: {fileID: 6067586404583493697, guid: 2044c8ad1f8c46645b594a2e4cb2b141,
         type: 3}
       propertyPath: optimize
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6067586404583493703, guid: 2044c8ad1f8c46645b594a2e4cb2b141,
         type: 3}
@@ -1504,7 +1537,7 @@ PrefabInstance:
     - target: {fileID: 6067586404583493703, guid: 2044c8ad1f8c46645b594a2e4cb2b141,
         type: 3}
       propertyPath: towerHeight
-      value: 5
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 6067586404583493703, guid: 2044c8ad1f8c46645b594a2e4cb2b141,
         type: 3}

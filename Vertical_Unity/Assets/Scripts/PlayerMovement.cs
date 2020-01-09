@@ -256,7 +256,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            dashDirection = new Vector2(GameData.gameController.input.leftJoystickHorizontal, -GameData.gameController.input.leftJoystickVertical).normalized;
+            dashDirection = new Vector2(GameData.gameController.input.rightJoystickHorizontal, GameData.gameController.input.rightJoystickVertical).normalized;
         }
 
         if(dashDirection == Vector2.zero)

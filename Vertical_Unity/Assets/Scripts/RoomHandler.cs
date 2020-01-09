@@ -13,6 +13,8 @@ public class RoomHandler
     public Vector2 center;
     public List<GameObject> roomParts;
 
+    public bool islocked;
+
     public RoomHandler(Room _originRoom, int floorNumber, int zoneNumber)
     {
         originRoom = _originRoom;
@@ -73,19 +75,19 @@ public class RoomHandler
 
     public void UpdateRoomLockState()
     {
-        if (currentEnemies.Count == 0)
+        if (currentEnemies.Count == 0 && islocked)
         {
-            foreach (RoomDoors door in doors)
-            {
-                door.doors.isLocked = false;
-            }
+            islocked = false;
         }
-        else
+        else if (!islocked && currentEnemies.Count > 0)
         {
-            foreach (RoomDoors door in doors)
-            {
-                door.doors.isLocked = true;
-            }
+            islocked = true;
+        }
+
+
+        foreach (RoomDoors door in doors)
+        {
+            door.doors.isLocked = islocked;
         }
     }
 
@@ -101,14 +103,14 @@ public class RoomHandler
                     for (int t = 0; t < child.childCount; t++)
                     {
                         EnemyHandler enemy = child.GetChild(t).GetComponent<EnemyHandler>();
-                        if (enemy != null)
+                        if (enemy != null && !currentEnemies.Contains(enemy))
                         {
                             currentEnemies.Add(enemy);
                             enemy.room = this;
-                        }
-                        else
-                        {
-                            Debug.LogError("No EnemyHandler script found on " + child.GetChild(t).name);
+                            if(originRoom.name == "Le DR 1")
+                            {
+                                Debug.Log("Added " + enemy.gameObject.name + " > " + currentEnemies.Count);
+                            }
                         }
                     }
                 }

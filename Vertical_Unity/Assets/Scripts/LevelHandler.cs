@@ -102,6 +102,19 @@ public class LevelHandler : MonoBehaviour
         }
 
         lowPassFilter.cutoffFrequency = lowPassFrequency + ((22000 - lowPassFrequency) * lowPassState);
+
+
+        if(Input.GetKeyDown(KeyCode.M))
+        {
+            if(isFinalLevel)
+            {
+                GameData.playerMovement.transform.position = GameObject.Find("EndPortal").transform.position;
+            }
+            else
+            {
+                GameData.playerMovement.transform.position = liftPos + new Vector2(4, 2);
+            }
+        }
     }
 
     private void UpdateZone()
@@ -118,19 +131,26 @@ public class LevelHandler : MonoBehaviour
 
             if(currentRoom != previousRoom && currentRoom != null)
             {
-                currentRoom.Play();
+                UpdateNearbyRoomState();
                 previousRoom.Pause();
                 if(optimize)
-                UpdateNearbyRoomState();
                 UpdatePathfindingGraph();
                 previousRoom = currentRoom;
+                currentRoom.Play();
             }
 
             if (levelBuilder.towerRooms[currentPlayerZone.x, currentPlayerZone.y] != null)
                 UpdateCamera(currentRoom.zonesCenterPos);
         }
 
+        Debug.Log(currentRoom.currentEnemies.Count);
+        if(currentRoom.currentEnemies.Count > 0)
+        {
+            Debug.Log(currentRoom.currentEnemies[0].gameObject.name);
+        }
+        Debug.Log("Before : " + currentRoom.islocked);
         currentRoom.UpdateRoomLockState();
+        Debug.Log("After : " + currentRoom.islocked);
     }
 
     private Coord GetCurrentPlayerZone()

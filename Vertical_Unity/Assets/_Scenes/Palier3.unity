@@ -137,6 +137,11 @@ PrefabInstance:
       propertyPath: ringHighLighterO
       value: 
       objectReference: {fileID: 1754757854}
+    - target: {fileID: 2276650194064215076, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
+        type: 3}
+      propertyPath: useAutoAim
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4503195422415338473, guid: 4a3e718bc3d9f7a4c8cf1dbc93a3f531,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2153,6 +2158,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 828206619, guid: 90bd2f44b45271c4093db3988ad51804, type: 3}
+      propertyPath: useMouseAim
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 90bd2f44b45271c4093db3988ad51804, type: 3}
 --- !u!114 &1436799079 stripped
@@ -3077,7 +3086,7 @@ PrefabInstance:
     - target: {fileID: 6067586404583493697, guid: 2044c8ad1f8c46645b594a2e4cb2b141,
         type: 3}
       propertyPath: optimize
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6067586404583493703, guid: 2044c8ad1f8c46645b594a2e4cb2b141,
         type: 3}
@@ -3117,7 +3126,7 @@ PrefabInstance:
     - target: {fileID: 6067586404583493703, guid: 2044c8ad1f8c46645b594a2e4cb2b141,
         type: 3}
       propertyPath: towerHeight
-      value: 11
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 6067586404583493703, guid: 2044c8ad1f8c46645b594a2e4cb2b141,
         type: 3}
@@ -3137,7 +3146,7 @@ PrefabInstance:
     - target: {fileID: 6067586404583493703, guid: 2044c8ad1f8c46645b594a2e4cb2b141,
         type: 3}
       propertyPath: instantCreation
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6067586404583493703, guid: 2044c8ad1f8c46645b594a2e4cb2b141,
         type: 3}
@@ -3445,7 +3454,7 @@ PrefabInstance:
     - target: {fileID: 6067586404583493703, guid: 2044c8ad1f8c46645b594a2e4cb2b141,
         type: 3}
       propertyPath: timeTestingRoom
-      value: 0.02
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2044c8ad1f8c46645b594a2e4cb2b141, type: 3}

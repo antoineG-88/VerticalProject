@@ -53,11 +53,11 @@ public class InputManager : MonoBehaviour
             leftJoystickVertical = GameData.gameController.takePlayerInput ? Input.GetAxis("LJoystickV") : 0;
 
             rightTriggerAxis = GameData.gameController.takePlayerInput ? Input.GetAxis("RTAxis") : 0;
-            leftTriggerAxis = GameData.gameController.takePlayerInput ? Input.GetAxis("LTAxis") : 0;
-            rightBumper = GameData.gameController.takePlayerInput ? Input.GetButton("RBButton") : false;
+            leftTriggerAxis = GameData.gameController.takePlayerInput ? Input.GetButton("LBButton") ? 1 : 0 : 0;
+            rightBumper = GameData.gameController.takePlayerInput ? Input.GetAxis("LTAxis") > 0.2f ? true : false : false;
         }
 
-        jump = GameData.gameController.takePlayerInput ? Input.GetButton("AButton") || Input.GetButton("Dash") ? true : false : false;
+        jump = GameData.gameController.takePlayerInput ? Input.GetButton("RBButton") || Input.GetButton("Dash") ? true : false : false;
 
         if (rtaFlag && !rightTriggerDown && rightTriggerAxis > 0.1f)
         {
